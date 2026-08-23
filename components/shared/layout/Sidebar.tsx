@@ -183,7 +183,19 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-800 truncate leading-tight">{userName || 'Pengguna'}</p>
-              <p className="text-[10px] text-slate-400 font-medium truncate capitalize">{userRole || 'Admin'}</p>
+              <p className="text-[10px] text-slate-400 font-medium truncate">
+                {userRole === 'pic_maintenance'
+                  ? 'PIC Maintenance'
+                  : userRole === 'admin'
+                  ? 'Administrator'
+                  : userRole === 'qc_leader'
+                  ? 'QC Leader'
+                  : userRole === 'coordinator'
+                  ? 'Koordinator'
+                  : userRole === 'reporter'
+                  ? 'Reporter'
+                  : userRole || 'Staf'}
+              </p>
             </div>
           </div>
           <button
