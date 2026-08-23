@@ -103,6 +103,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     { data: activities },
     { data: evidences },
     { data: comments },
+    { data: dueDateChanges },
     { data: rawProfiles },
     { data: rawRootCauses },
     { data: rawUserWarehouse },
@@ -131,7 +132,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         actor:actor_id ( full_name )
       `)
       .eq('case_id', id)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: true }),
 
     supabase
       .from('case_evidences')
@@ -162,12 +163,25 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .order('created_at', { ascending: true }),
 
     supabase
+      .from('due_date_changes')
+      .select(`
+        id,
+        previous_due_date,
+        new_due_date,
+        reason,
+        changed_at,
+        changer:changed_by ( full_name )
+      `)
+      .eq('case_id', id)
+      .order('changed_at', { ascending: false }),
+
+    supabase
       .from('user_warehouses')
       .select(`
         user_id,
-        warehouse_id,
-        roles ( id, name, display_name ),
-        profiles:user_id ( id, full_name, avatar_url, is_active )
+        is_active,
+        profiles ( id, full_name, avatar_url ),
+        roles ( name, display_name )
       `)
       .eq('warehouse_id', item.warehouse_id)
       .eq('is_active', true),
@@ -175,28 +189,29 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     supabase
       .from('root_causes')
       .select('id, name')
-      .eq('is_active', true),
+      .order('name'),
 
     supabase
       .from('user_warehouses')
-      .select('roles ( name, display_name )')
+      .select('roles(name)')
       .eq('user_id', user.id)
       .eq('warehouse_id', item.warehouse_id)
-      .eq('is_active', true)
       .maybeSingle(),
 
     supabase
       .from('profiles')
       .select('is_super_admin')
       .eq('id', user.id)
-      .maybeSingle(),
+      .single(),
   ]);
 
-  const currentUserRole = ((rawUserWarehouse as any)?.roles as any)?.name || 'reporter';
+  const currentUserRole = (rawUserWarehouse as any)?.roles?.name;
   const isSuperAdmin = (rawUserProfile as any)?.is_super_admin ?? false;
 
-  const assignableUsers: AssignableUser[] = ((rawProfiles as any) ?? [])
-    .filter((uw: any) => uw.profiles?.is_active)
+  // Filter assignable users to eligible candidates only (PIC Maintenance, Coordinator, Admin)
+  const eligibleRoles = ['pic_maintenance', 'coordinator', 'admin', 'qc_leader'];
+  const assignableUsers: AssignableUser[] = (rawProfiles ?? [])
+    .filter((uw: any) => uw?.profiles && uw?.roles && eligibleRoles.includes(uw.roles.name))
     .map((uw: any) => ({
       id: uw.profiles.id,
       full_name: uw.profiles.full_name,
@@ -258,21 +273,27 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       case 'created':
         return 'Kasus dibuat dan dilaporkan';
       case 'assigned':
-        return 'Kasus ditugaskan ke PIC';
+        return `Kasus ditugaskan ke PIC ${act.metadata?.assignee_name ? `(${act.metadata.assignee_name})` : ''}`;
       case 'status_changed':
         return `Status diubah ${act.from_status ? `dari ${act.from_status}` : ''} menjadi ${act.to_status}`;
+      case 'priority_changed':
+        return `Prioritas kasus diubah ${act.metadata?.from ? `dari ${act.metadata.from}` : ''} menjadi ${act.metadata?.to || ''}`;
+      case 'due_date_overridden':
+        return `Batas waktu SLA diperbarui ${act.metadata?.to ? `menjadi ${format(new Date(act.metadata.to), 'dd MMM yyyy, HH:mm', { locale: localeId })}` : ''}`;
+      case 'force_closed':
+        return 'Kasus ditutup paksa oleh Administrator';
       case 'evidence_added':
-        return 'Bukti foto berhasil diunggah';
+        return `Bukti foto (${act.metadata?.phase === 'after' ? 'Fase Selesai / After' : 'Fase Awal / Before'}) diunggah`;
       case 'commented':
         return 'Komentar baru ditambahkan';
       case 'verified':
-        return 'Kasus diverifikasi dan disetujui';
+        return 'Pekerjaan diverifikasi dan disetujui oleh QC';
       case 'verification_failed':
         return 'Verifikasi ditolak — dikembalikan untuk perbaikan ulang';
       case 'closed':
-        return 'Kasus ditutup (selesai)';
+        return 'Kasus diselesaikan dan ditutup (Closed)';
       case 'reopened':
-        return 'Kasus dibuka kembali';
+        return 'Kasus dibuka kembali untuk investigasi lanjutan (Reopened)';
       default:
         return act.action.replace(/_/g, ' ');
     }
@@ -399,6 +420,34 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             )}
           </div>
         </div>
+
+        {/* Due Date Overrides History (if any) */}
+        {dueDateChanges && dueDateChanges.length > 0 && (
+          <div className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-100 text-xs space-y-2 animate-in fade-in">
+            <div className="flex items-center gap-1.5 text-purple-900 font-extrabold">
+              <Clock className="w-3.5 h-3.5 text-purple-600" />
+              <span>Histori Penyesuaian Batas Waktu ({dueDateChanges.length})</span>
+            </div>
+            <div className="space-y-2">
+              {dueDateChanges.map((ddc: any) => (
+                <div key={ddc.id} className="text-[11.5px] bg-white/90 p-2.5 rounded-xl border border-purple-100 text-slate-700 space-y-1">
+                  <div className="flex items-center justify-between font-bold text-slate-900 text-xs">
+                    <span>Oleh: {ddc.changer?.full_name || 'Koordinator / Admin'}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      {format(new Date(ddc.changed_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
+                    </span>
+                  </div>
+                  <p className="text-slate-600">
+                    Batas waktu baru: <strong className="text-purple-700 font-bold">{format(new Date(ddc.new_due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}</strong>
+                  </p>
+                  <p className="text-amber-900 italic bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/60">
+                    Alasan: &quot;{ddc.reason}&quot;
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── 2. Workflow Action Panel (Assign, Priority, DueDate, ForceClose, Verify, Reopen) */}
@@ -457,7 +506,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     )}
                   </div>
                   <span className="text-[10px] text-slate-400">
-                    {formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })}
+                    {format(new Date(com.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
                   </span>
                 </div>
                 <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
@@ -472,7 +521,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
           <Activity className="w-4 h-4 text-blue-600" />
           <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-            Riwayat Aktivitas & Workflow
+            Riwayat Aktivitas & Alur Kerja ({activities?.length || 0})
           </h2>
         </div>
 
@@ -486,23 +535,23 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2 mb-0.5">
                     <span className="font-bold text-slate-800 truncate">
-                      {act.actor?.full_name || 'Sistem'}
+                      {act.actor?.full_name || 'Sistem / Administrator'}
                     </span>
                     <span className="text-[10.5px] text-slate-400">
-                      {formatDistanceToNow(new Date(act.created_at), { addSuffix: true, locale: localeId })}
+                      {format(new Date(act.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
                     </span>
                   </div>
-                  <p className="text-[11.5px] text-slate-600 font-medium">
+                  <p className="text-[11.5px] text-slate-700 font-semibold">
                     {formatActivityAction(act)}
                   </p>
                   {act.metadata?.reason && (
-                    <p className="text-[11px] text-amber-800 italic mt-1 bg-amber-50 p-2 rounded-lg border border-amber-200/80">
-                      Alasan: &quot;{act.metadata.reason}&quot;
+                    <p className="text-[11px] text-amber-900 italic mt-1.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200/80">
+                      <strong>Alasan:</strong> &quot;{act.metadata.reason}&quot;
                     </p>
                   )}
                   {act.metadata?.note && (
-                    <p className="text-[11px] text-slate-600 italic mt-1 bg-white p-2 rounded-lg border border-slate-200/60">
-                      Catatan: &quot;{act.metadata.note}&quot;
+                    <p className="text-[11px] text-slate-700 italic mt-1.5 bg-white p-2.5 rounded-xl border border-slate-200/80">
+                      <strong>Catatan:</strong> &quot;{act.metadata.note}&quot;
                     </p>
                   )}
                 </div>

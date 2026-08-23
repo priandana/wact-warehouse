@@ -278,13 +278,17 @@ export function CreateCaseWizard({
 
   const isAnyPhotoProcessing = photos.some((p) => p.status === 'processing');
 
-  // Validation
-  const isStep1Valid = title.trim().length >= 3;
+  // Validation: Title >= 3 chars & Category is mandatory
+  const isStep1Valid = title.trim().length >= 3 && Boolean(categoryId);
 
   const handleNext = () => {
     setErrorMessage(null);
     if (step === 1 && !isStep1Valid) {
-      setErrorMessage('Mohon isi judul kasus (minimal 3 karakter)');
+      if (title.trim().length < 3) {
+        setErrorMessage('Mohon isi judul kasus (minimal 3 karakter)');
+      } else if (!categoryId) {
+        setErrorMessage('Mohon pilih salah satu kategori kasus.');
+      }
       return;
     }
     setStep((prev) => Math.min(4, prev + 1));
@@ -309,9 +313,7 @@ export function CreateCaseWizard({
     const readyPhotos = photos.filter((p) => p.status === 'ready' && p.compressedBlob);
     let allSucceeded = true;
 
-    for (let i = 0; i < readyPhotos.length; i++) {
-      const photo = readyPhotos[i];
-      setSubmitStatusText(`Mengunggah foto ${i + 1} dari ${readyPhotos.length}...`);
+    for (const photo of readyPhotos) {
       try {
         const storagePath = buildCaseEvidencePath(activeWarehouseId, caseId, 'jpg');
         await uploadFile(
@@ -352,6 +354,11 @@ export function CreateCaseWizard({
     }
     if (!title.trim()) {
       setErrorMessage('Judul kasus wajib diisi.');
+      setStep(1);
+      return;
+    }
+    if (!categoryId) {
+      setErrorMessage('Kategori kasus wajib dipilih.');
       setStep(1);
       return;
     }
