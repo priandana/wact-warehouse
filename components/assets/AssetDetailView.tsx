@@ -87,6 +87,7 @@ interface AssetDetailProps {
     id: string;
     inspection_number?: string;
     status?: string;
+    overall_result?: string;
     created_at: string;
     inspector?: { full_name: string } | null;
   }>;
@@ -283,14 +284,14 @@ export function AssetDetailView({
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Jadwal QC Berikutnya
             </span>
-            <span className="text-xs font-black text-blue-700 mt-1 block truncate">
+            <span className="text-xs font-black text-slate-700 mt-1 block truncate">
               {asset.next_inspection_at
                 ? new Date(asset.next_inspection_at).toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric',
                   })
-                : 'Rutin Bulanan'}
+                : 'Belum Dijadwalkan'}
             </span>
           </div>
         </div>
@@ -476,12 +477,33 @@ export function AssetDetailView({
                 ) : (
                   <div className="divide-y divide-slate-100">
                     {inspections.map((insp) => (
-                      <div
+                      <Link
                         key={insp.id}
-                        className="py-3 flex items-center justify-between text-xs"
+                        href={`/inspections/${insp.id}`}
+                        className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2 rounded-xl transition-colors group block"
                       >
-                        <div>
-                          <p className="font-bold text-slate-900">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-black text-blue-700">
+                              {insp.inspection_number || 'INSP-QC'}
+                            </span>
+                            <span
+                              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                insp.status === 'completed'
+                                  ? insp.overall_result === 'ng'
+                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              }`}
+                            >
+                              {insp.status === 'completed'
+                                ? insp.overall_result === 'ng'
+                                  ? 'SELESAI (NG)'
+                                  : 'SELESAI (OK)'
+                                : 'DRAFT'}
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
                             Inspeksi QC Rutin
                           </p>
                           <p className="text-[11px] text-slate-400">
@@ -490,13 +512,14 @@ export function AssetDetailView({
                               day: 'numeric',
                               month: 'short',
                               year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
                             })}
                           </p>
                         </div>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          SELESAI
-                        </span>
-                      </div>
+
+                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 shrink-0" />
+                      </Link>
                     ))}
                   </div>
                 )}

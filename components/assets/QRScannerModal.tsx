@@ -18,9 +18,10 @@ interface QRScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
   activeWarehouseId?: string;
+  onScanSuccess?: (detectedCode: string) => void;
 }
 
-export function QRScannerModal({ isOpen, onClose, activeWarehouseId }: QRScannerModalProps) {
+export function QRScannerModal({ isOpen, onClose, activeWarehouseId, onScanSuccess }: QRScannerModalProps) {
   const router = useRouter();
   const [manualCode, setManualCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,11 @@ export function QRScannerModal({ isOpen, onClose, activeWarehouseId }: QRScanner
       }
 
       const foundAsset = assets[0];
+      if (onScanSuccess) {
+        onScanSuccess(raw);
+        onClose();
+        return;
+      }
       onClose();
       router.push(`/assets/${foundAsset.id}`);
     } catch (err: unknown) {

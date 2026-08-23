@@ -124,6 +124,9 @@ export default async function AssetDetailPage({
     .from('inspections')
     .select(`
       id,
+      inspection_number,
+      status,
+      overall_result,
       created_at,
       inspector:inspector_id(full_name)
     `)

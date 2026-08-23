@@ -24,22 +24,25 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
 
   // Desktop Composition
   if (isDesktop) {
-    const pageTitleMap: Record<string, string> = {
-      '/dashboard': 'Dashboard',
-      '/cases': 'Daftar Kasus',
-      '/my-tasks': 'Tugas Saya',
-      '/assets': 'Aset & Mesin',
-      '/inspections': 'QC & Inspeksi',
-      '/maintenance': 'Maintenance',
-      '/analytics': 'Analitik',
-      '/reports': 'Laporan',
-      '/notifications': 'Notifikasi',
-      '/master-data': 'Master Data',
-      '/users': 'Pengguna',
-      '/profile': 'Profil',
-    };
-
-    const currentTitle = pageTitleMap[pathname] ?? 'WACT';
+    let currentTitle = 'WACT';
+    if (pathname.startsWith('/inspections/templates')) currentTitle = 'Master Template QC';
+    else if (pathname.startsWith('/inspections/new')) currentTitle = 'Mulai Inspeksi QC';
+    else if (pathname.startsWith('/inspections/')) currentTitle = 'Detail Inspeksi QC';
+    else if (pathname === '/inspections') currentTitle = 'QC & Inspeksi';
+    else if (pathname.startsWith('/assets/')) currentTitle = 'Detail Aset';
+    else if (pathname === '/assets') currentTitle = 'Aset & Mesin';
+    else if (pathname.startsWith('/cases/new')) currentTitle = 'Buat Kasus Baru';
+    else if (pathname.startsWith('/cases/')) currentTitle = 'Detail Kasus';
+    else if (pathname === '/cases') currentTitle = 'Daftar Kasus';
+    else if (pathname === '/dashboard') currentTitle = 'Dashboard';
+    else if (pathname === '/my-tasks') currentTitle = 'Tugas Saya';
+    else if (pathname === '/maintenance') currentTitle = 'Maintenance';
+    else if (pathname === '/analytics') currentTitle = 'Analitik';
+    else if (pathname === '/reports') currentTitle = 'Laporan';
+    else if (pathname === '/notifications') currentTitle = 'Notifikasi';
+    else if (pathname === '/master-data') currentTitle = 'Master Data';
+    else if (pathname === '/users') currentTitle = 'Pengguna';
+    else if (pathname === '/profile') currentTitle = 'Profil';
 
     return (
       <div className="flex min-h-screen bg-[#F8FAFC]">

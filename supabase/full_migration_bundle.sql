@@ -1,4 +1,4 @@
--- WACT Complete Production Migration Bundle (001 -> 028)
+-- WACT Complete Production Migration Bundle (001 -> 033)
 -- Generated for clean database deployment
 
 BEGIN;
@@ -4196,12 +4196,9 @@ CREATE POLICY profiles_select ON public.profiles FOR SELECT
   );
 
 
-COMMIT;
-
-
--- ============================================================================
--- 029_master_areas_locations.sql
--- ============================================================================
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FILE: 029_master_areas_locations.sql
+-- ═══════════════════════════════════════════════════════════════════════════
 
 -- ============================================================================
 -- 029_master_areas_locations.sql
@@ -4436,3 +4433,891 @@ BEGIN
     SET name = EXCLUDED.name, description = EXCLUDED.description, is_active = EXCLUDED.is_active;
 
 END $$;
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FILE: 030_phase2b_asset_category_cleanup.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- 030_phase2b_asset_category_cleanup.sql
+-- Phase 2B: Deactivate 6 legacy generic asset categories and ensure 12 official Phase 2B categories are active.
+-- Safe, idempotent, non-destructive (no rows deleted, no schema changes).
+
+-- 1. Deactivate the 6 legacy categories
+UPDATE public.asset_categories
+SET is_active = false
+WHERE id IN (
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f96', -- Equipment
+  'e2651ab3-5dbe-44a2-a1b0-9cd2ff6adc93', -- Facility
+  'c1d77f69-7abb-4b9a-9f5e-9255e3fe0370', -- Vehicle
+  '807839ae-412c-48ff-a1db-93f3654aa417', -- IT Device
+  'f1649b55-afb3-4410-8db0-6f1a1d4b6906', -- Safety
+  'f836b989-b125-44e4-a037-691ad5a6b4d8'  -- Other
+);
+
+-- 2. Ensure all 12 official Phase 2B categories remain active
+UPDATE public.asset_categories
+SET is_active = true
+WHERE id IN (
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f01', -- Hand Pallet
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f02', -- Forklift
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f03', -- Reach Truck
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f04', -- PTL
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f05', -- Rack
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f06', -- Scanner
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f07', -- Printer
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f08', -- Scale
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f09', -- APAR
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f10', -- Lamp / Lighting
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f11', -- Chiller / Freezer Equipment
+  '1e9d0f83-b7d6-4f83-9644-18faf9e18f12'  -- Other Equipment
+);
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FILE: 031_phase2c_inspection_rpcs.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- 031_phase2c_inspection_rpcs.sql
+-- Phase 2C: QC & Inspection Workflow Database Foundation
+-- 1. inspection_sequences table for atomic sequence number generation (internal least-privilege)
+-- 2. inspection_interval_days column on inspection_templates (nullable)
+-- 3. UNIQUE (inspection_id, item_id) constraint on inspection_results for safe upsert
+-- 4. Partial unique index for one active draft inspection per asset
+-- 5. Hardened SECURITY DEFINER RPCs for inspection lifecycle and global template management
+
+-- ── 1. inspection_sequences table (Internal Least-Privilege) ────────────────
+
+CREATE TABLE IF NOT EXISTS public.inspection_sequences (
+  warehouse_id  uuid NOT NULL REFERENCES public.warehouses(id) ON DELETE CASCADE,
+  sequence_date date NOT NULL,
+  last_sequence int NOT NULL DEFAULT 0,
+  PRIMARY KEY (warehouse_id, sequence_date)
+);
+
+ALTER TABLE public.inspection_sequences ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS insp_seq_select ON public.inspection_sequences;
+DROP POLICY IF EXISTS insp_seq_insert ON public.inspection_sequences;
+DROP POLICY IF EXISTS insp_seq_update ON public.inspection_sequences;
+DROP POLICY IF EXISTS insp_seq_delete ON public.inspection_sequences;
+
+CREATE POLICY insp_seq_select ON public.inspection_sequences FOR SELECT USING (false);
+CREATE POLICY insp_seq_insert ON public.inspection_sequences FOR INSERT WITH CHECK (false);
+CREATE POLICY insp_seq_update ON public.inspection_sequences FOR UPDATE USING (false);
+CREATE POLICY insp_seq_delete ON public.inspection_sequences FOR DELETE USING (false);
+
+-- Direct client access revoked; table is mutated solely by start_inspection() RPC
+REVOKE ALL ON public.inspection_sequences FROM PUBLIC, authenticated;
+
+-- ── 2. Add inspection_interval_days to inspection_templates ────────────────
+
+ALTER TABLE public.inspection_templates
+  ADD COLUMN IF NOT EXISTS inspection_interval_days integer CHECK (inspection_interval_days > 0);
+
+-- ── 3. UNIQUE (inspection_id, item_id) on inspection_results ───────────────
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'uq_results_insp_item' AND conrelid = 'public.inspection_results'::regclass
+  ) THEN
+    ALTER TABLE public.inspection_results
+      ADD CONSTRAINT uq_results_insp_item UNIQUE (inspection_id, item_id);
+  END IF;
+END $$;
+
+-- ── 4. One active draft inspection per asset ───────────────────────────────
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_inspections_asset_draft
+  ON public.inspections (asset_id)
+  WHERE status = 'draft';
+
+-- ── 5. RPC: start_inspection ───────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.start_inspection(
+  p_warehouse_id uuid,
+  p_asset_id     uuid,
+  p_template_id  uuid
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id          uuid := auth.uid();
+  v_wh_code           text;
+  v_wh_tz             text;
+  v_asset_status      text;
+  v_asset_category_id uuid;
+  v_tpl_category_id   uuid;
+  v_local_date        date;
+  v_display_date      text;
+  v_seq               int;
+  v_insp_number       text;
+  v_inspection_id     uuid;
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate actor's warehouse scope & capability
+  IF NOT (p_warehouse_id = ANY(public.get_user_warehouse_ids())) THEN
+    RAISE EXCEPTION 'Permission denied: warehouse % is not in your active scope', p_warehouse_id;
+  END IF;
+
+  IF NOT public.has_capability(p_warehouse_id, 'inspection.start') THEN
+    RAISE EXCEPTION 'Permission denied: missing inspection.start capability in warehouse %', p_warehouse_id;
+  END IF;
+
+  -- 3. Validate warehouse is active & get timezone/code
+  SELECT code, timezone INTO v_wh_code, v_wh_tz
+    FROM public.warehouses
+   WHERE id = p_warehouse_id AND is_active = true;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Warehouse % not found or inactive', p_warehouse_id;
+  END IF;
+
+  -- 4. Validate asset belongs to warehouse, read category, and ensure not retired
+  SELECT status, category_id
+    INTO v_asset_status, v_asset_category_id
+    FROM public.assets
+   WHERE id = p_asset_id AND warehouse_id = p_warehouse_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Asset % does not belong to warehouse %', p_asset_id, p_warehouse_id;
+  END IF;
+  IF v_asset_status = 'retired' THEN
+    RAISE EXCEPTION 'Asset % is retired and cannot be inspected', p_asset_id;
+  END IF;
+
+  -- 5. Validate template exists, is active, and matches asset category
+  SELECT category_id
+    INTO v_tpl_category_id
+    FROM public.inspection_templates
+   WHERE id = p_template_id AND is_active = true;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Inspection template % not found or inactive', p_template_id;
+  END IF;
+
+  -- Category-specific templates must match asset category; generic templates (category_id IS NULL) are allowed
+  IF v_tpl_category_id IS NOT NULL AND v_tpl_category_id IS DISTINCT FROM v_asset_category_id THEN
+    RAISE EXCEPTION 'Template category does not match asset category';
+  END IF;
+
+  -- 6. Guard against active draft for same asset
+  IF EXISTS (
+    SELECT 1 FROM public.inspections
+     WHERE asset_id = p_asset_id AND status = 'draft'
+  ) THEN
+    RAISE EXCEPTION 'Asset % already has an active draft inspection. Complete or cancel it first.', p_asset_id;
+  END IF;
+
+  -- 7. Generate inspection number atomically (warehouse timezone aware)
+  v_local_date   := (now() AT TIME ZONE v_wh_tz)::date;
+  v_display_date := to_char(now() AT TIME ZONE v_wh_tz, 'YYMMDD');
+
+  INSERT INTO public.inspection_sequences (warehouse_id, sequence_date, last_sequence)
+  VALUES (p_warehouse_id, v_local_date, 1)
+  ON CONFLICT (warehouse_id, sequence_date)
+  DO UPDATE SET last_sequence = public.inspection_sequences.last_sequence + 1
+  RETURNING last_sequence INTO v_seq;
+
+  v_insp_number := 'INSP-' || v_wh_code || '-' || v_display_date || '-' || lpad(v_seq::text, 3, '0');
+
+  -- 8. Insert inspection record
+  INSERT INTO public.inspections (
+    inspection_number, asset_id, warehouse_id, template_id,
+    inspector_id, status, started_at
+  ) VALUES (
+    v_insp_number, p_asset_id, p_warehouse_id, p_template_id,
+    v_actor_id, 'draft', now()
+  )
+  RETURNING id INTO v_inspection_id;
+
+  RETURN v_inspection_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.start_inspection(uuid, uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.start_inspection(uuid, uuid, uuid) TO authenticated;
+
+-- ── 6. RPC: submit_inspection_result ───────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.submit_inspection_result(
+  p_inspection_id uuid,
+  p_item_id       uuid,
+  p_value         text,
+  p_notes         text DEFAULT NULL
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id           uuid := auth.uid();
+  v_insp_inspector_id  uuid;
+  v_insp_template_id   uuid;
+  v_insp_warehouse_id  uuid;
+  v_insp_status        text;
+  v_result_id          uuid;
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate value is ok, ng, or na
+  IF p_value NOT IN ('ok', 'ng', 'na') THEN
+    RAISE EXCEPTION 'Invalid result value: %. Must be ok, ng, or na', p_value;
+  END IF;
+
+  -- 3. Validate inspection exists, is draft, and actor is the assigned inspector
+  SELECT inspector_id, template_id, warehouse_id, status
+    INTO v_insp_inspector_id, v_insp_template_id, v_insp_warehouse_id, v_insp_status
+    FROM public.inspections
+   WHERE id = p_inspection_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Inspection % not found', p_inspection_id;
+  END IF;
+  IF v_insp_status != 'draft' THEN
+    RAISE EXCEPTION 'Inspection % is not in draft status (current: %)', p_inspection_id, v_insp_status;
+  END IF;
+  IF v_insp_inspector_id != v_actor_id THEN
+    RAISE EXCEPTION 'Permission denied: only the inspector who started this inspection can submit results';
+  END IF;
+
+  -- 4. Revalidate actor's current warehouse scope and inspection capability
+  IF NOT (v_insp_warehouse_id = ANY(public.get_user_warehouse_ids())) THEN
+    RAISE EXCEPTION 'Permission denied: inspection warehouse is no longer in your active scope';
+  END IF;
+  IF NOT public.has_capability(v_insp_warehouse_id, 'inspection.start') THEN
+    RAISE EXCEPTION 'Permission denied: missing inspection.start capability in warehouse %', v_insp_warehouse_id;
+  END IF;
+
+  -- 5. Cross-template item injection prevention: verify item belongs to this template
+  IF NOT EXISTS (
+    SELECT 1
+      FROM public.inspection_template_items iti
+      JOIN public.inspection_template_sections its ON its.id = iti.section_id
+     WHERE iti.id = p_item_id
+       AND its.template_id = v_insp_template_id
+  ) THEN
+    RAISE EXCEPTION 'Item % does not belong to the template of inspection %', p_item_id, p_inspection_id;
+  END IF;
+
+  -- 6. Upsert result
+  INSERT INTO public.inspection_results (
+    inspection_id, item_id, value, notes, created_at
+  ) VALUES (
+    p_inspection_id, p_item_id, p_value, p_notes, now()
+  )
+  ON CONFLICT (inspection_id, item_id)
+  DO UPDATE SET
+    value = EXCLUDED.value,
+    notes = EXCLUDED.notes
+  RETURNING id INTO v_result_id;
+
+  RETURN v_result_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.submit_inspection_result(uuid, uuid, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.submit_inspection_result(uuid, uuid, text, text) TO authenticated;
+
+-- ── 7. RPC: complete_inspection ────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.complete_inspection(
+  p_inspection_id uuid,
+  p_notes         text DEFAULT NULL
+)
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id         uuid := auth.uid();
+  v_asset_id         uuid;
+  v_template_id      uuid;
+  v_inspector_id     uuid;
+  v_warehouse_id     uuid;
+  v_status           text;
+  v_missing_count    int;
+  v_missing_labels   text;
+  v_ng_count         int;
+  v_ok_count         int;
+  v_na_count         int;
+  v_overall          text;
+  v_interval_days    int;
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate inspection exists, is draft, and actor is the assigned inspector
+  SELECT asset_id, template_id, inspector_id, warehouse_id, status
+    INTO v_asset_id, v_template_id, v_inspector_id, v_warehouse_id, v_status
+    FROM public.inspections
+   WHERE id = p_inspection_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Inspection % not found', p_inspection_id;
+  END IF;
+  IF v_status != 'draft' THEN
+    RAISE EXCEPTION 'Inspection % is not in draft status (current: %)', p_inspection_id, v_status;
+  END IF;
+  IF v_inspector_id != v_actor_id THEN
+    RAISE EXCEPTION 'Permission denied: only the inspector who started this inspection can complete it';
+  END IF;
+
+  -- 3. Revalidate actor's current warehouse scope and inspection capability
+  IF NOT (v_warehouse_id = ANY(public.get_user_warehouse_ids())) THEN
+    RAISE EXCEPTION 'Permission denied: inspection warehouse is no longer in your active scope';
+  END IF;
+  IF NOT public.has_capability(v_warehouse_id, 'inspection.start') THEN
+    RAISE EXCEPTION 'Permission denied: missing inspection.start capability in warehouse %', v_warehouse_id;
+  END IF;
+
+  -- 4. Check all required items are answered (submitted ok, ng, or na)
+  SELECT count(*), string_agg(iti.label, ', ')
+    INTO v_missing_count, v_missing_labels
+    FROM public.inspection_template_items iti
+    JOIN public.inspection_template_sections its ON its.id = iti.section_id
+    LEFT JOIN public.inspection_results ir
+           ON ir.inspection_id = p_inspection_id AND ir.item_id = iti.id
+   WHERE its.template_id = v_template_id
+     AND iti.is_required = true
+     AND (ir.id IS NULL OR ir.value IS NULL);
+
+  IF v_missing_count > 0 THEN
+    RAISE EXCEPTION 'Cannot complete inspection: % required item(s) not answered: %', v_missing_count, v_missing_labels;
+  END IF;
+
+  -- 5. Derive overall_result server-side: NG > OK > NA
+  SELECT
+    COUNT(*) FILTER (WHERE value = 'ng'),
+    COUNT(*) FILTER (WHERE value = 'ok'),
+    COUNT(*) FILTER (WHERE value = 'na')
+  INTO v_ng_count, v_ok_count, v_na_count
+  FROM public.inspection_results
+  WHERE inspection_id = p_inspection_id;
+
+  IF v_ng_count > 0 THEN
+    v_overall := 'ng';
+  ELSIF v_ok_count > 0 THEN
+    v_overall := 'ok';
+  ELSIF v_na_count > 0 THEN
+    v_overall := 'na';
+  ELSE
+    v_overall := 'ok';
+  END IF;
+
+  -- 6. Update inspection record
+  UPDATE public.inspections
+     SET status = 'completed',
+         overall_result = v_overall,
+         notes = COALESCE(p_notes, notes),
+         completed_at = now()
+   WHERE id = p_inspection_id;
+
+  -- 7. Safely update asset inspection timestamps (SECURITY DEFINER bypasses asset.manage RLS)
+  SELECT inspection_interval_days INTO v_interval_days
+    FROM public.inspection_templates
+   WHERE id = v_template_id;
+
+  IF v_interval_days IS NOT NULL AND v_interval_days > 0 THEN
+    UPDATE public.assets
+       SET last_inspection_at = now(),
+           next_inspection_at = now() + (v_interval_days || ' days')::interval
+     WHERE id = v_asset_id;
+  ELSE
+    UPDATE public.assets
+       SET last_inspection_at = now(),
+           next_inspection_at = NULL
+     WHERE id = v_asset_id;
+  END IF;
+
+  RETURN v_overall;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.complete_inspection(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.complete_inspection(uuid, text) TO authenticated;
+
+-- ── 8. RPC: cancel_inspection ──────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.cancel_inspection(
+  p_inspection_id uuid,
+  p_reason        text
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id      uuid := auth.uid();
+  v_inspector_id  uuid;
+  v_warehouse_id  uuid;
+  v_status        text;
+  v_notes         text;
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate cancellation reason is mandatory
+  IF p_reason IS NULL OR trim(p_reason) = '' THEN
+    RAISE EXCEPTION 'Cancellation reason is mandatory';
+  END IF;
+
+  -- 3. Validate inspection exists and is draft
+  SELECT inspector_id, warehouse_id, status, notes
+    INTO v_inspector_id, v_warehouse_id, v_status, v_notes
+    FROM public.inspections
+   WHERE id = p_inspection_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Inspection % not found', p_inspection_id;
+  END IF;
+  IF v_status != 'draft' THEN
+    RAISE EXCEPTION 'Cannot cancel inspection in % status (must be draft)', v_status;
+  END IF;
+
+  -- 4. Validate actor's current warehouse scope and cancellation capability
+  IF (SELECT is_super_admin FROM public.profiles WHERE id = v_actor_id) THEN
+    -- Super Admin always authorized
+    NULL;
+  ELSIF v_inspector_id = v_actor_id THEN
+    -- Inspector cancelling own draft: must still be in warehouse scope and have inspection.start capability
+    IF NOT (v_warehouse_id = ANY(public.get_user_warehouse_ids())) THEN
+      RAISE EXCEPTION 'Permission denied: inspection warehouse is no longer in your active scope';
+    END IF;
+    IF NOT public.has_capability(v_warehouse_id, 'inspection.start') THEN
+      RAISE EXCEPTION 'Permission denied: missing inspection.start capability in warehouse %', v_warehouse_id;
+    END IF;
+  ELSIF public.has_capability(v_warehouse_id, 'case.assign') THEN
+    -- Coordinator cancelling draft in their warehouse: must be in active warehouse scope
+    IF NOT (v_warehouse_id = ANY(public.get_user_warehouse_ids())) THEN
+      RAISE EXCEPTION 'Permission denied: warehouse % is not in your active scope', v_warehouse_id;
+    END IF;
+  ELSE
+    RAISE EXCEPTION 'Permission denied: only the inspector or a coordinator/admin can cancel this inspection';
+  END IF;
+
+  -- 5. Mark as cancelled with reason recorded
+  UPDATE public.inspections
+     SET status = 'cancelled',
+         notes = CASE
+                   WHEN notes IS NULL OR notes = '' THEN '[CANCELLED]: ' || trim(p_reason)
+                   ELSE notes || E'\n[CANCELLED]: ' || trim(p_reason)
+                 END,
+         completed_at = now()
+   WHERE id = p_inspection_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.cancel_inspection(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.cancel_inspection(uuid, text) TO authenticated;
+
+-- ── 9. RPC: create_inspection_template (Global Admin Only) ─────────────────
+
+CREATE OR REPLACE FUNCTION public.create_inspection_template(
+  p_name          text,
+  p_category_id   uuid DEFAULT NULL,
+  p_description   text DEFAULT NULL,
+  p_interval_days integer DEFAULT NULL,
+  p_sections      jsonb DEFAULT '[]'::jsonb
+)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id     uuid := auth.uid();
+  v_template_id  uuid;
+  v_section_id   uuid;
+  v_sec          jsonb;
+  v_itm          jsonb;
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate global authority: super_admin or active admin role assignment
+  IF NOT (
+    (SELECT is_super_admin FROM public.profiles WHERE id = v_actor_id)
+    OR EXISTS (
+      SELECT 1
+        FROM public.user_warehouses uw
+        JOIN public.roles r ON r.id = uw.role_id
+       WHERE uw.user_id = v_actor_id
+         AND uw.is_active = true
+         AND r.name = 'admin'
+    )
+  ) THEN
+    RAISE EXCEPTION 'Permission denied: Administrator or Super Admin authority required for global template management';
+  END IF;
+
+  -- 3. Validate template name
+  IF p_name IS NULL OR trim(p_name) = '' THEN
+    RAISE EXCEPTION 'Template name is required';
+  END IF;
+
+  -- 4. Validate category if provided
+  IF p_category_id IS NOT NULL AND NOT EXISTS (
+    SELECT 1 FROM public.asset_categories WHERE id = p_category_id
+  ) THEN
+    RAISE EXCEPTION 'Asset category % not found', p_category_id;
+  END IF;
+
+  -- 5. Validate interval if provided
+  IF p_interval_days IS NOT NULL AND p_interval_days <= 0 THEN
+    RAISE EXCEPTION 'inspection_interval_days must be greater than 0';
+  END IF;
+
+  -- 6. Insert template header
+  INSERT INTO public.inspection_templates (
+    name, category_id, description, inspection_interval_days, is_active, created_by
+  ) VALUES (
+    trim(p_name), p_category_id, p_description, p_interval_days, true, v_actor_id
+  )
+  RETURNING id INTO v_template_id;
+
+  -- 7. Insert sections and items atomically
+  IF p_sections IS NOT NULL AND jsonb_typeof(p_sections) = 'array' THEN
+    FOR v_sec IN SELECT * FROM jsonb_array_elements(p_sections)
+    LOOP
+      INSERT INTO public.inspection_template_sections (
+        template_id, title, sort_order
+      ) VALUES (
+        v_template_id,
+        COALESCE(v_sec->>'title', 'General'),
+        COALESCE((v_sec->>'sort_order')::int, 0)
+      )
+      RETURNING id INTO v_section_id;
+
+      IF v_sec->'items' IS NOT NULL AND jsonb_typeof(v_sec->'items') = 'array' THEN
+        FOR v_itm IN SELECT * FROM jsonb_array_elements(v_sec->'items')
+        LOOP
+          INSERT INTO public.inspection_template_items (
+            section_id, label, description, is_required, sort_order
+          ) VALUES (
+            v_section_id,
+            COALESCE(v_itm->>'label', 'Item'),
+            v_itm->>'description',
+            COALESCE((v_itm->>'is_required')::boolean, true),
+            COALESCE((v_itm->>'sort_order')::int, 0)
+          );
+        END LOOP;
+      END IF;
+    END LOOP;
+  END IF;
+
+  RETURN v_template_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.create_inspection_template(text, uuid, text, integer, jsonb) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.create_inspection_template(text, uuid, text, integer, jsonb) TO authenticated;
+
+-- ── 10. RPC: deactivate_inspection_template (Global Admin Only) ────────────
+
+CREATE OR REPLACE FUNCTION public.deactivate_inspection_template(
+  p_template_id uuid
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_actor_id uuid := auth.uid();
+BEGIN
+  -- 1. Validate actor is authenticated
+  IF v_actor_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 2. Validate global authority: super_admin or active admin role assignment
+  IF NOT (
+    (SELECT is_super_admin FROM public.profiles WHERE id = v_actor_id)
+    OR EXISTS (
+      SELECT 1
+        FROM public.user_warehouses uw
+        JOIN public.roles r ON r.id = uw.role_id
+       WHERE uw.user_id = v_actor_id
+         AND uw.is_active = true
+         AND r.name = 'admin'
+    )
+  ) THEN
+    RAISE EXCEPTION 'Permission denied: Administrator or Super Admin authority required for global template management';
+  END IF;
+
+  -- 3. Validate template exists
+  IF NOT EXISTS (SELECT 1 FROM public.inspection_templates WHERE id = p_template_id) THEN
+    RAISE EXCEPTION 'Inspection template % not found', p_template_id;
+  END IF;
+
+  -- 4. Soft deactivate
+  UPDATE public.inspection_templates
+     SET is_active = false,
+         updated_at = now()
+   WHERE id = p_template_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.deactivate_inspection_template(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.deactivate_inspection_template(uuid) TO authenticated;
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FILE: 032_phase2c_inspection_templates_seed.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- 032_phase2c_inspection_templates_seed.sql
+-- Phase 2C: Seed Initial Production Inspection Templates (Hand Pallet, APAR, Rack)
+-- Truly idempotent using deterministic UUIDs and fail-fast category validation.
+-- Note: inspection_interval_days is explicitly seeded as NULL (no business rule invented).
+
+BEGIN;
+
+DO $$
+DECLARE
+  v_cat_hand_pallet uuid;
+  v_cat_apar        uuid;
+  v_cat_rack        uuid;
+BEGIN
+  -- ── 1. Validate required active categories exist (Fail-Fast) ───────────────
+  SELECT id INTO v_cat_hand_pallet FROM public.asset_categories WHERE name = 'Hand Pallet' AND is_active = true LIMIT 1;
+  IF v_cat_hand_pallet IS NULL THEN
+    RAISE EXCEPTION 'Required active asset category "Hand Pallet" not found';
+  END IF;
+
+  SELECT id INTO v_cat_apar FROM public.asset_categories WHERE name = 'APAR' AND is_active = true LIMIT 1;
+  IF v_cat_apar IS NULL THEN
+    RAISE EXCEPTION 'Required active asset category "APAR" not found';
+  END IF;
+
+  SELECT id INTO v_cat_rack FROM public.asset_categories WHERE name = 'Rack' AND is_active = true LIMIT 1;
+  IF v_cat_rack IS NULL THEN
+    RAISE EXCEPTION 'Required active asset category "Rack" not found';
+  END IF;
+
+  -- ── 2. Template 1: Hand Pallet Checklist ─────────────────────────────────
+  INSERT INTO public.inspection_templates (
+    id, name, category_id, description, inspection_interval_days, is_active
+  ) VALUES (
+    '00000000-0000-0000-0007-000000000001',
+    'Checklist Inspeksi Hand Pallet',
+    v_cat_hand_pallet,
+    'Pemeriksaan kelayakan operasional, fisik, roda, dan hidrolik hand pallet manual.',
+    NULL,
+    true
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    category_id = EXCLUDED.category_id,
+    description = EXCLUDED.description,
+    is_active = EXCLUDED.is_active;
+
+  -- Sections
+  INSERT INTO public.inspection_template_sections (id, template_id, title, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000000101', '00000000-0000-0000-0007-000000000001', 'Kondisi Fisik & Struktur', 1),
+    ('00000000-0000-0000-0007-000000000102', '00000000-0000-0000-0007-000000000001', 'Sistem Hidrolik', 2),
+    ('00000000-0000-0000-0007-000000000103', '00000000-0000-0000-0007-000000000001', 'Fungsi Operasional & Safety', 3)
+  ON CONFLICT (id) DO UPDATE SET
+    template_id = EXCLUDED.template_id,
+    title = EXCLUDED.title,
+    sort_order = EXCLUDED.sort_order;
+
+  -- Items
+  INSERT INTO public.inspection_template_items (id, section_id, label, description, is_required, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000001101', '00000000-0000-0000-0007-000000000101', 'Kondisi Garpu / Fork', 'Fork tidak bengkok, retak, atau mengalami deformasi struktur.', true, 1),
+    ('00000000-0000-0000-0007-000000001102', '00000000-0000-0000-0007-000000000101', 'Kondisi Roda (Steering & Load Wheels)', 'Roda berputar lancar, tidak pecah, aus parah, atau terlilit tali/plastik.', true, 2),
+    ('00000000-0000-0000-0007-000000001103', '00000000-0000-0000-0007-000000000101', 'Handle & Tuas Kendali', 'Handle kokoh, tuas release 3 posisi (Up/Neutral/Down) berfungsi normal.', true, 3),
+
+    ('00000000-0000-0000-0007-000000001201', '00000000-0000-0000-0007-000000000102', 'Pompa & Tekanan Hidrolik', 'Pompa terasa responsif dan mampu mengangkat beban tanpa kendur/anjlok.', true, 1),
+    ('00000000-0000-0000-0007-000000001202', '00000000-0000-0000-0007-000000000102', 'Pemeriksaan Kebocoran Oli', 'Tidak ada rembesan atau tetesan oli pada silinder hidrolik dan seal.', true, 2),
+
+    ('00000000-0000-0000-0007-000000001301', '00000000-0000-0000-0007-000000000103', 'Mekanisme Turun (Lowering Valve)', 'Garpu turun secara halus dan terkendali saat tuas release ditarik.', true, 1),
+    ('00000000-0000-0000-0007-000000001302', '00000000-0000-0000-0007-000000000103', 'Kelayakan & Kebersihan Unit', 'Unit bersih dari kotoran berlebih dan layak beroperasi di area gudang.', true, 2)
+  ON CONFLICT (id) DO UPDATE SET
+    section_id = EXCLUDED.section_id,
+    label = EXCLUDED.label,
+    description = EXCLUDED.description,
+    is_required = EXCLUDED.is_required,
+    sort_order = EXCLUDED.sort_order;
+
+  -- ── 3. Template 2: APAR Checklist ────────────────────────────────────────
+  INSERT INTO public.inspection_templates (
+    id, name, category_id, description, inspection_interval_days, is_active
+  ) VALUES (
+    '00000000-0000-0000-0007-000000000002',
+    'Checklist Inspeksi APAR',
+    v_cat_apar,
+    'Pemeriksaan rutin kesiapan dan kondisi fisik Alat Pemadam Api Ringan (K3/Safety).',
+    NULL,
+    true
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    category_id = EXCLUDED.category_id,
+    description = EXCLUDED.description,
+    is_active = EXCLUDED.is_active;
+
+  -- Sections
+  INSERT INTO public.inspection_template_sections (id, template_id, title, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000000201', '00000000-0000-0000-0007-000000000002', 'Tabung & Label Informasi', 1),
+    ('00000000-0000-0000-0007-000000000202', '00000000-0000-0000-0007-000000000002', 'Indikator Tekanan & Pengaman', 2),
+    ('00000000-0000-0000-0007-000000000203', '00000000-0000-0000-0007-000000000002', 'Selang, Nozzle & Aksesibilitas', 3)
+  ON CONFLICT (id) DO UPDATE SET
+    template_id = EXCLUDED.template_id,
+    title = EXCLUDED.title,
+    sort_order = EXCLUDED.sort_order;
+
+  -- Items
+  INSERT INTO public.inspection_template_items (id, section_id, label, description, is_required, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000002101', '00000000-0000-0000-0007-000000000201', 'Kondisi Fisik Tabung', 'Tabung tidak berkarat, penyok, bocor, atau mengalami kerusakan cat parah.', true, 1),
+    ('00000000-0000-0000-0007-000000002102', '00000000-0000-0000-0007-000000000201', 'Label Instruksi & Masa Berlaku', 'Stiker cara penggunaan terbaca jelas dan kartu masa uji berkala terpasang.', true, 2),
+
+    ('00000000-0000-0000-0007-000000002201', '00000000-0000-0000-0007-000000000202', 'Pressure Gauge (Manometer)', 'Jarum indikator tekanan berada di zona hijau (standar operasional).', true, 1),
+    ('00000000-0000-0000-0007-000000002202', '00000000-0000-0000-0007-000000000202', 'Safety Pin & Segel Pengaman', 'Pin pengunci terpasang rapi dan segel plastik/timah dalam keadaan utuh.', true, 2),
+
+    ('00000000-0000-0000-0007-000000002301', '00000000-0000-0000-0007-000000000203', 'Selang (Hose) & Nozzle', 'Selang tidak retak/getas, klem kuat, dan corong nozzle tidak tersumbat.', true, 1),
+    ('00000000-0000-0000-0007-000000002302', '00000000-0000-0000-0007-000000000203', 'Akses Bebas Rintangan & Rambu', 'Posisi APAR tidak terhalang barang/pallet dan tanda segitiga APAR terlihat jelas.', true, 2)
+  ON CONFLICT (id) DO UPDATE SET
+    section_id = EXCLUDED.section_id,
+    label = EXCLUDED.label,
+    description = EXCLUDED.description,
+    is_required = EXCLUDED.is_required,
+    sort_order = EXCLUDED.sort_order;
+
+  -- ── 4. Template 3: Pallet Racking Checklist ──────────────────────────────
+  INSERT INTO public.inspection_templates (
+    id, name, category_id, description, inspection_interval_days, is_active
+  ) VALUES (
+    '00000000-0000-0000-0007-000000000003',
+    'Checklist Inspeksi Pallet Racking',
+    v_cat_rack,
+    'Audit berkala integritas struktur rak penyimpanan pallet gudang.',
+    NULL,
+    true
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    category_id = EXCLUDED.category_id,
+    description = EXCLUDED.description,
+    is_active = EXCLUDED.is_active;
+
+  -- Sections
+  INSERT INTO public.inspection_template_sections (id, template_id, title, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000000301', '00000000-0000-0000-0007-000000000003', 'Struktur Tiang & Frame', 1),
+    ('00000000-0000-0000-0007-000000000302', '00000000-0000-0000-0007-000000000003', 'Balok Penyangga & Pengunci', 2),
+    ('00000000-0000-0000-0007-000000000303', '00000000-0000-0000-0007-000000000003', 'Proteksi & Safety Operasional', 3)
+  ON CONFLICT (id) DO UPDATE SET
+    template_id = EXCLUDED.template_id,
+    title = EXCLUDED.title,
+    sort_order = EXCLUDED.sort_order;
+
+  -- Items
+  INSERT INTO public.inspection_template_items (id, section_id, label, description, is_required, sort_order) VALUES
+    ('00000000-0000-0000-0007-000000003101', '00000000-0000-0000-0007-000000000301', 'Tiang Rangka (Upright Post)', 'Tiang tegak lurus, tidak tertekuk, melengkung, atau rusak akibat benturan forklift.', true, 1),
+    ('00000000-0000-0000-0007-000000003102', '00000000-0000-0000-0007-000000000301', 'Bracing Horizontal & Diagonal', 'Batang pengaku diagonal/horizontal terpasang kuat, baut tidak longgar/patah.', true, 2),
+    ('00000000-0000-0000-0007-000000003103', '00000000-0000-0000-0007-000000000301', 'Baseplate & Anchor Bolt', 'Plat kaki tertanam kokoh di lantai beton dengan dynabolt utuh.', true, 3),
+
+    ('00000000-0000-0000-0007-000000003201', '00000000-0000-0000-0007-000000000302', 'Kondisi Balok Penyangga (Beam)', 'Beam tidak mengalami lendutan berlebih (defleksi) saat menahan beban.', true, 1),
+    ('00000000-0000-0000-0007-000000003202', '00000000-0000-0000-0007-000000000302', 'Safety Pin / Locking Pin', 'Semua connector beam memiliki safety pin pengunci agar tidak terangkat forklift.', true, 2),
+
+    ('00000000-0000-0000-0007-000000003301', '00000000-0000-0000-0007-000000000303', 'Pelindung Tiang (Column Guard)', 'Guard protector terpasang pada tiang sudut gang jalan.', true, 1),
+    ('00000000-0000-0000-0007-000000003302', '00000000-0000-0000-0007-000000000303', 'Kerapian Pallet & Kapasitas Beban', 'Pallet berada tepat di atas beam dan tidak melebihi kapasitas beban maksimum rak.', true, 2)
+  ON CONFLICT (id) DO UPDATE SET
+    section_id = EXCLUDED.section_id,
+    label = EXCLUDED.label,
+    description = EXCLUDED.description,
+    is_required = EXCLUDED.is_required,
+    sort_order = EXCLUDED.sort_order;
+
+END $$;
+
+COMMIT;
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- FILE: 033_phase2c_apar_handle_check.sql
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- 033_phase2c_apar_handle_check.sql
+-- Phase 2C: Add missing APAR checklist item (Kondisi Handle / Tuas Pengungkit)
+-- Fully idempotent with deterministic UUID: 00000000-0000-0000-0007-000000002203
+-- Includes fail-fast parent section and template integrity validation.
+
+BEGIN;
+
+DO $$
+DECLARE
+  v_target_section_id  uuid := '00000000-0000-0000-0007-000000000202';
+  v_expected_tpl_id    uuid := '00000000-0000-0000-0007-000000000002';
+  v_actual_tpl_id      uuid;
+  v_tpl_is_active      boolean;
+  v_cat_name           text;
+BEGIN
+  -- 1. Validate target section exists and points to expected template
+  SELECT s.template_id, t.is_active, c.name
+    INTO v_actual_tpl_id, v_tpl_is_active, v_cat_name
+    FROM public.inspection_template_sections s
+    JOIN public.inspection_templates t ON t.id = s.template_id
+    LEFT JOIN public.asset_categories c ON c.id = t.category_id
+   WHERE s.id = v_target_section_id;
+
+  IF v_actual_tpl_id IS NULL THEN
+    RAISE EXCEPTION 'Parent section % does not exist in inspection_template_sections', v_target_section_id;
+  END IF;
+
+  IF v_actual_tpl_id <> v_expected_tpl_id THEN
+    RAISE EXCEPTION 'Parent section % belongs to template %, expected %', v_target_section_id, v_actual_tpl_id, v_expected_tpl_id;
+  END IF;
+
+  IF v_tpl_is_active IS NOT TRUE THEN
+    RAISE EXCEPTION 'Parent template % is not active', v_expected_tpl_id;
+  END IF;
+
+  IF v_cat_name IS DISTINCT FROM 'APAR' THEN
+    RAISE EXCEPTION 'Parent template % category is %, expected APAR', v_expected_tpl_id, v_cat_name;
+  END IF;
+
+  -- 2. Upsert the APAR handle checklist item
+  INSERT INTO public.inspection_template_items (
+    id,
+    section_id,
+    label,
+    description,
+    is_required,
+    sort_order
+  ) VALUES (
+    '00000000-0000-0000-0007-000000002203',
+    v_target_section_id,
+    'Kondisi Handle / Tuas Pengungkit',
+    'Handle kokoh, tuas pengungkit tidak macet, bengkok, atau berkarat, dan siap dioperasikan.',
+    true,
+    3
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    section_id = EXCLUDED.section_id,
+    label = EXCLUDED.label,
+    description = EXCLUDED.description,
+    is_required = EXCLUDED.is_required,
+    sort_order = EXCLUDED.sort_order;
+
+END $$;
+
+COMMIT;
+
+
+COMMIT;

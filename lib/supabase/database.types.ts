@@ -79,6 +79,13 @@ export type Database = {
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "inspections_template_id_fkey";
+            columns: ["template_id"];
+            isOneToOne: false;
+            referencedRelation: "inspection_templates";
+            referencedColumns: ["id"];
+          },
         ];
       };
       case_categories: {
@@ -558,6 +565,7 @@ export type Database = {
           name: string;
           category_id: string | null;
           description: string | null;
+          inspection_interval_days: number | null;
           is_active: boolean;
           created_by: string | null;
           created_at: string;
@@ -568,6 +576,7 @@ export type Database = {
           name?: string | null;
           category_id?: string | null;
           description?: string | null;
+          inspection_interval_days?: number | null;
           is_active?: boolean | null;
           created_by?: string | null;
           created_at?: string | null;
@@ -578,6 +587,7 @@ export type Database = {
           name?: string | null;
           category_id?: string | null;
           description?: string | null;
+          inspection_interval_days?: number | null;
           is_active?: boolean | null;
           created_by?: string | null;
           created_at?: string | null;
@@ -1415,6 +1425,65 @@ export type Database = {
       is_super_admin: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
+      };
+      start_inspection: {
+        Args: {
+          p_warehouse_id: string;
+          p_asset_id: string;
+          p_template_id: string;
+        };
+        Returns: string;
+      };
+      submit_inspection_result: {
+        Args: {
+          p_inspection_id: string;
+          p_item_id: string;
+          p_value: string;
+          p_notes?: string | null;
+        };
+        Returns: string;
+      };
+      complete_inspection: {
+        Args: {
+          p_inspection_id: string;
+          p_notes?: string | null;
+        };
+        Returns: string;
+      };
+      cancel_inspection: {
+        Args: {
+          p_inspection_id: string;
+          p_reason: string;
+        };
+        Returns: void;
+      };
+      create_inspection_template: {
+        Args: {
+          p_name: string;
+          p_category_id?: string | null;
+          p_description?: string | null;
+          p_interval_days?: number | null;
+          p_sections?: any;
+        };
+        Returns: string;
+      };
+      deactivate_inspection_template: {
+        Args: {
+          p_template_id: string;
+        };
+        Returns: void;
+      };
+      add_inspection_evidence: {
+        Args: {
+          p_inspection_id: string;
+          p_inspection_result_id: string;
+          p_file_url: string;
+          p_file_name?: string | null;
+          p_file_size?: number | null;
+          p_mime_type?: string | null;
+          p_caption?: string | null;
+        };
+        Returns: string;
       };
     };
     Enums: {};
