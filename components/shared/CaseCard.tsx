@@ -105,7 +105,7 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
           {locationText && (
             <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[11.5px] text-slate-600">
               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="truncate max-w-[200px]">{locationText}</span>
+              <span>{locationText}</span>
             </span>
           )}
           {item.assets && (

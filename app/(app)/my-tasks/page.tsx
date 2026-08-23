@@ -1,11 +1,11 @@
 // app/(app)/my-tasks/page.tsx
+// PIC My Tasks Page — Server Component with Decoupled Queries
+
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { CaseCard, type CaseCardData } from '@/components/shared/CaseCard';
-import { EmptyState } from '@/components/shared/EmptyState';
-import { UserCheck, PlusCircle } from 'lucide-react';
-import Link from 'next/link';
+import { type CaseCardData } from '@/components/shared/CaseCard';
+import { MyTasksClient } from '@/components/tasks/MyTasksClient';
 
 export const metadata: Metadata = { title: 'Tugas Saya' };
 export const dynamic = 'force-dynamic';
@@ -15,59 +15,57 @@ export default async function MyTasksPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const { data: rawCases } = await supabase
-    .from('cases')
-    .select(`
-      id,
-      case_number,
-      title,
-      description,
-      priority,
-      status,
-      due_date,
-      created_at,
-      has_operational_impact,
-      requires_maintenance,
-      areas ( name ),
-      locations ( name ),
-      assets ( asset_code, name ),
-      reporter:reporter_id ( full_name ),
-      case_assignments (
-        assignee_id,
-        is_current,
-        assignee:assignee_id ( full_name )
-      )
-    `)
-    .neq('status', 'closed')
-    .order('created_at', { ascending: false });
+  // 1. Fetch user's active assignments
+  const { data: userAssignments } = await supabase
+    .from('case_assignments')
+    .select('case_id, is_current')
+    .eq('assignee_id', user.id)
+    .eq('is_current', true);
 
-  const myTasks: CaseCardData[] = (rawCases ?? [])
-    .filter((c: any) => {
-      const assignments = Array.isArray(c.case_assignments) ? c.case_assignments : [];
-      return assignments.some((a: any) => a.assignee_id === user.id && a.is_current);
-    })
-    .map((c: any) => {
-      const currentAssignment = Array.isArray(c.case_assignments)
-        ? c.case_assignments.find((a: any) => a.is_current)
-        : null;
-      return {
-        id: c.id,
-        case_number: c.case_number,
-        title: c.title,
-        description: c.description,
-        priority: c.priority,
-        status: c.status,
-        due_date: c.due_date,
-        created_at: c.created_at,
-        has_operational_impact: c.has_operational_impact,
-        requires_maintenance: c.requires_maintenance,
-        areas: c.areas,
-        locations: c.locations,
-        assets: c.assets,
-        assignee: currentAssignment?.assignee ?? null,
-        reporter: c.reporter,
-      };
-    });
+  const assignedCaseIds = (userAssignments ?? []).map(a => a.case_id);
+
+  let myTasks: CaseCardData[] = [];
+
+  if (assignedCaseIds.length > 0) {
+    const { data: rawCases } = await supabase
+      .from('cases')
+      .select(`
+        id,
+        case_number,
+        title,
+        description,
+        priority,
+        status,
+        due_date,
+        created_at,
+        has_operational_impact,
+        requires_maintenance,
+        areas:area_id ( name ),
+        locations:location_id ( name ),
+        assets:asset_id ( asset_code, name ),
+        reporter:reporter_id ( full_name )
+      `)
+      .in('id', assignedCaseIds)
+      .order('created_at', { ascending: false });
+
+    myTasks = (rawCases ?? []).map((c: any) => ({
+      id: c.id,
+      case_number: c.case_number,
+      title: c.title,
+      description: c.description,
+      priority: c.priority,
+      status: c.status,
+      due_date: c.due_date,
+      created_at: c.created_at,
+      has_operational_impact: c.has_operational_impact,
+      requires_maintenance: c.requires_maintenance,
+      areas: c.areas,
+      locations: c.locations,
+      assets: c.assets,
+      assignee: { full_name: 'Saya (PIC)' },
+      reporter: c.reporter,
+    }));
+  }
 
   return (
     <div className="page-padding py-5 max-w-5xl mx-auto space-y-4">
@@ -80,19 +78,7 @@ export default async function MyTasksPage() {
         </p>
       </div>
 
-      {myTasks.length > 0 ? (
-        <div className="space-y-3">
-          {myTasks.map((item) => (
-            <CaseCard key={item.id} item={item} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          icon={UserCheck}
-          title="Tidak ada tugas aktif"
-          description="Saat ini tidak ada kasus yang ditugaskan kepada Anda. Cek kembali nanti."
-        />
-      )}
+      <MyTasksClient tasks={myTasks} />
     </div>
   );
 }

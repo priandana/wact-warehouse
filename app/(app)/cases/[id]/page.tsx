@@ -1,6 +1,6 @@
 // app/(app)/cases/[id]/page.tsx
 // Case Detail View — Server Component with Live Supabase Data
-// Decoupled, resilient queries with signed evidence photo URLs and full timeline
+// Decoupled, resilient queries with signed evidence photo URLs, full workflow actions, and timeline
 
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
@@ -8,6 +8,11 @@ import { notFound, redirect } from 'next/navigation';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PriorityBadge } from '@/components/shared/PriorityBadge';
 import { EvidenceGallery, type EvidenceItem } from '@/components/cases/EvidenceGallery';
+import {
+  CaseWorkflowActionPanel,
+  type AssignableUser,
+  type RootCauseItem,
+} from '@/components/cases/CaseWorkflowActionPanel';
 import { BUCKETS } from '@/lib/supabase/storage';
 import Link from 'next/link';
 import {
@@ -62,6 +67,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     .from('cases')
     .select(`
       id,
+      warehouse_id,
       case_number,
       title,
       description,
@@ -71,6 +77,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       created_at,
       has_operational_impact,
       requires_maintenance,
+      reporter_id,
       areas:area_id ( name ),
       locations:location_id ( name ),
       assets:asset_id ( asset_code, name ),
@@ -96,6 +103,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     { data: activities },
     { data: evidences },
     { data: comments },
+    { data: rawProfiles },
+    { data: rawRootCauses },
   ] = await Promise.all([
     supabase
       .from('case_assignments')
@@ -149,6 +158,15 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       `)
       .eq('case_id', id)
       .order('created_at', { ascending: true }),
+
+    supabase
+      .from('profile_directory')
+      .select('id, full_name, avatar_url'),
+
+    supabase
+      .from('root_causes')
+      .select('id, name')
+      .eq('is_active', true),
   ]);
 
   // 3. Generate signed URLs via authenticated server client
@@ -163,8 +181,6 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
 
           if (!signErr && signData?.signedUrl) {
             signedUrl = signData.signedUrl;
-          } else if (signErr) {
-            console.error('Storage sign error for', ev.file_url, signErr);
           }
         } catch (err) {
           console.error('Failed to create signed URL:', ev.file_url, err);
@@ -189,8 +205,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     ? assignments.find((a: any) => a.is_current)
     : null;
 
+  const currentAssigneeName = currentAssignment?.assignee?.full_name || null;
   const isOverdue = item.due_date && isPast(new Date(item.due_date)) && item.status !== 'closed';
-  const locationText = [(item.areas as any)?.name, (item.locations as any)?.name].filter(Boolean).join(' • ');
 
   const formatActivityAction = (act: any) => {
     switch (act.action) {
@@ -205,7 +221,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       case 'commented':
         return 'Komentar baru ditambahkan';
       case 'verified':
-        return 'Kasus diverifikasi oleh QC';
+        return 'Kasus diverifikasi dan disetujui';
+      case 'verification_failed':
+        return 'Verifikasi ditolak — dikembalikan untuk perbaikan ulang';
       case 'closed':
         return 'Kasus ditutup (selesai)';
       case 'reopened':
@@ -245,8 +263,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </h1>
 
         {/* Operational & Maintenance Badges */}
-        {(item.has_operational_impact || item.requires_maintenance) && (
-          <div className="flex flex-wrap gap-2">
+        {(item.has_operational_impact || item.requires_maintenance || currentAssigneeName) && (
+          <div className="flex flex-wrap items-center gap-2">
             {item.has_operational_impact && (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
                 <AlertTriangle className="w-3.5 h-3.5" />
@@ -257,6 +275,12 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
                 <Wrench className="w-3.5 h-3.5" />
                 Membutuhkan Maintenance
+              </span>
+            )}
+            {currentAssigneeName && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <User className="w-3.5 h-3.5" />
+                PIC: {currentAssigneeName}
               </span>
             )}
           </div>
@@ -271,36 +295,44 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           </div>
         )}
 
-        {/* Metadata Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
+        {/* Metadata Grid (Responsive, unclipped Location) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
           <div>
             <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Kategori</p>
-            <p className="font-bold text-slate-800 mt-0.5 truncate">
+            <p className="font-bold text-slate-800 mt-0.5">
               {(item.category as any)?.name || '-'}
             </p>
             {(item.subcategory as any)?.name && (
-              <p className="text-[10.5px] text-slate-500 truncate">{(item.subcategory as any).name}</p>
+              <p className="text-[10.5px] text-slate-500 font-medium">{(item.subcategory as any).name}</p>
             )}
           </div>
 
+          {/* Location with responsive wrapping (no premature ellipsis) */}
           <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Lokasi</p>
-            <p className="font-bold text-slate-800 mt-0.5 flex items-center gap-1 truncate">
-              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="truncate">{locationText || '-'}</span>
-            </p>
+            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Lokasi & Area</p>
+            <div className="flex items-start gap-1 mt-0.5 text-slate-800 font-bold">
+              <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="leading-snug">
+                <span>{(item.areas as any)?.name || '-'}</span>
+                {(item.locations as any)?.name && (
+                  <span className="text-slate-500 font-normal"> &bull; {(item.locations as any).name}</span>
+                )}
+              </div>
+            </div>
             {(item.assets as any)?.asset_code && (
-              <p className="text-[10.5px] text-slate-500 font-mono truncate">{(item.assets as any).asset_code}</p>
+              <p className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+                {(item.assets as any).asset_code} — {(item.assets as any).name}
+              </p>
             )}
           </div>
 
           <div>
             <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Pelapor</p>
-            <p className="font-bold text-slate-800 mt-0.5 flex items-center gap-1 truncate">
+            <p className="font-bold text-slate-800 mt-0.5 flex items-center gap-1">
               <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="truncate">{(item.reporter as any)?.full_name || 'Administrator'}</span>
+              <span>{(item.reporter as any)?.full_name || 'Administrator'}</span>
             </p>
-            <p className="text-[10.5px] text-slate-400 truncate">
+            <p className="text-[10.5px] text-slate-400">
               {format(new Date(item.created_at), 'dd MMM, HH:mm', { locale: localeId })}
             </p>
           </div>
@@ -324,10 +356,70 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </div>
       </div>
 
-      {/* ── 2. Evidence Photos Section with Lightbox ─────────────────────── */}
+      {/* ── 2. Workflow Action Panel (Assign, Update, Evidence, Verify, Reopen) */}
+      <CaseWorkflowActionPanel
+        caseId={item.id}
+        caseNumber={item.case_number}
+        warehouseId={item.warehouse_id}
+        status={item.status}
+        priority={item.priority}
+        hasOperationalImpact={item.has_operational_impact}
+        requiresMaintenance={item.requires_maintenance}
+        currentUserId={user.id}
+        currentAssigneeId={currentAssignment?.assignee_id || null}
+        currentAssigneeName={currentAssigneeName}
+        reporterId={item.reporter_id}
+        assignableUsers={(rawProfiles as AssignableUser[]) ?? []}
+        rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
+      />
+
+      {/* ── 3. Evidence Photos Section with Lightbox ─────────────────────── */}
       <EvidenceGallery evidences={evidenceList} />
 
-      {/* ── 3. Activity Timeline Card ────────────────────────────────────── */}
+      {/* ── 4. Comments List ─────────────────────────────────────────────── */}
+      {comments && comments.length > 0 && (
+        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+          <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+            <MessageSquare className="w-4 h-4 text-blue-600" />
+            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+              Diskusi & Catatan ({comments.length})
+            </h2>
+          </div>
+
+          <div className="space-y-2.5 pt-1">
+            {comments.map((com: any) => (
+              <div
+                key={com.id}
+                className={cn(
+                  'p-3.5 rounded-2xl border text-xs space-y-1',
+                  com.is_internal
+                    ? 'bg-amber-50/70 border-amber-200/80'
+                    : 'bg-slate-50 border-slate-100'
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-slate-900">
+                      {com.author?.full_name || 'Staf'}
+                    </span>
+                    {com.is_internal && (
+                      <span className="text-[9.5px] font-extrabold text-amber-800 bg-amber-200/80 px-1.5 py-0.2 rounded-md">
+                        Internal
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-400">
+                    {formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })}
+                  </span>
+                </div>
+                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── 5. Activity Timeline Card ────────────────────────────────────── */}
       <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
         <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
           <Activity className="w-4 h-4 text-blue-600" />
@@ -355,9 +447,14 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                   <p className="text-[11.5px] text-slate-600 font-medium">
                     {formatActivityAction(act)}
                   </p>
-                  {act.note && (
-                    <p className="text-[11px] text-slate-500 italic mt-1 bg-white p-2 rounded-lg border border-slate-200/60">
-                      &quot;{act.note}&quot;
+                  {act.metadata?.reason && (
+                    <p className="text-[11px] text-amber-800 italic mt-1 bg-amber-50 p-2 rounded-lg border border-amber-200/80">
+                      Alasan: &quot;{act.metadata.reason}&quot;
+                    </p>
+                  )}
+                  {act.metadata?.note && (
+                    <p className="text-[11px] text-slate-600 italic mt-1 bg-white p-2 rounded-lg border border-slate-200/60">
+                      Catatan: &quot;{act.metadata.note}&quot;
                     </p>
                   )}
                 </div>
