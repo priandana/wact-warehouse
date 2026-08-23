@@ -171,7 +171,7 @@ export default async function LoginPage({ searchParams }: Props) {
         <div className="w-full max-w-md my-auto py-6">
           <div className="bg-white rounded-[28px] border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.06)] p-6 sm:p-9 space-y-6">
             <div>
-              <h1 className="text-2xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
                 Selamat Datang Kembali 👋
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
