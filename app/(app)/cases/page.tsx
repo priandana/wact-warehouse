@@ -59,9 +59,9 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
       created_at,
       has_operational_impact,
       requires_maintenance,
-      areas ( name ),
-      locations ( name ),
-      assets ( asset_code, name ),
+      areas:area_id ( name ),
+      locations:location_id ( name ),
+      assets:asset_id ( asset_code, name ),
       reporter:reporter_id ( full_name ),
       case_assignments (
         assignee_id,
