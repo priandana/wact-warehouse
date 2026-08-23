@@ -57,6 +57,8 @@ interface CaseWorkflowActionPanelProps {
   currentAssigneeId?: string | null;
   currentAssigneeName?: string | null;
   reporterId: string;
+  userRole?: string;
+  isSuperAdmin?: boolean;
   assignableUsers: AssignableUser[];
   rootCauses: RootCauseItem[];
 }
@@ -73,10 +75,26 @@ export function CaseWorkflowActionPanel({
   currentAssigneeId,
   currentAssigneeName,
   reporterId,
+  userRole,
+  isSuperAdmin = false,
   assignableUsers,
   rootCauses,
 }: CaseWorkflowActionPanelProps) {
   const router = useRouter();
+
+  const isAssignee = currentAssigneeId === currentUserId;
+  const isReporter = reporterId === currentUserId;
+
+  const isAdmin = isSuperAdmin || userRole === 'admin';
+  const isCoordinator = userRole === 'coordinator';
+  const isQC = userRole === 'qc_leader';
+
+  const canAssign = isAdmin || isCoordinator;
+  const canUpdateProgress = isAssignee || isAdmin || isCoordinator;
+  const canUploadEvidence = isAssignee || isReporter || isAdmin || isCoordinator;
+  const canRequestVerification = isAssignee || isAdmin || isCoordinator;
+  const canVerify = (isQC || isCoordinator || isAdmin) && !isAssignee;
+  const canReopen = isAdmin || isCoordinator;
 
   const [activeModal, setActiveModal] = useState<
     'assign' | 'progress' | 'evidence' | 'verify' | 'reject' | 'reopen' | 'comment' | null
@@ -104,9 +122,6 @@ export function CaseWorkflowActionPanel({
   const [evidencePhase, setEvidencePhase] = useState<'during' | 'after'>('after');
   const [evidenceProcessing, setEvidenceProcessing] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
-
-  const isAssignee = currentAssigneeId === currentUserId;
-  const isReporter = reporterId === currentUserId;
 
   const resetFormState = () => {
     setErrorMessage(null);
@@ -393,8 +408,8 @@ export function CaseWorkflowActionPanel({
 
         {/* Dynamic Action Buttons based on Status */}
         <div className="flex flex-wrap gap-2 pt-1">
-          {/* Action 1: Assign PIC (if open, reopened, or on_progress) */}
-          {status !== 'closed' && (
+          {/* Action 1: Assign PIC (only for Admin / Coordinator) */}
+          {status !== 'closed' && canAssign && (
             <button
               type="button"
               onClick={() => setActiveModal('assign')}
@@ -408,64 +423,84 @@ export function CaseWorkflowActionPanel({
           {/* Action 2: Update Progress (if on_progress / waiting_repair) */}
           {(status === 'on_progress' || status === 'waiting_repair') && (
             <>
-              <button
-                type="button"
-                onClick={() => setActiveModal('progress')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 active:scale-95 transition-all"
-              >
-                <FileText className="w-4 h-4 text-slate-600" />
-                <span>Update Progres & Koreksi</span>
-              </button>
+              {canUpdateProgress && (
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('progress')}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 active:scale-95 transition-all"
+                >
+                  <FileText className="w-4 h-4 text-slate-600" />
+                  <span>Update Progres & Koreksi</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                onClick={() => {
-                  setEvidencePhase('after');
-                  setActiveModal('evidence');
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200/80 active:scale-95 transition-all"
-              >
-                <Camera className="w-4 h-4" />
-                <span>Unggah Bukti Selesai (After)</span>
-              </button>
+              {canUploadEvidence && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEvidencePhase('after');
+                    setActiveModal('evidence');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200/80 active:scale-95 transition-all"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>Unggah Bukti Selesai (After)</span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                disabled={loading}
-                onClick={handleRequestVerification}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 disabled:opacity-50 transition-all"
-              >
-                <Clock className="w-4 h-4" />
-                <span>Ajukan Verifikasi QC</span>
-              </button>
+              {canRequestVerification && (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleRequestVerification}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 disabled:opacity-50 transition-all"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span>Ajukan Verifikasi QC</span>
+                </button>
+              )}
             </>
           )}
 
           {/* Action 3: QC Verification (if waiting_verification) */}
           {status === 'waiting_verification' && (
             <>
-              <button
-                type="button"
-                onClick={() => setActiveModal('verify')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Setujui & Selesaikan (Close)</span>
-              </button>
+              {canVerify ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveModal('verify')}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Setujui & Selesaikan (Close)</span>
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveModal('reject')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-95 transition-all"
-              >
-                <XCircle className="w-4 h-4" />
-                <span>Tolak / Minta Perbaikan</span>
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveModal('reject')}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-95 transition-all"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span>Tolak / Minta Perbaikan</span>
+                  </button>
+                </>
+              ) : isAssignee ? (
+                <div className="w-full p-3 rounded-2xl bg-indigo-50/80 border border-indigo-100 text-xs font-semibold text-indigo-900 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>Menunggu verifikasi dari tim QC / Koordinator. PIC tidak dapat memverifikasi pekerjaan sendiri.</span>
+                </div>
+              ) : (
+                <div className="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>Menunggu verifikasi dari tim QC / Koordinator.</span>
+                </div>
+              )}
             </>
           )}
 
-          {/* Action 4: Reopen Case (if closed) */}
-          {status === 'closed' && (
+          {/* Action 4: Reopen Case (if closed, only for Admin / Coordinator) */}
+          {status === 'closed' && canReopen && (
             <button
               type="button"
               onClick={() => setActiveModal('reopen')}

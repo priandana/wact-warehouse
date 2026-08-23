@@ -105,6 +105,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     { data: comments },
     { data: rawProfiles },
     { data: rawRootCauses },
+    { data: rawUserWarehouse },
+    { data: rawUserProfile },
   ] = await Promise.all([
     supabase
       .from('case_assignments')
@@ -174,7 +176,24 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .from('root_causes')
       .select('id, name')
       .eq('is_active', true),
+
+    supabase
+      .from('user_warehouses')
+      .select('roles ( name, display_name )')
+      .eq('user_id', user.id)
+      .eq('warehouse_id', item.warehouse_id)
+      .eq('is_active', true)
+      .maybeSingle(),
+
+    supabase
+      .from('profiles')
+      .select('is_super_admin')
+      .eq('id', user.id)
+      .maybeSingle(),
   ]);
+
+  const currentUserRole = ((rawUserWarehouse as any)?.roles as any)?.name || 'reporter';
+  const isSuperAdmin = (rawUserProfile as any)?.is_super_admin ?? false;
 
   const assignableUsers: AssignableUser[] = ((rawProfiles as any) ?? [])
     .filter((uw: any) => uw.profiles?.is_active)
@@ -395,6 +414,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         currentAssigneeId={currentAssignment?.assignee_id || null}
         currentAssigneeName={currentAssigneeName}
         reporterId={item.reporter_id}
+        userRole={currentUserRole}
+        isSuperAdmin={isSuperAdmin}
         assignableUsers={assignableUsers}
         rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
       />

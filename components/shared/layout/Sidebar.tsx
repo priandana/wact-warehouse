@@ -122,45 +122,55 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
 
         {/* Navigation Items */}
         <nav className="px-2.5 py-2 space-y-3.5 max-h-[calc(100vh-220px)] overflow-y-auto no-scrollbar">
-          {navGroups.map((group, gi) => (
-            <div key={gi} className="space-y-0.5">
-              {group.label && (
-                <p className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {group.label}
-                </p>
-              )}
-              {group.items.map((item) => {
-                const isActive = pathname === item.href ||
-                  (item.href !== '/dashboard' && pathname.startsWith(item.href));
-                const Icon = item.icon;
+          {navGroups.map((group, gi) => {
+            const isAdminOrCoord = userRole === 'admin' || userRole === 'coordinator';
+            const visibleItems = group.items.filter((item) => {
+              if (item.href === '/users' || item.href === '/master-data') {
+                return isAdminOrCoord;
+              }
+              return true;
+            });
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 relative',
-                      isActive
-                        ? 'bg-blue-50/80 text-blue-700 font-bold'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-                    )}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    {isActive && (
-                      <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-blue-600" />
-                    )}
-                    <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
-                    <span className="flex-1 truncate">{item.label}</span>
-                    {item.badge && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+            if (visibleItems.length === 0) return null;
+
+            return (
+              <div key={gi} className="space-y-0.5">
+                {group.label && (
+                  <p className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {group.label}
+                  </p>
+                )}
+                {visibleItems.map((item) => {
+                  const isActive = pathname === item.href ||
+                    (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                  const Icon = item.icon;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150',
+                        isActive
+                          ? 'bg-blue-50/90 text-blue-700 font-bold shadow-2xs'
+                          : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            );
+          })}
         </nav>
       </div>
 

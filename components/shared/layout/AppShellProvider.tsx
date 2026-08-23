@@ -59,6 +59,7 @@ export function AppShellProvider({ children, warehouseAccess, userName }: AppShe
         warehouseName={activeWarehouse?.warehouseName}
         warehouseCode={activeWarehouse?.warehouseCode}
         userName={userName}
+        userRole={activeWarehouse?.roles[0]}
       >
         {children}
       </AppShell>
