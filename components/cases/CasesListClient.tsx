@@ -180,25 +180,28 @@ export function CasesListClient({
           </button>
         </form>
 
-        {/* Status Horizontal Pill Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {statusOptions.map((opt) => {
-            const isSelected = currentStatus === opt.value;
-            return (
-              <button
-                key={opt.value}
-                onClick={() => updateFilters({ status: opt.value })}
-                className={cn(
-                  'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none',
-                  isSelected
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50'
-                )}
-              >
-                {opt.label}
-              </button>
-            );
-          })}
+        {/* Status Horizontal Pill Tabs with subtle right edge fade */}
+        <div className="relative">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 pr-8 scroll-smooth">
+            {statusOptions.map((opt) => {
+              const isSelected = currentStatus === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => updateFilters({ status: opt.value })}
+                  className={cn(
+                    'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none',
+                    isSelected
+                      ? 'bg-slate-900 text-white shadow-2xs'
+                      : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50'
+                  )}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#F8FAFC] to-transparent" />
         </div>
 
         {/* Advanced Filters Drawer */}
