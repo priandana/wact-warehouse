@@ -7,7 +7,8 @@ import { createServerClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PriorityBadge } from '@/components/shared/PriorityBadge';
-import { BUCKETS, getSignedUrl } from '@/lib/supabase/storage';
+import { EvidenceGallery, type EvidenceItem } from '@/components/cases/EvidenceGallery';
+import { BUCKETS } from '@/lib/supabase/storage';
 import Link from 'next/link';
 import {
   ChevronLeft,
@@ -18,7 +19,6 @@ import {
   Wrench,
   Activity,
   Calendar,
-  Image as ImageIcon,
   Building2,
   Package,
   MessageSquare,
@@ -151,20 +151,36 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .order('created_at', { ascending: true }),
   ]);
 
-  // Generate signed URLs for private storage images
-  const evidenceList = await Promise.all(
+  // 3. Generate signed URLs via authenticated server client
+  const evidenceList: EvidenceItem[] = await Promise.all(
     (evidences ?? []).map(async (ev) => {
       let signedUrl = '';
-      try {
-        if (ev.file_url) {
-          signedUrl = await getSignedUrl(BUCKETS.CASE_EVIDENCES, ev.file_url, 3600);
+      if (ev.file_url) {
+        try {
+          const { data: signData, error: signErr } = await supabase.storage
+            .from(BUCKETS.CASE_EVIDENCES)
+            .createSignedUrl(ev.file_url, 3600);
+
+          if (!signErr && signData?.signedUrl) {
+            signedUrl = signData.signedUrl;
+          } else if (signErr) {
+            console.error('Storage sign error for', ev.file_url, signErr);
+          }
+        } catch (err) {
+          console.error('Failed to create signed URL:', ev.file_url, err);
         }
-      } catch (e) {
-        console.error('Failed to sign evidence URL:', ev.file_url, e);
       }
       return {
-        ...ev,
+        id: ev.id,
+        phase: ev.phase,
+        file_url: ev.file_url,
+        file_name: ev.file_name,
+        file_size: ev.file_size,
+        mime_type: ev.mime_type,
+        caption: ev.caption,
+        uploaded_at: ev.uploaded_at,
         signedUrl,
+        uploader: (ev.uploader as any) ?? null,
       };
     })
   );
@@ -185,7 +201,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       case 'status_changed':
         return `Status diubah ${act.from_status ? `dari ${act.from_status}` : ''} menjadi ${act.to_status}`;
       case 'evidence_added':
-        return 'Bukti foto ditambahkan';
+        return 'Bukti foto berhasil diunggah';
       case 'commented':
         return 'Komentar baru ditambahkan';
       case 'verified':
@@ -308,44 +324,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </div>
       </div>
 
-      {/* ── 2. Evidence Photos Section ───────────────────────────────────── */}
-      {evidenceList.length > 0 && (
-        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-blue-600" />
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                Bukti Foto ({evidenceList.length})
-              </h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            {evidenceList.map((ev) => (
-              <div key={ev.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 shadow-2xs group">
-                {ev.signedUrl ? (
-                  <a href={ev.signedUrl} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={ev.signedUrl}
-                      alt={ev.caption || ev.file_name || 'Bukti Kasus'}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  </a>
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-2 text-slate-400 text-center">
-                    <ImageIcon className="w-6 h-6 mb-1" />
-                    <span className="text-[10px]">{ev.file_name || 'Foto'}</span>
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-2 text-white text-[10px] font-semibold truncate">
-                  <span className="capitalize">{ev.phase}</span>
-                  {ev.caption && <span className="opacity-80"> • {ev.caption}</span>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── 2. Evidence Photos Section with Lightbox ─────────────────────── */}
+      <EvidenceGallery evidences={evidenceList} />
 
       {/* ── 3. Activity Timeline Card ────────────────────────────────────── */}
       <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
