@@ -36,6 +36,8 @@ export interface AssignableUser {
   id: string;
   full_name: string;
   avatar_url?: string | null;
+  role_name?: string;
+  role_display_name?: string;
 }
 
 export interface RootCauseItem {
@@ -569,12 +571,17 @@ export function CaseWorkflowActionPanel({
                       )}
                     >
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
                           {u.full_name[0].toUpperCase()}
                         </div>
-                        <span className="text-xs">{u.full_name}</span>
+                        <div className="min-w-0">
+                          <p className="text-xs truncate">{u.full_name}</p>
+                          {u.role_display_name && (
+                            <p className="text-[10px] text-slate-500 font-semibold truncate">{u.role_display_name}</p>
+                          )}
+                        </div>
                       </div>
-                      {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
+                      {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
                     </button>
                   );
                 })}

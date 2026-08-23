@@ -160,14 +160,40 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .order('created_at', { ascending: true }),
 
     supabase
-      .from('profile_directory')
-      .select('id, full_name, avatar_url'),
+      .from('user_warehouses')
+      .select(`
+        user_id,
+        warehouse_id,
+        roles ( id, name, display_name ),
+        profiles:user_id ( id, full_name, avatar_url, is_active )
+      `)
+      .eq('warehouse_id', item.warehouse_id)
+      .eq('is_active', true),
 
     supabase
       .from('root_causes')
       .select('id, name')
       .eq('is_active', true),
   ]);
+
+  const assignableUsers: AssignableUser[] = ((rawProfiles as any) ?? [])
+    .filter((uw: any) => uw.profiles?.is_active)
+    .map((uw: any) => ({
+      id: uw.profiles.id,
+      full_name: uw.profiles.full_name,
+      avatar_url: uw.profiles.avatar_url,
+      role_name: uw.roles?.name,
+      role_display_name: uw.roles?.display_name || uw.roles?.name || 'Staff',
+    }))
+    .sort((a: AssignableUser, b: AssignableUser) => {
+      const score = (role?: string) => {
+        if (role === 'pic_maintenance') return 0;
+        if (role === 'coordinator') return 1;
+        if (role === 'admin') return 2;
+        return 3;
+      };
+      return score(a.role_name) - score(b.role_name);
+    });
 
   // 3. Generate signed URLs via authenticated server client
   const evidenceList: EvidenceItem[] = await Promise.all(
@@ -369,7 +395,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         currentAssigneeId={currentAssignment?.assignee_id || null}
         currentAssigneeName={currentAssigneeName}
         reporterId={item.reporter_id}
-        assignableUsers={(rawProfiles as AssignableUser[]) ?? []}
+        assignableUsers={assignableUsers}
         rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
       />
 
