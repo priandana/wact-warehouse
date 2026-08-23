@@ -1,4 +1,5 @@
 // components/shared/EmptyState.tsx
+// Modern empty state with soft background icon container and actionable buttons
 
 import { cn } from '@/lib/utils/cn';
 import { LucideIcon } from 'lucide-react';
@@ -13,15 +14,15 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
   return (
-    <div className={cn('flex flex-col items-center justify-center py-16 px-6 text-center', className)}>
+    <div className={cn('flex flex-col items-center justify-center py-12 px-6 text-center rounded-2xl bg-white border border-dashed border-slate-200/80', className)}>
       {Icon && (
-        <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-          <Icon className="w-7 h-7 text-[--color-text-disabled]" />
+        <div className="w-14 h-14 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-center mb-3.5 shadow-sm">
+          <Icon className="w-7 h-7 text-blue-600" />
         </div>
       )}
-      <p className="text-sm font-semibold text-[--color-text-primary] mb-1">{title}</p>
-      {description && <p className="text-sm text-[--color-text-secondary] max-w-xs">{description}</p>}
-      {action && <div className="mt-5">{action}</div>}
+      <h3 className="text-sm font-bold text-slate-900 mb-1">{title}</h3>
+      {description && <p className="text-xs text-slate-500 max-w-xs leading-relaxed">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

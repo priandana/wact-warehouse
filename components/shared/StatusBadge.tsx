@@ -1,9 +1,9 @@
 // components/shared/StatusBadge.tsx
-// Displays case status as a pill badge
+// Displays case status as a modern pill badge with visual dot indicator
 
 import { cn } from '@/lib/utils/cn';
 
-type CaseStatus =
+export type CaseStatus =
   | 'open'
   | 'on_progress'
   | 'waiting_repair'
@@ -11,32 +11,82 @@ type CaseStatus =
   | 'closed'
   | 'reopened';
 
-const config: Record<CaseStatus, { label: string; className: string }> = {
-  open:                 { label: 'Open',             className: 'bg-blue-50 text-blue-600 border-blue-100' },
-  on_progress:          { label: 'On Progress',      className: 'bg-purple-50 text-purple-600 border-purple-100' },
-  waiting_repair:       { label: 'Waiting Repair',   className: 'bg-amber-50 text-amber-600 border-amber-100' },
-  waiting_verification: { label: 'Waiting Verify',   className: 'bg-orange-50 text-orange-600 border-orange-100' },
-  closed:               { label: 'Closed',           className: 'bg-green-50 text-green-600 border-green-100' },
-  reopened:             { label: 'Reopened',         className: 'bg-red-50 text-red-600 border-red-100' },
+const config: Record<CaseStatus, { label: string; bg: string; text: string; dot: string; border: string }> = {
+  open: {
+    label: 'Open',
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    dot: 'bg-blue-500',
+    border: 'border-blue-200/80',
+  },
+  on_progress: {
+    label: 'On Progress',
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    dot: 'bg-purple-500 animate-pulse',
+    border: 'border-purple-200/80',
+  },
+  waiting_repair: {
+    label: 'Menunggu Perbaikan',
+    bg: 'bg-amber-50',
+    text: 'text-amber-800',
+    dot: 'bg-amber-500',
+    border: 'border-amber-200/80',
+  },
+  waiting_verification: {
+    label: 'Verifikasi QC',
+    bg: 'bg-orange-50',
+    text: 'text-orange-800',
+    dot: 'bg-orange-500',
+    border: 'border-orange-200/80',
+  },
+  closed: {
+    label: 'Selesai / Closed',
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-800',
+    dot: 'bg-emerald-500',
+    border: 'border-emerald-200/80',
+  },
+  reopened: {
+    label: 'Reopened',
+    bg: 'bg-rose-50',
+    text: 'text-rose-700',
+    dot: 'bg-rose-500',
+    border: 'border-rose-200/80',
+  },
 };
 
 interface StatusBadgeProps {
-  status: CaseStatus;
-  size?: 'sm' | 'md';
+  status: CaseStatus | string;
+  size?: 'sm' | 'md' | 'lg';
+  showDot?: boolean;
 }
 
-export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
-  const { label, className } = config[status] ?? { label: status, className: 'bg-gray-50 text-gray-500 border-gray-100' };
+export function StatusBadge({ status, size = 'md', showDot = true }: StatusBadgeProps) {
+  const conf = config[status as CaseStatus] ?? {
+    label: status,
+    bg: 'bg-slate-100',
+    text: 'text-slate-700',
+    dot: 'bg-slate-400',
+    border: 'border-slate-200',
+  };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center font-medium rounded-full border',
-        size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-2.5 py-1',
-        className,
+        'inline-flex items-center gap-1.5 font-bold tracking-tight rounded-full border shadow-sm select-none',
+        conf.bg,
+        conf.text,
+        conf.border,
+        size === 'sm' && 'text-[10px] px-2 py-0.5',
+        size === 'md' && 'text-xs px-2.5 py-1',
+        size === 'lg' && 'text-sm px-3.5 py-1.5',
       )}
     >
-      {label}
+      {showDot && (
+        <span className={cn('rounded-full shrink-0', conf.dot, size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2')} />
+      )}
+      <span>{conf.label}</span>
     </span>
   );
 }

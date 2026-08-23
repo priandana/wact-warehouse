@@ -1,74 +1,70 @@
 /* app/globals.css */
-/* WACT Design System — CSS custom properties */
-/* Font: Plus Jakarta Sans (via next/font or @import) */
+/* WACT Design System — CSS custom properties & utility styles */
+/* Fintech/Consumer-grade modern mobile-first styling */
 
 @import "tailwindcss";
 
 /* ── Design Tokens ──────────────────────────────────────────────────────── */
 :root {
   /* Colors */
-  --color-primary:        #3B6FE0;   /* Modern blue */
-  --color-primary-light:  #EBF0FF;
-  --color-primary-dark:   #2B4FB8;
-  --color-accent:         #5B8BF5;
+  --color-primary:        #2563EB;   /* Modern vibrant blue (Tailwind blue-600) */
+  --color-primary-light:  #EFF6FF;   /* Soft blue-50 */
+  --color-primary-dark:   #1D4ED8;   /* Deep blue-700 */
+  --color-primary-hover:  #1E40AF;
+  --color-accent:         #3B82F6;
 
-  --color-success:        #22C55E;
-  --color-success-light:  #DCFCE7;
-  --color-warning:        #F59E0B;
-  --color-warning-light:  #FEF3C7;
-  --color-danger:         #EF4444;
-  --color-danger-light:   #FEE2E2;
-  --color-info:           #3B82F6;
-  --color-info-light:     #DBEAFE;
+  --color-success:        #10B981;   /* Emerald 500 */
+  --color-success-light:  #ECFDF5;
+  --color-warning:        #F59E0B;   /* Amber 500 */
+  --color-warning-light:  #FFFBEB;
+  --color-danger:         #EF4444;   /* Rose/Red 500 */
+  --color-danger-light:   #FEF2F2;
+  --color-info:           #06B6D4;   /* Cyan 500 */
+  --color-info-light:     #ECFEFF;
 
   /* Neutral palette */
-  --color-bg:             #F5F6FA;   /* Soft off-white page background */
-  --color-surface:        #FFFFFF;   /* Card / sheet background */
-  --color-border:         #E5E7EB;
-  --color-border-light:   #F3F4F6;
-  --color-text-primary:   #111827;
-  --color-text-secondary: #6B7280;
-  --color-text-disabled:  #9CA3AF;
+  --color-bg:             #F8FAFC;   /* Slate-50 soft background */
+  --color-surface:        #FFFFFF;   /* Pure white card surface */
+  --color-border:         #E2E8F0;   /* Slate-200 */
+  --color-border-light:   #F1F5F9;   /* Slate-100 */
+  --color-text-primary:   #0F172A;   /* Slate-900 */
+  --color-text-secondary: #64748B;   /* Slate-500 */
+  --color-text-muted:     #94A3B8;   /* Slate-400 */
+  --color-text-disabled:  #CBD5E1;   /* Slate-300 */
 
   /* Priority colors */
   --color-priority-critical: #EF4444;
   --color-priority-high:     #F97316;
-  --color-priority-medium:   #3B6FE0;
-  --color-priority-low:      #6B7280;
-
-  /* Status colors */
-  --color-status-open:         #3B82F6;
-  --color-status-on-progress:  #8B5CF6;
-  --color-status-waiting:      #F59E0B;
-  --color-status-verification: #F97316;
-  --color-status-closed:       #22C55E;
-  --color-status-reopened:     #EF4444;
+  --color-priority-medium:   #2563EB;
+  --color-priority-low:      #64748B;
 
   /* Radius */
   --radius-xs:   8px;
   --radius-sm:   12px;
   --radius-md:   16px;
   --radius-lg:   20px;
-  --radius-xl:   24px;   /* Primary card radius mobile */
+  --radius-xl:   24px;
+  --radius-2xl:  28px;
   --radius-full: 9999px;
 
   /* Spacing */
   --space-page-mobile:  16px;
-  --space-page-desktop: 24px;
+  --space-page-desktop: 28px;
   --space-card-inner:   16px;
 
-  /* Shadow */
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-sheet: 0 -4px 24px rgba(0,0,0,0.10);
+  /* Modern Subtle Shadows */
+  --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+  --shadow-card: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 1px 4px -1px rgba(15, 23, 42, 0.03);
+  --shadow-card-hover: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+  --shadow-float: 0 14px 34px -4px rgba(37, 99, 235, 0.28), 0 8px 16px -6px rgba(37, 99, 235, 0.18);
+  --shadow-sheet: 0 -4px 30px rgba(15, 23, 42, 0.08);
 
-  /* Bottom navigation */
-  --bottom-nav-height: 64px;
+  /* Heights */
+  --bottom-nav-height: 68px;
   --min-touch-target:  44px;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
-
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -77,29 +73,57 @@ html {
 body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Tailwind utility extensions ─────────────────────────────────────────── */
+/* ── Microinteractions & Touch Feedback ─────────────────────────────────── */
+.tap-active {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+}
+.tap-active:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* Hide scrollbar for horizontal category pills */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Utility Classes ─────────────────────────────────────────────────────── */
 @layer utilities {
   .touch-target {
     min-height: var(--min-touch-target);
     min-width: var(--min-touch-target);
   }
 
-  .card {
+  .wact-card {
     background: var(--color-surface);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-card);
-    padding: var(--space-card-inner);
+    border: 1px solid var(--color-border-light);
   }
 
-  .card-hover:hover {
+  .wact-card-interactive {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border-light);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .wact-card-interactive:hover {
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-1px);
-    transition: all 0.15s ease;
+    border-color: #CBD5E1;
+    transform: translateY(-2px);
+  }
+  .wact-card-interactive:active {
+    transform: scale(0.985);
   }
 
   .page-padding {
@@ -114,8 +138,7 @@ body {
     }
   }
 
-  /* Safe area for bottom navigation */
   .pb-safe-nav {
-    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 16px) + 16px);
   }
 }

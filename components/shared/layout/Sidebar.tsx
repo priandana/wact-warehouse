@@ -1,6 +1,6 @@
 'use client';
 // components/shared/layout/Sidebar.tsx
-// Desktop sidebar navigation
+// Desktop sidebar navigation — Clean Modern SaaS Feel
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,10 +13,13 @@ import {
   BarChart2,
   Bell,
   Settings,
-  ChevronDown,
   Building2,
+  PlusCircle,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 interface NavGroup {
   label?: string;
@@ -24,7 +27,7 @@ interface NavGroup {
     href: string;
     icon: React.ElementType;
     label: string;
-    badge?: number;
+    badge?: string | number;
   }[];
 }
 
@@ -32,31 +35,31 @@ const navGroups: NavGroup[] = [
   {
     items: [
       { href: '/dashboard', icon: Home,          label: 'Dashboard' },
-      { href: '/cases',     icon: FileText,       label: 'Cases' },
-      { href: '/my-tasks',  icon: ClipboardCheck, label: 'My Tasks' },
+      { href: '/cases',     icon: FileText,      label: 'Daftar Kasus' },
+      { href: '/my-tasks',  icon: ClipboardCheck, label: 'Tugas Saya' },
     ],
   },
   {
     label: 'Operasional',
     items: [
-      { href: '/assets',      icon: Package,  label: 'Assets' },
-      { href: '/inspections', icon: ClipboardCheck, label: 'Inspeksi' },
-      { href: '/maintenance', icon: Wrench,   label: 'Maintenance' },
+      { href: '/assets',      icon: Package,        label: 'Aset & Mesin' },
+      { href: '/inspections', icon: ClipboardCheck, label: 'QC & Inspeksi' },
+      { href: '/maintenance', icon: Wrench,         label: 'Maintenance' },
     ],
   },
   {
-    label: 'Analitik',
+    label: 'Laporan & Analisis',
     items: [
-      { href: '/analytics',    icon: BarChart2, label: 'Analytics' },
-      { href: '/reports',      icon: FileText,  label: 'Reports' },
+      { href: '/analytics',   icon: BarChart2,      label: 'Analitik' },
+      { href: '/reports',     icon: FileText,       label: 'Laporan SLA' },
     ],
   },
   {
-    label: 'Pengaturan',
+    label: 'Konfigurasi',
     items: [
-      { href: '/notifications', icon: Bell,     label: 'Notifikasi' },
-      { href: '/master-data',   icon: Settings, label: 'Master Data' },
-      { href: '/users',         icon: Building2, label: 'Users' },
+      { href: '/notifications', icon: Bell,        label: 'Notifikasi' },
+      { href: '/master-data',   icon: Settings,    label: 'Master Data' },
+      { href: '/users',         icon: Building2,   label: 'Pengguna' },
     ],
   },
 ];
@@ -65,77 +68,134 @@ interface SidebarProps {
   warehouseName?: string;
   warehouseCode?: string;
   userName?: string;
+  userRole?: string;
 }
 
-export function Sidebar({ warehouseName, warehouseCode, userName }: SidebarProps) {
+export function Sidebar({ warehouseName, warehouseCode, userName, userRole }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .slice(0, 2)
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+  };
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r border-gray-100 flex flex-col">
-      {/* Logo */}
-      <div className="px-6 py-5 border-b border-gray-100">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[--color-primary] flex items-center justify-center">
-            <Package className="w-4 h-4 text-white" />
+    <aside className="w-[260px] h-screen sticky top-0 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 z-30 select-none shadow-[2px_0_12px_rgba(15,23,42,0.02)]">
+      <div>
+        {/* Logo & Brand Header */}
+        <div className="px-5 py-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md shadow-blue-500/20">
+              <Package className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900">WACT</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700">PRO</span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium leading-none mt-0.5">Warehouse Action Tracker</p>
+            </div>
           </div>
-          <span className="font-bold text-lg tracking-tight text-[--color-text-primary]">WACT</span>
         </div>
-        <p className="text-xs text-[--color-text-secondary] mt-1">Warehouse Action Tracker</p>
+
+        {/* Primary Action Button Desktop */}
+        <div className="px-4 pt-4 pb-2">
+          <Link
+            href="/cases/new"
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm shadow-blue-600/30 active:scale-[0.98] transition-all duration-150"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Laporkan Kasus</span>
+          </Link>
+        </div>
+
+        {/* Warehouse Context Pill */}
+        {warehouseName && (
+          <div className="px-4 py-1.5">
+            <div className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">{warehouseCode}</span>
+                <p className="text-xs font-semibold text-slate-700 truncate">{warehouseName}</p>
+              </div>
+              <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Active Warehouse" />
+            </div>
+          </div>
+        )}
+
+        {/* Navigation links */}
+        <nav className="px-3 py-2 space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto no-scrollbar">
+          {navGroups.map((group, gi) => (
+            <div key={gi} className="space-y-0.5">
+              {group.label && (
+                <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {group.label}
+                </p>
+              )}
+              {group.items.map((item) => {
+                const isActive = pathname === item.href ||
+                  (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150',
+                      isActive
+                        ? 'bg-blue-50 text-blue-600 shadow-sm shadow-blue-100/50'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                    )}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                    <span className="flex-1 truncate">{item.label}</span>
+                    {item.badge && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
       </div>
 
-      {/* Warehouse selector */}
-      {warehouseName && (
-        <button className="mx-4 my-3 px-3 py-2.5 rounded-xl bg-[--color-primary-light] flex items-center justify-between text-left hover:bg-blue-100 transition-colors">
-          <div>
-            <p className="text-xs text-[--color-primary] font-semibold">{warehouseCode}</p>
-            <p className="text-sm font-medium text-[--color-text-primary] truncate max-w-[160px]">{warehouseName}</p>
+      {/* User Footer Profile Card */}
+      <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/70 shadow-sm">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+              {getInitials(userName)}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-800 truncate leading-tight">{userName || 'Pengguna'}</p>
+              <p className="text-[10px] text-slate-400 font-medium truncate capitalize">{userRole || 'Anggota Tim'}</p>
+            </div>
           </div>
-          <ChevronDown className="w-4 h-4 text-[--color-primary] shrink-0" />
-        </button>
-      )}
-
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-2 px-3">
-        {navGroups.map((group, gi) => (
-          <div key={gi} className="mb-4">
-            {group.label && (
-              <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[--color-text-disabled]">
-                {group.label}
-              </p>
-            )}
-            {group.items.map((item) => {
-              const isActive = pathname === item.href ||
-                (item.href !== '/dashboard' && pathname.startsWith(item.href + '/'));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors mb-0.5',
-                    isActive
-                      ? 'bg-[--color-primary-light] text-[--color-primary]'
-                      : 'text-[--color-text-secondary] hover:bg-gray-50 hover:text-[--color-text-primary]',
-                  )}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <item.icon className="w-4 h-4 shrink-0" />
-                  <span className="flex-1">{item.label}</span>
-                  {item.badge ? (
-                    <span className="text-xs bg-[--color-danger] text-white rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
-                      {item.badge}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </div>
-        ))}
-      </nav>
-
-      {/* User footer */}
-      <div className="px-4 py-4 border-t border-gray-100">
-        <p className="text-xs text-[--color-text-disabled]">Masuk sebagai</p>
-        <p className="text-sm font-medium text-[--color-text-primary] truncate">{userName ?? '...'}</p>
+          <button
+            onClick={handleSignOut}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+            title="Keluar"
+            aria-label="Keluar"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </aside>
   );
