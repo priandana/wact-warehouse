@@ -81,6 +81,7 @@ export async function flushSyncQueue(): Promise<void> {
       const { data: serverCaseId, error } = await supabase.rpc('create_case', {
         p_warehouse_id:            payload.warehouseId,
         p_title:                   payload.title,
+        p_client_request_id:       payload.clientRequestId,  // mandatory idempotency key
         p_description:             payload.description ?? null,
         p_category_id:             payload.categoryId ?? null,
         p_subcategory_id:          payload.subcategoryId ?? null,
@@ -91,8 +92,6 @@ export async function flushSyncQueue(): Promise<void> {
         p_has_operational_impact:  payload.hasOperationalImpact ?? false,
         p_requires_maintenance:    payload.requiresMaintenance ?? false,
         p_source:                  payload.source ?? 'direct',
-        p_due_date:                payload.dueDate ?? null,
-        p_client_request_id:       payload.clientRequestId,  // idempotency key
       });
 
       if (error) throw new Error(error.message);
