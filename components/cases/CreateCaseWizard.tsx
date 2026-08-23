@@ -76,6 +76,10 @@ interface CreateCaseWizardProps {
   areas: AreaItem[];
   locations: LocationItem[];
   assets: AssetItem[];
+  initialAssetId?: string;
+  initialAreaId?: string;
+  initialLocationId?: string;
+  initialWarehouseId?: string;
 }
 
 export interface PhotoItem {
@@ -96,10 +100,14 @@ export function CreateCaseWizard({
   areas,
   locations,
   assets,
+  initialAssetId,
+  initialAreaId,
+  initialLocationId,
+  initialWarehouseId,
 }: CreateCaseWizardProps) {
   const router = useRouter();
   const { activeWarehouse } = useActiveWarehouse();
-  const activeWarehouseId = activeWarehouse?.warehouseId;
+  const activeWarehouseId = initialWarehouseId || activeWarehouse?.warehouseId;
 
   const [step, setStep] = useState<number>(1);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -119,13 +127,13 @@ export function CreateCaseWizard({
   const [subcategoryId, setSubcategoryId] = useState<string>('');
   const [priority, setPriority] = useState<Priority>('medium');
 
-  const [areaId, setAreaId] = useState<string>('');
-  const [locationId, setLocationId] = useState<string>('');
-  const [assetId, setAssetId] = useState<string>('');
+  const [areaId, setAreaId] = useState<string>(initialAreaId || '');
+  const [locationId, setLocationId] = useState<string>(initialLocationId || '');
+  const [assetId, setAssetId] = useState<string>(initialAssetId || '');
 
   const [description, setDescription] = useState<string>('');
-  const [hasOperationalImpact, setHasOperationalImpact] = useState<boolean>(false);
-  const [requiresMaintenance, setRequiresMaintenance] = useState<boolean>(false);
+  const [hasOperationalImpact, setHasOperationalImpact] = useState<boolean>(Boolean(initialAssetId));
+  const [requiresMaintenance, setRequiresMaintenance] = useState<boolean>(Boolean(initialAssetId));
 
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -134,6 +142,15 @@ export function CreateCaseWizard({
   // Initialize draft and clientRequestId
   useEffect(() => {
     try {
+      if (initialAssetId) {
+        setAssetId(initialAssetId);
+        if (initialAreaId) setAreaId(initialAreaId);
+        if (initialLocationId) setLocationId(initialLocationId);
+        setRequiresMaintenance(true);
+        setClientRequestId(crypto.randomUUID());
+        return;
+      }
+
       const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -155,7 +172,7 @@ export function CreateCaseWizard({
     } catch {
       setClientRequestId(crypto.randomUUID());
     }
-  }, []);
+  }, [initialAssetId, initialAreaId, initialLocationId]);
 
   // Persist draft on changes
   useEffect(() => {

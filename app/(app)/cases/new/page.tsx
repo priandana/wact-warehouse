@@ -13,7 +13,17 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function NewCasePage() {
+export default async function NewCasePage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    asset_id?: string;
+    warehouse_id?: string;
+    area_id?: string;
+    location_id?: string;
+  }>;
+}) {
+  const params = await searchParams;
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -68,6 +78,10 @@ export default async function NewCasePage() {
         areas={areas ?? []}
         locations={locations ?? []}
         assets={assets ?? []}
+        initialAssetId={params.asset_id}
+        initialAreaId={params.area_id}
+        initialLocationId={params.location_id}
+        initialWarehouseId={params.warehouse_id}
       />
     </div>
   );

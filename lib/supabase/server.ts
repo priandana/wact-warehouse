@@ -2,7 +2,7 @@
 // Server-side Supabase clients (per-request — uses cookies)
 
 import { createServerClient as createSSRClient } from '@supabase/ssr';
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import type { Database } from './database.types';
 
@@ -35,13 +35,15 @@ export async function createServerClient() {
   );
 }
 
+export const createClient = createServerClient;
+
 /**
  * Admin / service role client.
  * Bypasses RLS — use only in trusted server actions.
  * NEVER expose to client or use for user-facing reads.
  */
 export function createAdminClient() {
-  return createClient<Database>(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
