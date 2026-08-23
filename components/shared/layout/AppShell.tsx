@@ -1,13 +1,13 @@
 'use client';
 // components/shared/layout/AppShell.tsx
-// Root layout shell — Responsive Mobile (BottomNav) & Desktop (Sidebar + Header)
+// Responsive App Shell — Mobile (Integrated Top Header + Bottom Nav) & Desktop (Sidebar + Topbar)
 
 import { useIsDesktop } from '@/lib/hooks/useMediaQuery';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
 import { WarehouseSelector } from '@/components/shared/WarehouseSelector';
 import Link from 'next/link';
-import { Bell, Search, User } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 interface AppShellProps {
@@ -24,8 +24,25 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
 
   // Desktop Composition
   if (isDesktop) {
+    const pageTitleMap: Record<string, string> = {
+      '/dashboard': 'Dashboard',
+      '/cases': 'Daftar Kasus',
+      '/my-tasks': 'Tugas Saya',
+      '/assets': 'Aset & Mesin',
+      '/inspections': 'QC & Inspeksi',
+      '/maintenance': 'Maintenance',
+      '/analytics': 'Analitik',
+      '/reports': 'Laporan',
+      '/notifications': 'Notifikasi',
+      '/master-data': 'Master Data',
+      '/users': 'Pengguna',
+      '/profile': 'Profil',
+    };
+
+    const currentTitle = pageTitleMap[pathname] ?? 'WACT';
+
     return (
-      <div className="flex min-h-screen bg-slate-50/60">
+      <div className="flex min-h-screen bg-[#F8FAFC]">
         <Sidebar
           warehouseName={warehouseName}
           warehouseCode={warehouseCode}
@@ -33,20 +50,20 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
           userRole={userRole}
         />
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Desktop Topbar */}
-          <header className="h-16 px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-20 flex items-center justify-between shadow-[0_1px_4px_rgba(15,23,42,0.02)]">
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-slate-400 capitalize">
+          {/* Desktop Clean Topbar */}
+          <header className="h-16 px-8 bg-white/70 backdrop-blur-md border-b border-slate-200/70 sticky top-0 z-20 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 WACT
               </span>
               <span className="text-slate-300">/</span>
-              <span className="text-sm font-bold text-slate-800 capitalize">
-                {pathname === '/dashboard' ? 'Dashboard' : pathname.replace('/', '').replace('-', ' ')}
+              <span className="text-sm font-extrabold text-slate-900 tracking-tight">
+                {currentTitle}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <WarehouseSelector variant="compact" />
+              <WarehouseSelector />
               <Link
                 href="/notifications"
                 className="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
@@ -70,11 +87,9 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
   // Mobile Composition
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
-      {/* Mobile Top Header */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/60 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-2">
-          <WarehouseSelector variant="compact" />
-        </div>
+      {/* Mobile Integrated Top Header */}
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/60 px-4 py-2.5 flex items-center justify-between">
+        <WarehouseSelector />
 
         <div className="flex items-center gap-2">
           <Link
@@ -82,12 +97,12 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
             className="relative p-2 rounded-full text-slate-600 hover:bg-slate-100 active:scale-95 transition-all touch-target flex items-center justify-center"
             aria-label="Notifikasi"
           >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+            <Bell className="w-4 h-4" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
           </Link>
           <Link
             href="/profile"
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm"
+            className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs"
             aria-label="Profil"
           >
             {userName ? userName[0].toUpperCase() : 'U'}
@@ -95,7 +110,7 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
         </div>
       </header>
 
-      {/* Main Content Area with Safe Area Bottom Padding */}
+      {/* Mobile Content Area */}
       <main className="flex-1 pb-safe-nav">
         {children}
       </main>

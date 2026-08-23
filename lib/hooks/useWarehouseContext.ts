@@ -1,13 +1,13 @@
 // lib/hooks/useWarehouseContext.ts
-// Provides the currently selected warehouse from cookie/localStorage.
-// For multi-warehouse users: tracks which warehouse is "active" for the current session.
+// Provides the currently selected warehouse from localStorage and cookies.
+// Defaults to WH-PDL for development testing if no preference is saved.
 
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import type { UserWarehouseAccess } from '@/lib/permissions/getWarehouseAccess';
 
-const STORAGE_KEY = 'wact_active_warehouse_id'; // localStorage = UI prefs only
+const STORAGE_KEY = 'wact_active_warehouse_id';
 
 export function useWarehouseContext(availableWarehouses: UserWarehouseAccess[]) {
   const [activeWarehouseId, setActiveWarehouseId] = useState<string | null>(null);
@@ -21,23 +21,29 @@ export function useWarehouseContext(availableWarehouses: UserWarehouseAccess[]) 
     if (found) {
       setActiveWarehouseId(found.warehouseId);
     } else {
-      // Default to first available
-      setActiveWarehouseId(availableWarehouses[0].warehouseId);
+      // Default: prefer PDL if available
+      const pdlWh = availableWarehouses.find(
+        (w) => w.warehouseCode === 'WH-PDL' || w.warehouseCode === 'PDL' || w.warehouseName.toLowerCase().includes('padalarang')
+      );
+      const defaultWh = pdlWh ?? availableWarehouses[0];
+      setActiveWarehouseId(defaultWh.warehouseId);
+      localStorage.setItem(STORAGE_KEY, defaultWh.warehouseId);
     }
   }, [availableWarehouses]);
 
   const switchWarehouse = useCallback((warehouseId: string) => {
     localStorage.setItem(STORAGE_KEY, warehouseId);
+    document.cookie = `wact_active_warehouse_id=${warehouseId}; path=/; max-age=31536000; SameSite=Lax`;
     setActiveWarehouseId(warehouseId);
   }, []);
 
   const activeWarehouse = availableWarehouses.find(
     (w) => w.warehouseId === activeWarehouseId,
-  ) ?? null;
+  ) ?? (availableWarehouses.length > 0 ? availableWarehouses[0] : null);
 
   return {
     activeWarehouse,
-    activeWarehouseId,
+    activeWarehouseId: activeWarehouse?.warehouseId ?? activeWarehouseId,
     availableWarehouses,
     switchWarehouse,
   };
