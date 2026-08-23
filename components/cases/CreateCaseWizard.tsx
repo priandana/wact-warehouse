@@ -1,6 +1,7 @@
 'use client';
 // components/cases/CreateCaseWizard.tsx
 // Fast, Consumer/Fintech 4-Step Mobile-First Case Creation Wizard
+// Includes instant compression UX, progress state, and retryable upload flow.
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,8 @@ import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider'
 import {
   BUCKETS,
   buildCaseEvidencePath,
-  compressAndUpload,
+  compressImage,
+  uploadFile,
 } from '@/lib/supabase/storage';
 import { PriorityBadge, type Priority } from '@/components/shared/PriorityBadge';
 import {
@@ -22,12 +24,12 @@ import {
   Loader2,
   AlertCircle,
   Building2,
-  MapPin,
   Package,
   Wrench,
   AlertTriangle,
   Sparkles,
   ShieldAlert,
+  RotateCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -76,10 +78,14 @@ interface CreateCaseWizardProps {
   assets: AssetItem[];
 }
 
-interface PhotoPreview {
+export interface PhotoItem {
   id: string;
-  file: File;
+  rawFile: File;
   previewUrl: string;
+  compressedBlob?: Blob;
+  compressedSize?: number;
+  status: 'processing' | 'ready' | 'error';
+  errorMessage?: string;
 }
 
 const DRAFT_STORAGE_KEY = 'wact_case_draft_v1';
@@ -97,7 +103,12 @@ export function CreateCaseWizard({
 
   const [step, setStep] = useState<number>(1);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submitStatusText, setSubmitStatusText] = useState<string>('Mengirim laporan...');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Partial success state (Case created, evidence upload failed)
+  const [createdCaseId, setCreatedCaseId] = useState<string | null>(null);
+  const [partialEvidenceError, setPartialEvidenceError] = useState<string | null>(null);
 
   // Idempotency key (UUID v4 generated once per draft)
   const [clientRequestId, setClientRequestId] = useState<string>('');
@@ -116,7 +127,7 @@ export function CreateCaseWizard({
   const [hasOperationalImpact, setHasOperationalImpact] = useState<boolean>(false);
   const [requiresMaintenance, setRequiresMaintenance] = useState<boolean>(false);
 
-  const [photos, setPhotos] = useState<PhotoPreview[]>([]);
+  const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -200,22 +211,55 @@ export function CreateCaseWizard({
     'Selisih Jumlah Stok Barang',
   ];
 
-  // Photo handlers
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Photo handlers with Async Compression
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const newPhotos: PhotoPreview[] = [];
-    Array.from(files).forEach((file) => {
-      newPhotos.push({
-        id: crypto.randomUUID(),
-        file,
-        previewUrl: URL.createObjectURL(file),
-      });
-    });
-
-    setPhotos((prev) => [...prev, ...newPhotos]);
+    const filesArray = Array.from(files);
     if (e.target) e.target.value = '';
+
+    // Create initial processing items
+    const newItems: PhotoItem[] = filesArray.map((file) => ({
+      id: crypto.randomUUID(),
+      rawFile: file,
+      previewUrl: URL.createObjectURL(file),
+      status: 'processing',
+    }));
+
+    setPhotos((prev) => [...prev, ...newItems]);
+
+    // Process & compress each photo asynchronously
+    for (const item of newItems) {
+      try {
+        const { blob } = await compressImage(item.rawFile, 1920, 0.82);
+        setPhotos((prev) =>
+          prev.map((p) =>
+            p.id === item.id
+              ? {
+                  ...p,
+                  compressedBlob: blob,
+                  compressedSize: blob.size,
+                  status: 'ready',
+                }
+              : p
+          )
+        );
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Gagal memproses foto';
+        setPhotos((prev) =>
+          prev.map((p) =>
+            p.id === item.id
+              ? {
+                  ...p,
+                  status: 'error',
+                  errorMessage: msg,
+                }
+              : p
+          )
+        );
+      }
+    }
   };
 
   const removePhoto = (id: string) => {
@@ -226,10 +270,16 @@ export function CreateCaseWizard({
     });
   };
 
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return '';
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const isAnyPhotoProcessing = photos.some((p) => p.status === 'processing');
+
   // Validation
   const isStep1Valid = title.trim().length >= 3;
-  const isStep2Valid = !activeWarehouseId || true; // area is recommended but flexible
-  const isStep3Valid = true;
 
   const handleNext = () => {
     setErrorMessage(null);
@@ -241,6 +291,7 @@ export function CreateCaseWizard({
   };
 
   const handleBack = () => {
+    if (submitting) return;
     setErrorMessage(null);
     if (step === 1) {
       router.push('/cases');
@@ -249,8 +300,52 @@ export function CreateCaseWizard({
     }
   };
 
+  // Helper to upload evidences
+  const uploadEvidencesForCase = async (caseId: string): Promise<boolean> => {
+    if (!activeWarehouseId) return false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createClient() as any;
+
+    const readyPhotos = photos.filter((p) => p.status === 'ready' && p.compressedBlob);
+    let allSucceeded = true;
+
+    for (let i = 0; i < readyPhotos.length; i++) {
+      const photo = readyPhotos[i];
+      setSubmitStatusText(`Mengunggah foto ${i + 1} dari ${readyPhotos.length}...`);
+      try {
+        const storagePath = buildCaseEvidencePath(activeWarehouseId, caseId, 'jpg');
+        await uploadFile(
+          BUCKETS.CASE_EVIDENCES,
+          storagePath,
+          photo.compressedBlob!,
+          'image/jpeg'
+        );
+
+        await supabase.rpc('add_case_evidence', {
+          p_case_id: caseId,
+          p_phase: 'before', // Initial report phase MUST be 'before'
+          p_file_url: storagePath,
+          p_file_name: photo.rawFile.name,
+          p_file_size: photo.compressedSize || photo.rawFile.size,
+          p_mime_type: 'image/jpeg',
+          p_caption: 'Foto bukti pelaporan awal',
+        });
+      } catch (evErr) {
+        console.error('Evidence upload failed for photo:', photo.id, evErr);
+        allSucceeded = false;
+      }
+    }
+
+    return allSucceeded;
+  };
+
   // Submit Handler
   const handleSubmit = async () => {
+    if (submitting) return; // Prevent double click
+    if (isAnyPhotoProcessing) {
+      setErrorMessage('Harap tunggu sampai seluruh foto selesai diproses.');
+      return;
+    }
     if (!activeWarehouseId) {
       setErrorMessage('Gudang aktif tidak terdeteksi. Silakan pilih gudang di header terlebih dahulu.');
       return;
@@ -263,12 +358,14 @@ export function CreateCaseWizard({
 
     setSubmitting(true);
     setErrorMessage(null);
+    setPartialEvidenceError(null);
+    setSubmitStatusText('Mengirim laporan kasus...');
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = createClient() as any;
 
-      // 1. Call create_case RPC
+      // 1. Call create_case RPC (source must be 'direct')
       const { data: caseId, error: createErr } = await supabase.rpc('create_case', {
         p_warehouse_id: activeWarehouseId,
         p_title: title.trim(),
@@ -282,43 +379,52 @@ export function CreateCaseWizard({
         p_priority: priority,
         p_has_operational_impact: hasOperationalImpact,
         p_requires_maintenance: requiresMaintenance,
-        p_source: 'mobile_web',
+        p_source: 'direct', // strictly 'direct' or 'inspection'
       });
 
       if (createErr) {
         throw new Error(createErr.message || 'Gagal membuat kasus.');
       }
 
+      setCreatedCaseId(caseId);
+
       // 2. Upload photo evidence if attached
-      if (photos.length > 0 && caseId) {
-        for (const photo of photos) {
-          try {
-            const storagePath = buildCaseEvidencePath(activeWarehouseId, caseId);
-            await compressAndUpload(BUCKETS.CASE_EVIDENCES, storagePath, photo.file);
-            await supabase.rpc('add_case_evidence', {
-              p_case_id: caseId,
-              p_phase: 'reported',
-              p_file_url: storagePath,
-              p_file_name: photo.file.name,
-              p_file_size: photo.file.size,
-              p_mime_type: photo.file.type,
-              p_caption: 'Foto bukti saat pelaporan',
-            });
-          } catch (evErr) {
-            console.error('Evidence upload warning:', evErr);
-            // Case creation succeeded, so continue
-          }
+      const readyPhotos = photos.filter((p) => p.status === 'ready');
+      if (readyPhotos.length > 0 && caseId) {
+        const evidenceSuccess = await uploadEvidencesForCase(caseId);
+        if (!evidenceSuccess) {
+          setPartialEvidenceError(
+            'Laporan kasus berhasil dibuat, tetapi beberapa foto bukti gagal diunggah. Anda dapat mencoba unggah ulang sekarang atau melanjutkannya nanti.'
+          );
+          setSubmitting(false);
+          return;
         }
       }
 
-      // 3. Clear draft
+      // 3. Success -> Clear draft & Redirect
+      setSubmitStatusText('Laporan berhasil dibuat! Mengalihkan...');
       clearDraft();
-
-      // 4. Redirect
-      router.push(`/cases/${caseId}`);
+      setTimeout(() => {
+        router.push(`/cases/${caseId}`);
+      }, 500);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
       setErrorMessage(msg);
+      setSubmitting(false);
+    }
+  };
+
+  // Retry Evidence Upload Handler
+  const handleRetryEvidence = async () => {
+    if (!createdCaseId) return;
+    setSubmitting(true);
+    setPartialEvidenceError(null);
+    const success = await uploadEvidencesForCase(createdCaseId);
+    if (success) {
+      clearDraft();
+      router.push(`/cases/${createdCaseId}`);
+    } else {
+      setPartialEvidenceError('Sebagian foto masih gagal diunggah. Silakan coba lagi atau buka detail kasus.');
       setSubmitting(false);
     }
   };
@@ -330,14 +436,15 @@ export function CreateCaseWizard({
   const selectedAssetName = assets.find(a => a.id === assetId)?.name;
 
   return (
-    <div className="max-w-xl mx-auto space-y-4 pb-24">
+    <div className="max-w-xl mx-auto space-y-4 pb-28">
       {/* ── Top Step Header & Progress Bar ──────────────────────────────── */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <button
             type="button"
+            disabled={submitting}
             onClick={handleBack}
-            className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900 active:scale-95 transition-all p-1"
+            className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all p-1"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>{step === 1 ? 'Batal' : 'Kembali'}</span>
@@ -366,6 +473,38 @@ export function CreateCaseWizard({
         <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start gap-2 animate-in fade-in">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Partial Success (Evidence retry banner) */}
+      {partialEvidenceError && createdCaseId && (
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs space-y-2.5 animate-in fade-in">
+          <div className="flex items-start gap-2 text-amber-800 font-semibold">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>{partialEvidenceError}</span>
+          </div>
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={handleRetryEvidence}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-xs hover:bg-amber-700 active:scale-95 disabled:opacity-50 transition-all"
+            >
+              <RotateCw className={cn('w-3.5 h-3.5', submitting && 'animate-spin')} />
+              <span>Coba Unggah Ulang</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                clearDraft();
+                router.push(`/cases/${createdCaseId}`);
+              }}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-100 transition-all"
+            >
+              <span>Lanjut ke Kasus</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -737,8 +876,9 @@ export function CreateCaseWizard({
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
+                disabled={submitting || isAnyPhotoProcessing}
                 onClick={() => cameraInputRef.current?.click()}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200/80 active:scale-95 transition-all"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200/80 active:scale-95 disabled:opacity-50 transition-all touch-target"
               >
                 <Camera className="w-4 h-4" />
                 <span>Buka Kamera</span>
@@ -746,32 +886,61 @@ export function CreateCaseWizard({
 
               <button
                 type="button"
+                disabled={submitting || isAnyPhotoProcessing}
                 onClick={() => galleryInputRef.current?.click()}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 active:scale-95 transition-all"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 active:scale-95 disabled:opacity-50 transition-all touch-target"
               >
                 <ImageIcon className="w-4 h-4" />
                 <span>Pilih Galeri</span>
               </button>
             </div>
 
-            {/* Photos Preview Grid */}
+            {/* Photos Preview Grid with Status Overlays */}
             {photos.length > 0 && (
               <div className="grid grid-cols-3 gap-2.5 pt-2">
                 {photos.map((p) => (
-                  <div key={p.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 shadow-2xs group">
+                  <div key={p.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-2xs group">
                     <img
                       src={p.previewUrl}
                       alt="Preview bukti"
                       className="w-full h-full object-cover"
                     />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(p.id)}
-                      className="absolute top-1.5 right-1.5 p-1 rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors"
-                      title="Hapus foto"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
+
+                    {/* Processing Overlay */}
+                    {p.status === 'processing' && (
+                      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[1px] flex flex-col items-center justify-center p-2 text-center text-white">
+                        <Loader2 className="w-4 h-4 animate-spin mb-1 text-blue-400" />
+                        <span className="text-[9.5px] font-bold leading-tight">Menyiapkan...</span>
+                      </div>
+                    )}
+
+                    {/* Ready Badge */}
+                    {p.status === 'ready' && (
+                      <div className="absolute bottom-1 left-1 bg-slate-900/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                        <span>{formatFileSize(p.compressedSize)}</span>
+                      </div>
+                    )}
+
+                    {/* Error Overlay */}
+                    {p.status === 'error' && (
+                      <div className="absolute inset-0 bg-rose-900/80 flex flex-col items-center justify-center p-1.5 text-center text-white">
+                        <AlertCircle className="w-4 h-4 text-rose-300 mb-0.5" />
+                        <span className="text-[9px] font-bold">Gagal</span>
+                      </div>
+                    )}
+
+                    {/* Remove button */}
+                    {!submitting && p.status !== 'processing' && (
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(p.id)}
+                        className="absolute top-1.5 right-1.5 p-1 rounded-full bg-slate-900/75 text-white hover:bg-rose-600 transition-colors"
+                        title="Hapus foto"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -841,6 +1010,7 @@ export function CreateCaseWizard({
           {step < 4 ? (
             <button
               type="button"
+              disabled={submitting}
               onClick={handleNext}
               className="flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all touch-target"
             >
@@ -850,14 +1020,19 @@ export function CreateCaseWizard({
           ) : (
             <button
               type="button"
-              disabled={submitting}
+              disabled={submitting || isAnyPhotoProcessing}
               onClick={handleSubmit}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-blue-500/30 active:scale-[0.98] disabled:opacity-60 transition-all touch-target"
             >
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Mengirim Laporan Kasus...</span>
+                  <span>{submitStatusText}</span>
+                </>
+              ) : isAnyPhotoProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Menyiapkan Foto...</span>
                 </>
               ) : (
                 <>
