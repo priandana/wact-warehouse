@@ -1,6 +1,5 @@
 // proxy.ts (root)
 // Next.js Proxy — runs on every matching request.
-// (Previously named middleware.ts — renamed in Next.js 16)
 
 import { type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
@@ -13,11 +12,10 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico (favicon)
-     * - public folder files (*.png, *.svg, etc.)
+     * - _next/static, _next/image
+     * - favicon.ico, manifest.webmanifest, manifest.json
+     * - static public files (*.svg, *.png, *.jpg, *.jpeg, *.gif, *.webp, *.ico, *.json, *.webmanifest)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|manifest\\.webmanifest|manifest\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest|json)$).*)',
   ],
 };

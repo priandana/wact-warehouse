@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     default: 'WACT — Warehouse Action & Case Tracker',
   },
   description: 'Internal warehouse monitoring, QC, and case management system',
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

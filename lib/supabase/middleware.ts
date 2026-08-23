@@ -9,6 +9,21 @@ import type { Database } from './database.types';
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  const { pathname } = request.nextUrl;
+
+  // Bypass session check for static, public, and PWA assets
+  const isStaticOrPublic =
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/manifest.json' ||
+    pathname === '/favicon.ico' ||
+    /\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest|json)$/i.test(pathname);
+
+  if (isStaticOrPublic) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,11 +50,9 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
   // Protected routes: redirect to login if not authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/forgot-password');
-  const isProtectedRoute = !isAuthRoute && !pathname.startsWith('/_next') && !pathname.startsWith('/api');
+  const isProtectedRoute = !isAuthRoute;
 
   if (isProtectedRoute && !user) {
     const loginUrl = request.nextUrl.clone();
