@@ -29,6 +29,9 @@ import {
   UserCheck,
   Send,
   Sparkles,
+  Tag,
+  Calendar,
+  ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -51,6 +54,7 @@ interface CaseWorkflowActionPanelProps {
   warehouseId: string;
   status: string;
   priority: string;
+  dueDate?: string | null;
   hasOperationalImpact: boolean;
   requiresMaintenance: boolean;
   currentUserId: string;
@@ -69,6 +73,7 @@ export function CaseWorkflowActionPanel({
   warehouseId,
   status,
   priority,
+  dueDate,
   hasOperationalImpact,
   requiresMaintenance,
   currentUserId,
@@ -95,9 +100,12 @@ export function CaseWorkflowActionPanel({
   const canRequestVerification = isAssignee || isAdmin || isCoordinator;
   const canVerify = (isQC || isCoordinator || isAdmin) && !isAssignee;
   const canReopen = isAdmin || isCoordinator;
+  const canChangePriority = isAdmin || isCoordinator;
+  const canOverrideDueDate = isAdmin || isCoordinator;
+  const canForceClose = isAdmin;
 
   const [activeModal, setActiveModal] = useState<
-    'assign' | 'progress' | 'evidence' | 'verify' | 'reject' | 'reopen' | 'comment' | null
+    'assign' | 'progress' | 'evidence' | 'verify' | 'reject' | 'reopen' | 'comment' | 'priority' | 'due_date' | 'force_close' | null
   >(null);
 
   const [loading, setLoading] = useState(false);
@@ -106,6 +114,10 @@ export function CaseWorkflowActionPanel({
 
   // Form states
   const [selectedAssigneeId, setSelectedAssigneeId] = useState(currentAssigneeId || '');
+  const [selectedPriority, setSelectedPriority] = useState(priority || 'medium');
+  const [newDueDate, setNewDueDate] = useState('');
+  const [dueDateReason, setDueDateReason] = useState('');
+  const [forceCloseReason, setForceCloseReason] = useState('');
   const [correctiveAction, setCorrectiveAction] = useState('');
   const [preventiveAction, setPreventiveAction] = useState('');
   const [selectedRootCauseId, setSelectedRootCauseId] = useState('');
@@ -365,7 +377,95 @@ export function CaseWorkflowActionPanel({
     }
   };
 
-  // ── 8. Add Comment Handler ──────────────────────────────────────────────
+  // ── 8. Change Priority Handler ───────────────────────────────────────────
+  const handleChangePriority = async () => {
+    setLoading(true);
+    setErrorMessage(null);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabase = createClient() as any;
+      const { error } = await supabase.rpc('change_case_priority', {
+        p_case_id: caseId,
+        p_priority: selectedPriority,
+      });
+
+      if (error) throw new Error(error.message);
+
+      setSuccessMessage('Prioritas kasus berhasil diubah!');
+      setTimeout(() => {
+        closeModal();
+        router.refresh();
+      }, 500);
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Gagal mengubah prioritas');
+      setLoading(false);
+    }
+  };
+
+  // ── 9. Override Due Date Handler ─────────────────────────────────────────
+  const handleOverrideDueDate = async () => {
+    if (!newDueDate) {
+      setErrorMessage('Batas waktu baru wajib dipilih.');
+      return;
+    }
+    if (!dueDateReason.trim()) {
+      setErrorMessage('Alasan perubahan batas waktu wajib diisi.');
+      return;
+    }
+    setLoading(true);
+    setErrorMessage(null);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabase = createClient() as any;
+      const { error } = await supabase.rpc('override_case_due_date', {
+        p_case_id: caseId,
+        p_new_due_date: new Date(newDueDate).toISOString(),
+        p_reason: dueDateReason.trim(),
+      });
+
+      if (error) throw new Error(error.message);
+
+      setSuccessMessage('Batas waktu (Due Date) berhasil diperbarui!');
+      setTimeout(() => {
+        closeModal();
+        router.refresh();
+      }, 500);
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Gagal mengubah batas waktu');
+      setLoading(false);
+    }
+  };
+
+  // ── 10. Force Close Handler (Admin Only) ─────────────────────────────────
+  const handleForceClose = async () => {
+    if (!forceCloseReason.trim()) {
+      setErrorMessage('Alasan penutupan paksa wajib diisi.');
+      return;
+    }
+    setLoading(true);
+    setErrorMessage(null);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabase = createClient() as any;
+      const { error } = await supabase.rpc('force_close_case', {
+        p_case_id: caseId,
+        p_reason: forceCloseReason.trim(),
+      });
+
+      if (error) throw new Error(error.message);
+
+      setSuccessMessage('Kasus berhasil ditutup paksa oleh Admin!');
+      setTimeout(() => {
+        closeModal();
+        router.refresh();
+      }, 600);
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Gagal menutup paksa kasus');
+      setLoading(false);
+    }
+  };
+
+  // ── 11. Add Comment Handler ─────────────────────────────────────────────
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentContent.trim()) return;
@@ -406,7 +506,7 @@ export function CaseWorkflowActionPanel({
           </span>
         </div>
 
-        {/* Dynamic Action Buttons based on Status */}
+        {/* Dynamic Action Buttons based on Status & Capabilities */}
         <div className="flex flex-wrap gap-2 pt-1">
           {/* Action 1: Assign PIC (only for Admin / Coordinator) */}
           {status !== 'closed' && canAssign && (
@@ -417,6 +517,48 @@ export function CaseWorkflowActionPanel({
             >
               <UserPlus className="w-4 h-4" />
               <span>{currentAssigneeName ? 'Ganti PIC' : 'Tugaskan PIC'}</span>
+            </button>
+          )}
+
+          {/* Action: Change Priority */}
+          {status !== 'closed' && canChangePriority && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPriority(priority);
+                setActiveModal('priority');
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200/80 active:scale-95 transition-all"
+            >
+              <Tag className="w-4 h-4" />
+              <span>Ubah Prioritas</span>
+            </button>
+          )}
+
+          {/* Action: Override Due Date */}
+          {status !== 'closed' && canOverrideDueDate && (
+            <button
+              type="button"
+              onClick={() => {
+                setNewDueDate(dueDate ? new Date(dueDate).toISOString().slice(0, 16) : '');
+                setActiveModal('due_date');
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs border border-purple-200/80 active:scale-95 transition-all"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Ubah Batas Waktu</span>
+            </button>
+          )}
+
+          {/* Action: Force Close (Admin / Super Admin only) */}
+          {status !== 'closed' && canForceClose && (
+            <button
+              type="button"
+              onClick={() => setActiveModal('force_close')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-95 transition-all"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span>Tutup Paksa (Admin)</span>
             </button>
           )}
 
@@ -1018,6 +1160,204 @@ export function CaseWorkflowActionPanel({
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
                 <span>Buka Kembali</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 7: CHANGE PRIORITY                                            */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {activeModal === 'priority' && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-sm font-extrabold text-slate-900">Ubah Prioritas Kasus</h3>
+              </div>
+              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+
+            {errorMessage && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Tingkat Prioritas Kasus
+              </label>
+              <select
+                value={selectedPriority}
+                onChange={(e) => setSelectedPriority(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              >
+                <option value="low">Rendah (Low) — SLA 72 Jam</option>
+                <option value="medium">Sedang (Medium) — SLA 24 Jam</option>
+                <option value="high">Tinggi (High) — SLA 8 Jam</option>
+                <option value="critical">Kritis (Critical) — SLA 2 Jam</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleChangePriority}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tag className="w-4 h-4" />}
+                <span>Simpan Prioritas</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 8: OVERRIDE DUE DATE                                          */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {activeModal === 'due_date' && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-purple-600" />
+                <h3 className="text-sm font-extrabold text-slate-900">Ubah Batas Waktu SLA Kasus</h3>
+              </div>
+              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+
+            {errorMessage && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Batas Waktu Baru (Due Date) <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="datetime-local"
+                value={newDueDate}
+                onChange={(e) => setNewDueDate(e.target.value)}
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Alasan Perubahan Batas Waktu <span className="text-rose-500">*</span>
+              </label>
+              <textarea
+                rows={2}
+                value={dueDateReason}
+                onChange={(e) => setDueDateReason(e.target.value)}
+                placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleOverrideDueDate}
+                disabled={loading || !newDueDate || !dueDateReason.trim()}
+                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
+                <span>Perbarui Batas Waktu</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 9: FORCE CLOSE (ADMIN ONLY)                                    */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {activeModal === 'force_close' && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4 text-rose-600" />
+                <h3 className="text-sm font-extrabold text-slate-900">Tutup Paksa Kasus (Admin Only)</h3>
+              </div>
+              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+
+            {errorMessage && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
+              ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                Alasan Penutupan Paksa <span className="text-rose-500">*</span>
+              </label>
+              <textarea
+                rows={3}
+                value={forceCloseReason}
+                onChange={(e) => setForceCloseReason(e.target.value)}
+                placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={loading}
+                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleForceClose}
+                disabled={loading || !forceCloseReason.trim()}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
+              >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
+                <span>Tutup Paksa Sekarang</span>
               </button>
             </div>
           </div>

@@ -401,13 +401,14 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </div>
       </div>
 
-      {/* ── 2. Workflow Action Panel (Assign, Update, Evidence, Verify, Reopen) */}
+      {/* ── 2. Workflow Action Panel (Assign, Priority, DueDate, ForceClose, Verify, Reopen) */}
       <CaseWorkflowActionPanel
         caseId={item.id}
         caseNumber={item.case_number}
         warehouseId={item.warehouse_id}
         status={item.status}
         priority={item.priority}
+        dueDate={item.due_date}
         hasOperationalImpact={item.has_operational_impact}
         requiresMaintenance={item.requires_maintenance}
         currentUserId={user.id}
