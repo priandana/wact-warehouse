@@ -1,5 +1,5 @@
 // app/(app)/layout.tsx
-// Protected app layout — fetches session, warehouse access, wraps in AppShell.
+// Protected app layout — fetches session, profile, and warehouse access with strict error discrimination.
 
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@/lib/supabase/server';
@@ -8,30 +8,58 @@ import { AppShellProvider } from '@/components/shared/layout/AppShellProvider';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  // 1. Unauthenticated or session expired
+  if (!user || authError) {
     redirect('/login');
   }
 
-  // Fetch profile + warehouse access
-  const [{ data: profileData }, warehouseAccess] = await Promise.all([
-    supabase.from('profiles').select('full_name, is_active').eq('id', user.id).single(),
-    getUserWarehouseAccess(user.id),
-  ]);
+  // 2. Fetch profile with explicit error checking
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, full_name, is_active, is_super_admin')
+    .eq('id', user.id)
+    .maybeSingle();
 
-  const profile = profileData as { full_name: string; is_active: boolean } | null;
+  // Condition: PROFILE_QUERY_FAILED
+  if (profileError) {
+    console.error(`[AppLayout] PROFILE_QUERY_FAILED: User ${user.id} query returned error: ${profileError.message} (code: ${profileError.code})`);
+    // Do NOT sign out or mask as account_inactive. Allow fallback or redirect with explicit code.
+  }
 
-  // Deactivated account
-  if (!profile?.is_active) {
+  // Condition: PROFILE_NOT_FOUND
+  if (!profile && !profileError) {
+    console.warn(`[AppLayout] PROFILE_NOT_FOUND: No profile row found for user ${user.id}`);
+    redirect('/login?error=profile_not_found');
+  }
+
+  // Condition: ACCOUNT_INACTIVE (Only if profile explicitly exists and is_active === false)
+  if (profile && profile.is_active === false) {
+    console.warn(`[AppLayout] ACCOUNT_INACTIVE: Account ${user.id} is deactivated`);
     await supabase.auth.signOut();
     redirect('/login?error=account_inactive');
   }
 
+  // 3. Fetch warehouse access
+  const warehouseAccess = await getUserWarehouseAccess(user.id);
+
+  // Condition: NO_WAREHOUSE_ACCESS (Non-superadmin with zero active warehouses)
+  const isSuperAdmin = profile?.is_super_admin ?? false;
+  if (warehouseAccess.length === 0 && !isSuperAdmin) {
+    console.warn(`[AppLayout] NO_WAREHOUSE_ACCESS: User ${user.id} has 0 active warehouse assignments`);
+    // We can still render AppShell so the user can see their profile / contact admin, or pass empty access
+  }
+
+  // Diagnostics summary (Safe: non-sensitive metadata only)
+  console.log(`[AppLayout] Session verified: user=${user.id}, active=${profile?.is_active ?? 'unknown'}, super_admin=${isSuperAdmin}, warehouses=${warehouseAccess.length}`);
+
+  const displayName = profile?.full_name || user.email || 'Pengguna';
+
   return (
     <AppShellProvider
       warehouseAccess={warehouseAccess}
-      userName={profile?.full_name ?? user.email ?? ''}
+      userName={displayName}
     >
       {children}
     </AppShellProvider>

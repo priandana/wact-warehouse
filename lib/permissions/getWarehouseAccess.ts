@@ -25,19 +25,28 @@ export async function getUserWarehouseAccess(
   const supabase = await createServerClient();
 
   // Check super admin
-  const { data: profile } = await supabase
+  const { data: profile, error: profileErr } = await supabase
     .from('profiles')
     .select('is_super_admin')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
+
+  if (profileErr) {
+    console.error('[getUserWarehouseAccess] Profile error:', profileErr.message);
+  }
 
   if ((profile as ProfileRow | null)?.is_super_admin) {
     // Super admin sees all active warehouses
-    const { data: warehouses } = await supabase
+    const { data: warehouses, error: whErr } = await supabase
       .from('warehouses')
       .select('id, code, name, timezone')
       .eq('is_active', true)
       .order('name');
+
+    if (whErr) {
+      console.error('[getUserWarehouseAccess] Warehouses query error:', whErr.message);
+      return [];
+    }
 
     return ((warehouses ?? []) as WarehouseRow[]).map((w) => ({
       warehouseId: w.id,
@@ -49,7 +58,7 @@ export async function getUserWarehouseAccess(
   }
 
   // Regular users — get from user_warehouses
-  const { data: rows } = await supabase
+  const { data: rows, error: uwErr } = await supabase
     .from('user_warehouses')
     .select(`
       warehouse_id,
@@ -58,6 +67,11 @@ export async function getUserWarehouseAccess(
     `)
     .eq('user_id', userId)
     .eq('is_active', true);
+
+  if (uwErr) {
+    console.error('[getUserWarehouseAccess] User warehouses query error:', uwErr.message);
+    return [];
+  }
 
   if (!rows?.length) return [];
 

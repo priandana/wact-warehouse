@@ -1,7 +1,7 @@
 // lib/supabase/database.types.ts
 // Generated from Live Supabase PostgREST OpenAPI Schema
 // Project: https://geidhxmkglandwjqitqg.supabase.co
-// Generated at: 2026-08-23T02:38:26.463Z
+// Generated at: 2026-08-23T03:20:53.672Z
 
 export type Json =
   | string
@@ -1410,6 +1410,10 @@ export type Database = {
       };
       can_view_case_assignment: {
         Args: { p_case_id: string; p_assignee_id: string; p_assigned_by: string };
+        Returns: boolean;
+      };
+      is_super_admin: {
+        Args: Record<PropertyKey, never>;
         Returns: boolean;
       };
     };
