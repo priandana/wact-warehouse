@@ -19,7 +19,7 @@ export default async function InspectionsPage() {
   const userId = authData.user.id;
 
   // 1. Fetch user's active warehouses & roles
-  const { data: userWarehouses } = await supabase
+  const { data: userWarehouses, error: uwErr } = await supabase
     .from('user_warehouses')
     .select('warehouse_id, roles(name), warehouses(id, code, name)')
     .eq('user_id', userId)
@@ -29,7 +29,7 @@ export default async function InspectionsPage() {
     .from('profiles')
     .select('is_super_admin')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   const isSuperAdmin = profile?.is_super_admin ?? false;
   const isAdmin = userWarehouses?.some((uw: any) => uw.roles?.name === 'admin');
@@ -55,25 +55,38 @@ export default async function InspectionsPage() {
       completed_at,
       created_at,
       inspector:profiles!inspections_inspector_id_fkey(id, full_name, avatar_url),
-      asset:assets(
+      asset:assets!inspections_asset_fk(
         id,
         asset_code,
         name,
-        category:asset_categories(name),
-        area:areas(name),
-        location:locations(name)
+        category:category_id(name),
+        area:area_id(name),
+        location:location_id(name)
       ),
       template:inspection_templates(
         id,
         name,
-        category:asset_categories(name)
+        category:category_id(name)
       ),
       warehouse:warehouses(id, code, name)
     `)
     .order('created_at', { ascending: false });
 
   if (inspErr) {
-    console.error('Error loading inspections:', inspErr.message);
+    console.error('[InspectionsPage] Error loading inspections:', inspErr.message);
+  }
+
+  if (inspErr || uwErr) {
+    return (
+      <div className="page-padding py-8 max-w-6xl mx-auto space-y-4">
+        <div className="p-6 rounded-3xl bg-rose-50 border border-rose-200 text-slate-800 space-y-2">
+          <h2 className="text-base font-extrabold text-rose-700">Gagal Memuat Daftar Inspeksi</h2>
+          <p className="text-xs text-rose-600 font-medium">
+            Terjadi kendala saat mengambil data sesi inspeksi. Silakan muat ulang halaman atau hubungi Administrator.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const formattedInspections: InspectionListItem[] = (inspections || []).map((insp: any) => ({

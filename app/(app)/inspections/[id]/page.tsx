@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .from('inspections')
     .select('inspection_number')
     .eq('id', resolvedParams.id)
-    .single();
+    .maybeSingle();
 
   return {
     title: data ? `Inspeksi ${data.inspection_number} — WACT` : 'Detail Inspeksi QC',
@@ -32,7 +32,7 @@ export default async function InspectionDetailPage({ params }: PageProps) {
     redirect('/login');
   }
 
-  // 1. Fetch inspection details
+  // 1. Fetch inspection details with explicit FK relationship constraints
   const { data: inspection, error: fetchErr } = await supabase
     .from('inspections')
     .select(`
@@ -48,30 +48,45 @@ export default async function InspectionDetailPage({ params }: PageProps) {
       completed_at,
       created_at,
       inspector:profiles!inspections_inspector_id_fkey(id, full_name),
-      asset:assets(
+      asset:assets!inspections_asset_fk(
         id,
         asset_code,
         name,
-        category:asset_categories(name),
-        area:areas(name),
-        location:locations(name)
+        category:category_id(name),
+        area:area_id(name),
+        location:location_id(name)
       ),
       template:inspection_templates(
         id,
         name,
-        category:asset_categories(name)
+        category:category_id(name)
       ),
       warehouse:warehouses(id, code, name)
     `)
     .eq('id', inspectionId)
-    .single();
+    .maybeSingle();
 
-  if (fetchErr || !inspection) {
+  // Distinguish between query failure and non-existent inspection
+  if (fetchErr) {
+    console.error(`[InspectionDetailPage] Error fetching inspection ${inspectionId}:`, fetchErr.message);
+    return (
+      <div className="page-padding py-8 max-w-4xl mx-auto space-y-4">
+        <div className="p-6 rounded-3xl bg-rose-50 border border-rose-200 text-slate-800 space-y-2">
+          <h2 className="text-base font-extrabold text-rose-700">Gagal Memuat Detail Inspeksi</h2>
+          <p className="text-xs text-rose-600 font-medium">
+            Terjadi kendala saat mengambil data sesi inspeksi. Silakan muat ulang halaman atau hubungi Administrator.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!inspection) {
     notFound();
   }
 
   // 2. Fetch template sections and items ordered by sort_order
-  const { data: sectionsData } = await supabase
+  const { data: sectionsData, error: secErr } = await supabase
     .from('inspection_template_sections')
     .select(`
       id,
@@ -89,6 +104,10 @@ export default async function InspectionDetailPage({ params }: PageProps) {
     `)
     .eq('template_id', inspection.template_id || '')
     .order('sort_order', { ascending: true });
+
+  if (secErr) {
+    console.error(`[InspectionDetailPage] Error fetching template sections for template ${inspection.template_id}:`, secErr.message);
+  }
 
   // Sort items within sections
   const formattedSections: ChecklistSection[] = (sectionsData || []).map((sec: any) => ({
