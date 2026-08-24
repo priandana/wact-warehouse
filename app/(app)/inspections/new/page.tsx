@@ -23,73 +23,93 @@ export default async function NewInspectionPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const initialAssetId = resolvedParams.asset_id;
 
-  // 1. Fetch user's active warehouses
-  const { data: userWarehouses } = await supabase
-    .from('user_warehouses')
-    .select('warehouses(id, code, name)')
-    .eq('user_id', authData.user.id)
-    .eq('is_active', true);
+  // 1. Fetch user's active warehouses, active assets, templates, and active drafts concurrently
+  const [userWarehousesRes, assetsRes, templatesRes, draftsRes] = await Promise.all([
+    supabase
+      .from('user_warehouses')
+      .select('warehouses(id, code, name)')
+      .eq('user_id', authData.user.id)
+      .eq('is_active', true),
+    supabase
+      .from('assets')
+      .select(`
+        id,
+        warehouse_id,
+        asset_code,
+        name,
+        category_id,
+        area_id,
+        location_id,
+        status,
+        last_inspection_at,
+        next_inspection_at,
+        category:category_id(id, name),
+        area:area_id(name),
+        location:location_id(name)
+      `)
+      .neq('status', 'retired')
+      .order('asset_code'),
+    supabase
+      .from('inspection_templates')
+      .select(`
+        id,
+        name,
+        category_id,
+        description,
+        inspection_interval_days,
+        is_active,
+        category:category_id(id, name),
+        sections:inspection_template_sections(
+          id,
+          title,
+          items:inspection_template_items(
+            id,
+            label,
+            is_required
+          )
+        )
+      `)
+      .eq('is_active', true)
+      .order('name'),
+    supabase
+      .from('inspections')
+      .select('id, inspection_number, asset_id, started_at')
+      .eq('status', 'draft'),
+  ]);
 
-  const warehouses = (userWarehouses || [])
+  // Explicit error logging & user-friendly fallback (no silent failure hiding schema/embedding errors)
+  if (assetsRes.error) {
+    console.error('[NewInspectionPage] Failed to fetch assets:', assetsRes.error.message);
+  }
+  if (templatesRes.error) {
+    console.error('[NewInspectionPage] Failed to fetch templates:', templatesRes.error.message);
+  }
+  if (userWarehousesRes.error) {
+    console.error('[NewInspectionPage] Failed to fetch warehouses:', userWarehousesRes.error.message);
+  }
+
+  if (assetsRes.error || templatesRes.error || userWarehousesRes.error) {
+    return (
+      <div className="page-padding py-8 max-w-4xl mx-auto space-y-4">
+        <div className="p-6 rounded-3xl bg-rose-50 border border-rose-200 text-slate-800 space-y-2">
+          <h2 className="text-base font-extrabold text-rose-700">Gagal Memuat Data Inspeksi</h2>
+          <p className="text-xs text-rose-600 font-medium">
+            Terjadi kendala saat memuat master aset atau template checklist. Silakan muat ulang halaman atau hubungi Administrator.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const warehouses = (userWarehousesRes.data || [])
     .map((uw: any) => uw.warehouses)
     .filter(Boolean);
 
-  // 2. Fetch active assets
-  const { data: assets } = await supabase
-    .from('assets')
-    .select(`
-      id,
-      warehouse_id,
-      asset_code,
-      name,
-      category_id,
-      area_id,
-      location_id,
-      status,
-      last_inspection_at,
-      next_inspection_at,
-      category:asset_categories(id, name),
-      area:areas(name),
-      location:locations(name)
-    `)
-    .neq('status', 'retired')
-    .order('asset_code');
-
-  // 3. Fetch active inspection templates with sections & items
-  const { data: templates } = await supabase
-    .from('inspection_templates')
-    .select(`
-      id,
-      name,
-      category_id,
-      description,
-      inspection_interval_days,
-      is_active,
-      category:asset_categories(id, name),
-      sections:inspection_template_sections(
-        id,
-        title,
-        items:inspection_template_items(
-          id,
-          label,
-          is_required
-        )
-      )
-    `)
-    .eq('is_active', true)
-    .order('name');
-
-  // 4. Fetch existing active drafts to prevent collision and offer resume option
-  const { data: activeDrafts } = await supabase
-    .from('inspections')
-    .select('id, inspection_number, asset_id, started_at')
-    .eq('status', 'draft');
-
   return (
     <StartInspectionWizard
-      assets={(assets || []) as any}
-      templates={(templates || []) as any}
-      activeDrafts={(activeDrafts || []) as any}
+      assets={(assetsRes.data || []) as any}
+      templates={(templatesRes.data || []) as any}
+      activeDrafts={(draftsRes.data || []) as any}
       initialAssetId={initialAssetId}
       warehouses={warehouses}
     />

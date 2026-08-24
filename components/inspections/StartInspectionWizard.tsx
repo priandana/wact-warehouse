@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -88,6 +88,22 @@ export function StartInspectionWizard({
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Synchronize when active warehouse hydrates from AppShellProvider
+  useEffect(() => {
+    if (activeWarehouseId && activeWarehouseId !== selectedWarehouseId) {
+      setSelectedWarehouseId(activeWarehouseId);
+      setSelectedAssetId('');
+      setSelectedTemplateId('');
+    }
+  }, [activeWarehouseId]);
+
+  const handleWarehouseChange = (newWarehouseId: string) => {
+    setSelectedWarehouseId(newWarehouseId);
+    setSelectedAssetId('');
+    setSelectedTemplateId('');
+    setServerError(null);
+  };
 
   // Filter assets by selected warehouse
   const warehouseAssets = useMemo(() => {
@@ -243,10 +259,7 @@ export function StartInspectionWizard({
           <Select
             label="Gudang Operasional"
             value={selectedWarehouseId}
-            onChange={(val) => {
-              setSelectedWarehouseId(val);
-              setSelectedAssetId('');
-            }}
+            onChange={handleWarehouseChange}
             options={warehouses.map((w) => ({
               value: w.id,
               label: `${w.code} - ${w.name}`,
