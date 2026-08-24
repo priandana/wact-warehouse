@@ -4,6 +4,7 @@
 
 import { ChevronDown, Check, Building2 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider';
 
@@ -12,6 +13,7 @@ interface WarehouseSelectorProps {
 }
 
 export function WarehouseSelector({ className }: WarehouseSelectorProps) {
+  const router = useRouter();
   const { activeWarehouse, availableWarehouses, switchWarehouse } = useActiveWarehouse();
   const [open, setOpen] = useState(false);
 
@@ -64,6 +66,7 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                     onClick={() => {
                       switchWarehouse(wh.warehouseId);
                       setOpen(false);
+                      router.refresh();
                     }}
                     className={cn(
                       'w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors',
