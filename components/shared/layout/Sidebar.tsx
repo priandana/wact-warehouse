@@ -94,17 +94,17 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
   };
 
   return (
-    <aside className="w-[240px] h-screen sticky top-0 bg-white border-r border-slate-200/60 flex flex-col justify-between shrink-0 z-30 select-none">
+    <aside className="w-[240px] h-screen sticky top-0 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 z-30 select-none">
       <div>
         {/* Brand Header */}
         <div className="px-5 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20">
               <Package className="w-4 h-4" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-slate-900">WACT</span>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700">PRO</span>
+              <span className="font-black text-base tracking-tight text-slate-900">WACT</span>
+              <span className="text-[9.5px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100/80">PRO</span>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
         <div className="px-3.5 pb-2">
           <Link
             href="/cases/new"
-            className="flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all"
+            className="flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Laporkan Kasus</span>
@@ -121,7 +121,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
         </div>
 
         {/* Navigation Items */}
-        <nav className="px-2.5 py-2 space-y-3.5 max-h-[calc(100vh-220px)] overflow-y-auto no-scrollbar">
+        <nav className="px-2.5 py-2 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto no-scrollbar">
           {navGroups.map((group, gi) => {
             const isAdminOrCoord = userRole === 'admin' || userRole === 'coordinator';
             const visibleItems = group.items.filter((item) => {
@@ -136,7 +136,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
             return (
               <div key={gi} className="space-y-0.5">
                 {group.label && (
-                  <p className="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
                     {group.label}
                   </p>
                 )}
@@ -157,7 +157,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
                       className={cn(
                         'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-[0.97]',
                         isActive
-                          ? 'bg-blue-50/90 text-blue-700 font-bold shadow-2xs'
+                          ? 'bg-blue-50/80 text-blue-700 font-bold border border-blue-100/70 shadow-2xs'
                           : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
                       )}
                     >
@@ -181,9 +181,9 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
 
       {/* User Footer Profile */}
       <div className="p-3 border-t border-slate-100">
-        <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-200/60">
+        <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-[11px] flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-xl bg-slate-800 text-white font-bold text-[11px] flex items-center justify-center shrink-0 shadow-2xs">
               {getInitials(userName)}
             </div>
             <div className="min-w-0">
@@ -205,7 +205,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
           </div>
           <button
             onClick={handleSignOut}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
             title="Keluar"
             aria-label="Keluar"
           >

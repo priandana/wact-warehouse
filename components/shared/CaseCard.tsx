@@ -43,8 +43,8 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
 
     if (item.status === 'closed') {
       return (
-        <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50/80 px-2 py-0.5 rounded-full border border-emerald-100/80">
-          <Clock className="w-3 h-3" />
+        <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+          <Clock className="w-3 h-3 text-emerald-600" />
           Selesai
         </span>
       );
@@ -53,15 +53,15 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
     if (isOverdue) {
       const hoursLate = Math.abs(differenceInHours(new Date(), dueDate));
       return (
-        <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/80 animate-pulse">
-          <AlertCircle className="w-3 h-3 text-rose-600" />
+        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/80">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
           Lewat SLA {hoursLate > 0 ? `${hoursLate}j` : '<1j'}
         </span>
       );
     }
 
     return (
-      <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1 bg-slate-100/70 px-2 py-0.5 rounded-full">
+      <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1 bg-slate-100/80 px-2.5 py-0.5 rounded-full">
         <Clock className="w-3 h-3 text-slate-400" />
         Sisa {formatDistanceToNow(dueDate, { locale: localeId })}
       </span>
@@ -74,20 +74,21 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
     <Link
       href={`/cases/${item.id}`}
       className={cn(
-        'group block w-full p-4 rounded-2xl bg-white border border-slate-200/70 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_22px_-4px_rgba(15,23,42,0.07)] hover:border-blue-200 active:scale-[0.99] transition-all duration-150',
-        isOverdue && 'border-rose-200/90 bg-rose-50/15',
+        'group block w-full p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-300 active:scale-[0.99] transition-all duration-150',
+        isOverdue && 'border-rose-200 bg-rose-50/20 hover:border-rose-300',
         className,
       )}
     >
       {/* Top Header: Case Number & Priority */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-extrabold font-mono text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-lg border border-blue-100/80">
+          <span className="text-[11px] font-extrabold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
             {item.case_number}
           </span>
           {item.requires_maintenance && (
-            <span className="p-1 rounded-md bg-amber-50 text-amber-700" title="Maintenance Diperlukan">
-              <Wrench className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 text-[10px] font-bold border border-amber-200/60" title="Maintenance Diperlukan">
+              <Wrench className="w-3 h-3 text-amber-600" />
+              <span>Maint</span>
             </span>
           )}
         </div>
@@ -103,13 +104,13 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
       {(locationText || item.assets) && (
         <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 mb-3 font-medium">
           {locationText && (
-            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[11.5px] text-slate-600">
+            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] text-slate-600 border border-slate-200/50">
               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
               <span>{locationText}</span>
             </span>
           )}
           {item.assets && (
-            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[10.5px] text-slate-500 font-mono">
+            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[10.5px] text-slate-600 font-mono border border-slate-200/50">
               {item.assets.asset_code}
             </span>
           )}
@@ -125,12 +126,12 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
 
         <div className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
           {showAssignee && (
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600">
-              <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] font-bold text-slate-700">
+            <div className="flex items-center gap-1 text-[11px] font-medium text-slate-600">
+              <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9.5px] font-bold text-slate-700">
                 {item.assignee?.full_name ? item.assignee.full_name[0].toUpperCase() : '?'}
               </div>
-              <span className="truncate max-w-[75px] hidden sm:inline">
-                {item.assignee?.full_name ? item.assignee.full_name.split(' ')[0] : 'Unassigned'}
+              <span className="truncate max-w-[80px] hidden sm:inline">
+                {item.assignee?.full_name ? item.assignee.full_name.split(' ')[0] : 'Belum di-assign'}
               </span>
             </div>
           )}

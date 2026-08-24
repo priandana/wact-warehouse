@@ -48,12 +48,12 @@ export function BottomNav() {
               <div key={item.href} className="relative flex flex-col items-center justify-center -mt-6">
                 <Link
                   href={item.href}
-                  className="group flex items-center justify-center w-[54px] h-[54px] rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-[0_10px_25px_-3px_rgba(37,99,235,0.45)] hover:shadow-[0_14px_30px_-3px_rgba(37,99,235,0.55)] active:scale-95 transition-all duration-200"
+                  className="group flex items-center justify-center w-[50px] h-[50px] rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 active:scale-95 transition-all duration-200"
                   aria-label="Buat case baru"
                 >
-                  <Plus className="w-7 h-7 text-white stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
+                  <Plus className="w-5 h-5 text-white stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
                 </Link>
-                <span className="text-[10px] font-semibold text-slate-600 mt-1">
+                <span className="text-[10px] font-bold text-slate-600 mt-1">
                   {item.label}
                 </span>
               </div>
@@ -72,20 +72,20 @@ export function BottomNav() {
                 }
               }}
               className={cn(
-                'flex flex-col items-center justify-center w-14 h-14 rounded-2xl gap-1 tap-active touch-target transition-all active:scale-95',
+                'flex flex-col items-center justify-center w-14 h-13 rounded-2xl gap-1 tap-active touch-target transition-all active:scale-95',
                 isActive
-                  ? 'text-blue-600 font-semibold'
+                  ? 'text-blue-600 font-bold'
                   : 'text-slate-500 hover:text-slate-800 font-medium',
               )}
               aria-current={isActive ? 'page' : undefined}
             >
               <div className={cn(
-                'p-1 rounded-xl transition-colors',
-                isActive ? 'bg-blue-50 text-blue-600' : 'text-slate-400'
+                'p-1.5 rounded-xl transition-colors',
+                isActive ? 'bg-blue-50/90 text-blue-600' : 'text-slate-400'
               )}>
-                <Icon className={cn('w-5 h-5 transition-transform', isActive && 'scale-110')} />
+                <Icon className={cn('w-4 h-4 transition-transform', isActive && 'scale-110')} />
               </div>
-              <span className="text-[10.5px] leading-none tracking-tight">{item.label}</span>
+              <span className="text-[10px] leading-none tracking-tight">{item.label}</span>
             </Link>
           );
         })}
