@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
-import { MapPin, Clock, ChevronRight, AlertCircle, Wrench } from 'lucide-react';
+import { MapPin, Clock, ChevronRight, CheckCircle2, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { formatDistanceToNow, isPast, differenceInHours } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
@@ -35,17 +35,18 @@ interface CaseCardProps {
 }
 
 export function CaseCard({ item, className, showAssignee = true }: CaseCardProps) {
-  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && item.status !== 'closed';
+  const isClosed = item.status === 'closed';
+  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
 
   const getSlaDisplay = () => {
     if (!item.due_date) return null;
     const dueDate = new Date(item.due_date);
 
-    if (item.status === 'closed') {
+    if (isClosed) {
       return (
-        <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
-          <Clock className="w-3 h-3 text-emerald-600" />
-          Selesai
+        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2.5 py-0.5 rounded-full border border-emerald-200/70 select-none shadow-2xs">
+          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+          <span>Selesai</span>
         </span>
       );
     }
@@ -53,17 +54,27 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
     if (isOverdue) {
       const hoursLate = Math.abs(differenceInHours(new Date(), dueDate));
       return (
-        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/80">
+        <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2.5 py-0.5 rounded-full border border-rose-200/90 shadow-2xs select-none">
           <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-          Lewat SLA {hoursLate > 0 ? `${hoursLate}j` : '<1j'}
+          <span>Lewat SLA {hoursLate > 0 ? `${hoursLate}j` : '<1j'}</span>
+        </span>
+      );
+    }
+
+    const hoursLeft = differenceInHours(dueDate, new Date());
+    if (hoursLeft <= 4 && hoursLeft >= 0) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-full border border-amber-200/80 shadow-2xs select-none">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+          <span>Sisa {formatDistanceToNow(dueDate, { locale: localeId })}</span>
         </span>
       );
     }
 
     return (
-      <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1 bg-slate-100/80 px-2.5 py-0.5 rounded-full">
+      <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2.5 py-0.5 rounded-full border border-slate-200/70 select-none shadow-2xs">
         <Clock className="w-3 h-3 text-slate-400" />
-        Sisa {formatDistanceToNow(dueDate, { locale: localeId })}
+        <span>Sisa {formatDistanceToNow(dueDate, { locale: localeId })}</span>
       </span>
     );
   };
@@ -74,19 +85,19 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
     <Link
       href={`/cases/${item.id}`}
       className={cn(
-        'group block w-full p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-300 active:scale-[0.99] transition-all duration-150',
-        isOverdue && 'border-rose-200 bg-rose-50/20 hover:border-rose-300',
+        'group block w-full p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-blue-300 active:scale-[0.99] transition-all duration-150',
+        isOverdue && 'border-rose-200/90 bg-rose-50/20 hover:border-rose-300',
         className,
       )}
     >
       {/* Top Header: Case Number & Priority */}
       <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-extrabold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] font-extrabold font-mono text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-100/80 shadow-2xs">
             {item.case_number}
           </span>
           {item.requires_maintenance && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 text-[10px] font-bold border border-amber-200/60" title="Maintenance Diperlukan">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50/90 text-amber-800 text-[10px] font-bold border border-amber-200/70 shadow-2xs" title="Maintenance Diperlukan">
               <Wrench className="w-3 h-3 text-amber-600" />
               <span>Maint</span>
             </span>
@@ -101,25 +112,28 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
       </h3>
 
       {/* Location & Asset Metadata Tag */}
-      {(locationText || item.assets) && (
-        <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 mb-3 font-medium">
-          {locationText && (
-            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] text-slate-600 border border-slate-200/50">
-              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-              <span>{locationText}</span>
-            </span>
-          )}
-          {item.assets && (
-            <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md text-[10.5px] text-slate-600 font-mono border border-slate-200/50">
-              {item.assets.asset_code}
-            </span>
-          )}
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 mb-3 font-medium">
+        {locationText ? (
+          <span className="inline-flex items-center gap-1 bg-slate-50/90 px-2 py-0.5 rounded-md text-[11px] text-slate-600 border border-slate-200/60 shadow-2xs">
+            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+            <span className="truncate max-w-[200px]">{locationText}</span>
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 bg-slate-50/60 px-2 py-0.5 rounded-md text-[10.5px] text-slate-400 italic border border-slate-200/40">
+            <MapPin className="w-3 h-3 text-slate-300 shrink-0" />
+            <span>Lokasi belum ditentukan</span>
+          </span>
+        )}
+        {item.assets && (
+          <span className="inline-flex items-center gap-1 bg-slate-50/90 px-2 py-0.5 rounded-md text-[10.5px] text-slate-600 font-mono border border-slate-200/60 shadow-2xs">
+            {item.assets.asset_code}
+          </span>
+        )}
+      </div>
 
       {/* Bottom Footer: Status Badge, SLA countdown, and Assignee */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <StatusBadge status={item.status} size="sm" />
           {getSlaDisplay()}
         </div>

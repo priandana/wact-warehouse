@@ -14,45 +14,45 @@ export type CaseStatus =
 const config: Record<CaseStatus, { label: string; bg: string; text: string; dot: string; border: string }> = {
   open: {
     label: 'Open',
-    bg: 'bg-blue-50',
+    bg: 'bg-blue-50/90',
     text: 'text-blue-700',
     dot: 'bg-blue-500',
-    border: 'border-blue-200/80',
+    border: 'border-blue-200/70',
   },
   on_progress: {
     label: 'On Progress',
-    bg: 'bg-purple-50',
+    bg: 'bg-purple-50/90',
     text: 'text-purple-700',
     dot: 'bg-purple-500 animate-pulse',
-    border: 'border-purple-200/80',
+    border: 'border-purple-200/70',
   },
   waiting_repair: {
     label: 'Menunggu Perbaikan',
-    bg: 'bg-amber-50',
+    bg: 'bg-amber-50/90',
     text: 'text-amber-800',
     dot: 'bg-amber-500',
-    border: 'border-amber-200/80',
+    border: 'border-amber-200/70',
   },
   waiting_verification: {
     label: 'Verifikasi QC',
-    bg: 'bg-orange-50',
+    bg: 'bg-orange-50/90',
     text: 'text-orange-800',
     dot: 'bg-orange-500',
-    border: 'border-orange-200/80',
+    border: 'border-orange-200/70',
   },
   closed: {
-    label: 'Selesai / Closed',
-    bg: 'bg-emerald-50',
+    label: 'Selesai (Closed)',
+    bg: 'bg-emerald-50/90',
     text: 'text-emerald-800',
     dot: 'bg-emerald-500',
-    border: 'border-emerald-200/80',
+    border: 'border-emerald-200/70',
   },
   reopened: {
     label: 'Reopened',
-    bg: 'bg-rose-50',
+    bg: 'bg-rose-50/90',
     text: 'text-rose-700',
     dot: 'bg-rose-500',
-    border: 'border-rose-200/80',
+    border: 'border-rose-200/70',
   },
 };
 
@@ -74,7 +74,7 @@ export function StatusBadge({ status, size = 'md', showDot = true }: StatusBadge
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-bold tracking-tight rounded-full border shadow-sm select-none',
+        'inline-flex items-center gap-1.5 font-bold tracking-tight rounded-full border shadow-2xs select-none',
         conf.bg,
         conf.text,
         conf.border,

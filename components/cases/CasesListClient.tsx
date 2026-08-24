@@ -1,6 +1,6 @@
 'use client';
 // components/cases/CasesListClient.tsx
-// Interactive Cases List Component with Mobile Cards & Desktop Table Hybrid
+// Interactive Case Command Center Component with 4 KPI Cards, Mobile Cards & Desktop Hybrid Table
 
 import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -22,9 +22,11 @@ import {
   AlertCircle,
   SlidersHorizontal,
   FolderOpen,
+  Wrench,
+  CheckCircle2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { formatDistanceToNow, isPast } from 'date-fns';
+import { formatDistanceToNow, isPast, differenceInHours } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 
 interface CasesListClientProps {
@@ -32,15 +34,21 @@ interface CasesListClientProps {
   totalCount: number;
   currentPage: number;
   pageSize: number;
+  kpiStats?: {
+    openCount: number;
+    inProgressCount: number;
+    waitingQcCount: number;
+    overdueCount: number;
+  };
 }
 
 const statusOptions = [
-  { value: 'all', label: 'Semua' },
+  { value: 'all', label: 'Semua Status' },
   { value: 'open', label: 'Open' },
   { value: 'on_progress', label: 'On Progress' },
-  { value: 'waiting_repair', label: 'Waiting Repair' },
-  { value: 'waiting_verification', label: 'Waiting Verify' },
-  { value: 'closed', label: 'Closed' },
+  { value: 'waiting_repair', label: 'Menunggu Perbaikan' },
+  { value: 'waiting_verification', label: 'Verifikasi QC' },
+  { value: 'closed', label: 'Selesai' },
   { value: 'reopened', label: 'Reopened' },
   { value: 'overdue', label: '⚠️ Overdue' },
 ];
@@ -65,6 +73,7 @@ export function CasesListClient({
   totalCount,
   currentPage,
   pageSize,
+  kpiStats,
 }: CasesListClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -113,31 +122,156 @@ export function CasesListClient({
     });
   };
 
-  const hasActiveFilters = currentSearch || currentStatus !== 'all' || currentPriority !== 'all' || currentDate !== 'all';
+  const activeFilterCount =
+    (currentPriority !== 'all' ? 1 : 0) +
+    (currentDate !== 'all' ? 1 : 0);
+
+  const hasActiveFilters = Boolean(currentSearch || currentStatus !== 'all' || currentPriority !== 'all' || currentDate !== 'all');
 
   return (
-    <div className="space-y-4">
-      {/* ── 1. Header with Title & Action ────────────────────────────────── */}
+    <div className="space-y-4 sm:space-y-5">
+      {/* ── 1. Header with Title, Context & Action ────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-            Daftar Kasus Warehouse
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Daftar Kasus Warehouse
+            </h1>
+            <span className="text-xs font-extrabold text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-full border border-blue-200/70 shadow-2xs">
+              {totalCount} Total
+            </span>
+          </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Total {totalCount} kasus tercatat
+            Monitoring perbaikan, eskalasi, dan pemenuhan target SLA operasional
           </p>
         </div>
 
         <Link
           href="/cases/new"
-          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs shadow-blue-600/30 active:scale-95 transition-all self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs shadow-blue-600/20 active:scale-95 transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Laporkan Kasus</span>
         </Link>
       </div>
 
-      {/* ── 2. Search & Pill Filters ─────────────────────────────────────── */}
+      {/* ── 2. Authoritative KPI Metric Overview Cards ─────────────────────── */}
+      {kpiStats && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+          {/* 1. Kasus Open & Reopened */}
+          <button
+            type="button"
+            onClick={() => updateFilters({ status: currentStatus === 'open' ? 'all' : 'open' })}
+            className={cn(
+              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              currentStatus === 'open' || currentStatus === 'reopened'
+                ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-blue-200 hover:shadow-xs'
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
+                <FolderOpen className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-extrabold text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded-full border border-blue-100/80">
+                Open &amp; Reopen
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {kpiStats.openCount}
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+              Kasus aktif butuh penanganan
+            </p>
+          </button>
+
+          {/* 2. Dalam Pengerjaan */}
+          <button
+            type="button"
+            onClick={() => updateFilters({ status: currentStatus === 'on_progress' ? 'all' : 'on_progress' })}
+            className={cn(
+              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              currentStatus === 'on_progress' || currentStatus === 'waiting_repair'
+                ? 'bg-purple-50/70 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-purple-200 hover:shadow-xs'
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-105 transition-transform">
+                <Wrench className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50/80 px-2 py-0.5 rounded-full border border-purple-100/80">
+                On Progress
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {kpiStats.inProgressCount}
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+              Sedang ditangani staf/PIC
+            </p>
+          </button>
+
+          {/* 3. Menunggu QC */}
+          <button
+            type="button"
+            onClick={() => updateFilters({ status: currentStatus === 'waiting_verification' ? 'all' : 'waiting_verification' })}
+            className={cn(
+              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              currentStatus === 'waiting_verification'
+                ? 'bg-orange-50/70 border-orange-300 ring-2 ring-orange-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-orange-200 hover:shadow-xs'
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 group-hover:scale-105 transition-transform">
+                <Clock className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-extrabold text-orange-800 bg-orange-50/80 px-2 py-0.5 rounded-full border border-orange-100/80">
+                QC Verify
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {kpiStats.waitingQcCount}
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+              Verifikasi perbaikan
+            </p>
+          </button>
+
+          {/* 4. Lewat SLA (Overdue) */}
+          <button
+            type="button"
+            onClick={() => updateFilters({ status: currentStatus === 'overdue' ? 'all' : 'overdue' })}
+            className={cn(
+              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              currentStatus === 'overdue'
+                ? 'bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-rose-200 hover:shadow-xs'
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 group-hover:scale-105 transition-transform">
+                <AlertCircle className="w-4 h-4" />
+              </div>
+              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/80">
+                {kpiStats.overdueCount > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                )}
+                Overdue
+              </span>
+            </div>
+            <p className={cn('text-xl sm:text-2xl font-black tracking-tight', kpiStats.overdueCount > 0 ? 'text-rose-600' : 'text-slate-900')}>
+              {kpiStats.overdueCount}
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+              Melebihi batas waktu SLA
+            </p>
+          </button>
+        </div>
+      )}
+
+      {/* ── 3. Search & Filter Bar ────────────────────────────────────────── */}
       <div className="space-y-2.5">
         <form onSubmit={handleSearchSubmit} className="flex gap-2">
           <div className="relative flex-1">
@@ -146,7 +280,7 @@ export function CasesListClient({
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Cari nomor kasus atau judul..."
+              placeholder="Cari nomor kasus (WHC-...), judul kasus, atau aset..."
               className="w-full pl-9 pr-8 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-slate-900 text-xs font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs transition-all"
             />
             {searchInput && (
@@ -167,23 +301,25 @@ export function CasesListClient({
             type="button"
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              'inline-flex items-center gap-1.5 px-3 py-2.5 rounded-2xl border text-xs font-bold shadow-2xs transition-all active:scale-95',
-              showFilters || hasActiveFilters
+              'inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl border text-xs font-bold shadow-2xs transition-all active:scale-95',
+              showFilters || activeFilterCount > 0
                 ? 'bg-blue-50 border-blue-200 text-blue-700'
                 : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
             )}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Filter</span>
-            {hasActiveFilters && (
-              <span className="w-2 h-2 rounded-full bg-blue-600" />
+            {activeFilterCount > 0 && (
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-[10px] font-bold text-white">
+                {activeFilterCount}
+              </span>
             )}
           </button>
         </form>
 
-        {/* Status Horizontal Pill Tabs with subtle right edge fade */}
+        {/* Status Horizontal Pill Tabs with visible scroll affordance */}
         <div className="relative">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 pr-8 scroll-smooth">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 pr-10 scroll-smooth">
             {statusOptions.map((opt) => {
               const isSelected = currentStatus === opt.value;
               return (
@@ -191,10 +327,10 @@ export function CasesListClient({
                   key={opt.value}
                   onClick={() => updateFilters({ status: opt.value })}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none',
+                    'px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none shrink-0',
                     isSelected
                       ? 'bg-slate-900 text-white shadow-2xs'
-                      : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50'
+                      : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   )}
                 >
                   {opt.label}
@@ -202,12 +338,12 @@ export function CasesListClient({
               );
             })}
           </div>
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#F8FAFC] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#F8FAFC] via-[#F8FAFC]/80 to-transparent" />
         </div>
 
         {/* Advanced Filters Drawer */}
         {showFilters && (
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-150">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <span className="text-xs font-bold text-slate-800">Filter Tambahan</span>
               {hasActiveFilters && (
@@ -215,7 +351,7 @@ export function CasesListClient({
                   onClick={clearAllFilters}
                   className="text-[11px] font-bold text-rose-600 hover:underline"
                 >
-                  Reset Filter
+                  Reset Semua Filter
                 </button>
               )}
             </div>
@@ -233,7 +369,7 @@ export function CasesListClient({
 
               {/* Date Select */}
               <Select
-                label="Rentang Tanggal"
+                label="Rentang Tanggal Pelaporan"
                 value={currentDate}
                 onChange={(val) => updateFilters({ date: val })}
                 options={dateOptions}
@@ -245,7 +381,7 @@ export function CasesListClient({
         )}
       </div>
 
-      {/* ── 3. Content Section ───────────────────────────────────────────── */}
+      {/* ── 4. Content Section ───────────────────────────────────────────── */}
       {isPending ? (
         <SkeletonList count={4} />
       ) : initialCases.length === 0 ? (
@@ -254,8 +390,8 @@ export function CasesListClient({
           title="Tidak ada kasus ditemukan"
           description={
             hasActiveFilters
-              ? "Coba ubah filter atau kata kunci pencarian."
-              : "Belum ada kasus yang dilaporkan di gudang ini."
+              ? "Tidak ada kasus yang cocok dengan kriteria pencarian atau filter aktif."
+              : "Belum ada laporan kasus operasional di gudang ini."
           }
           action={
             hasActiveFilters ? (
@@ -268,39 +404,40 @@ export function CasesListClient({
             ) : (
               <Link
                 href="/cases/new"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Laporkan Kasus</span>
+                <span>Laporkan Kasus Baru</span>
               </Link>
             )
           }
         />
       ) : (
         <>
-          {/* MOBILE VIEW: Case Cards Feed */}
-          <div className="block md:hidden space-y-2.5">
+          {/* MOBILE VIEW: Case Cards Feed (Strict 16px Gutter) */}
+          <div className="block md:hidden space-y-3">
             {initialCases.map((item) => (
               <CaseCard key={item.id} item={item} />
             ))}
           </div>
 
-          {/* DESKTOP VIEW: Hybrid Table */}
+          {/* DESKTOP VIEW: High-Density Operational Hybrid Table */}
           <div className="hidden md:block overflow-hidden rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/70 text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
-                  <th className="py-3 px-4">Kasus</th>
-                  <th className="py-3 px-4">Lokasi</th>
+                <tr className="border-b border-slate-100 bg-slate-50/80 text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <th className="py-3 px-4">Kasus & Judul</th>
+                  <th className="py-3 px-4">Lokasi & Aset</th>
                   <th className="py-3 px-4">Prioritas</th>
                   <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">PIC</th>
-                  <th className="py-3 px-4">SLA</th>
+                  <th className="py-3 px-4">PIC Ditugaskan</th>
+                  <th className="py-3 px-4">Target SLA</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
                 {initialCases.map((item) => {
-                  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && item.status !== 'closed';
+                  const isClosed = item.status === 'closed';
+                  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
                   const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
 
                   return (
@@ -308,16 +445,22 @@ export function CasesListClient({
                       key={item.id}
                       onClick={() => router.push(`/cases/${item.id}`)}
                       className={cn(
-                        'hover:bg-slate-50/80 cursor-pointer transition-colors group',
-                        isOverdue && 'bg-rose-50/20'
+                        'hover:bg-slate-50/90 cursor-pointer transition-colors group',
+                        isOverdue && 'bg-rose-50/15'
                       )}
                     >
                       {/* Kasus */}
                       <td className="py-3.5 px-4 max-w-xs">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="font-mono font-extrabold text-blue-700 text-[11px] bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100">
+                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                          <span className="font-mono font-extrabold text-blue-700 text-[10.5px] bg-blue-50/90 px-1.5 py-0.5 rounded-md border border-blue-100/80 shadow-2xs">
                             {item.case_number}
                           </span>
+                          {item.requires_maintenance && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50/90 text-amber-800 text-[9.5px] font-bold border border-amber-200/70" title="Maintenance Diperlukan">
+                              <Wrench className="w-2.5 h-2.5 text-amber-600" />
+                              <span>Maint</span>
+                            </span>
+                          )}
                           <span className="text-[10px] text-slate-400 font-medium">
                             {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })}
                           </span>
@@ -327,15 +470,24 @@ export function CasesListClient({
                         </p>
                       </td>
 
-                      {/* Lokasi */}
+                      {/* Lokasi & Aset */}
                       <td className="py-3.5 px-4 text-slate-600 font-medium">
                         {locationText ? (
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate max-w-[140px]">{locationText}</span>
+                            <span className="truncate max-w-[160px]">{locationText}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="text-slate-400 italic text-[11px]">Lokasi belum ditentukan</span>
+                        )}
+                        {item.assets ? (
+                          <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 truncate max-w-[160px]">
+                            {item.assets.asset_code}
+                          </p>
+                        ) : (
+                          <p className="text-[10.5px] text-slate-400 italic mt-0.5">
+                            Tidak terkait aset
+                          </p>
                         )}
                       </td>
 
@@ -359,26 +511,26 @@ export function CasesListClient({
                             <span className="truncate max-w-[110px]">{item.assignee.full_name}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-400 italic">Belum ditugaskan</span>
+                          <span className="text-slate-400 italic text-[11px]">Belum ditugaskan</span>
                         )}
                       </td>
 
                       {/* SLA */}
                       <td className="py-3.5 px-4">
-                        {item.status === 'closed' ? (
-                          <span className="text-emerald-600 font-bold text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
+                        {isClosed ? (
+                          <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-200/70 shadow-2xs">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                             Selesai
                           </span>
                         ) : isOverdue ? (
-                          <span className="inline-flex items-center gap-1 font-extrabold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 text-[10.5px] animate-pulse">
-                            <AlertCircle className="w-3 h-3 text-rose-600" />
-                            Overdue
+                          <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2 py-0.5 rounded-full border border-rose-200/90 shadow-2xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                            Lewat SLA {item.due_date ? `${Math.abs(differenceInHours(new Date(), new Date(item.due_date)))}j` : ''}
                           </span>
                         ) : item.due_date ? (
-                          <span className="text-slate-500 font-semibold text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-slate-400" />
-                            {formatDistanceToNow(new Date(item.due_date), { locale: localeId })}
+                          <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2 py-0.5 rounded-full border border-slate-200/70 shadow-2xs">
+                            <Clock className="w-3 h-3 text-slate-400" />
+                            Sisa {formatDistanceToNow(new Date(item.due_date), { locale: localeId })}
                           </span>
                         ) : (
                           <span className="text-slate-400">-</span>
@@ -391,7 +543,7 @@ export function CasesListClient({
             </table>
           </div>
 
-          {/* ── 4. Pagination ────────────────────────────────────────────── */}
+          {/* ── 5. Pagination ────────────────────────────────────────────── */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2 pb-3">
               <p className="text-xs text-slate-500 font-medium">

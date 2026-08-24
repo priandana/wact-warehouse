@@ -9,30 +9,30 @@ export type Priority = 'low' | 'medium' | 'high' | 'critical';
 const config: Record<Priority, { label: string; bg: string; text: string; border: string; icon: React.ElementType }> = {
   critical: {
     label: 'Kritis',
-    bg: 'bg-rose-50',
+    bg: 'bg-rose-50/90',
     text: 'text-rose-700',
-    border: 'border-rose-200/80',
+    border: 'border-rose-200/70',
     icon: ShieldAlert,
   },
   high: {
     label: 'Tinggi',
-    bg: 'bg-orange-50',
+    bg: 'bg-orange-50/90',
     text: 'text-orange-700',
-    border: 'border-orange-200/80',
+    border: 'border-orange-200/70',
     icon: AlertTriangle,
   },
   medium: {
     label: 'Sedang',
-    bg: 'bg-blue-50',
+    bg: 'bg-blue-50/90',
     text: 'text-blue-700',
-    border: 'border-blue-200/80',
+    border: 'border-blue-200/70',
     icon: Info,
   },
   low: {
     label: 'Rendah',
-    bg: 'bg-slate-100',
+    bg: 'bg-slate-100/90',
     text: 'text-slate-600',
-    border: 'border-slate-200',
+    border: 'border-slate-200/70',
     icon: AlertCircle,
   },
 };
@@ -59,7 +59,7 @@ export function PriorityBadge({ priority, size = 'md', variant = 'pill' }: Prior
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-bold rounded-full border shadow-sm select-none',
+        'inline-flex items-center gap-1.5 font-bold rounded-full border shadow-2xs select-none',
         conf.bg,
         conf.text,
         conf.border,

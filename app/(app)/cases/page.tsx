@@ -110,13 +110,28 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
     .order('created_at', { ascending: false })
     .range(from, to);
 
-  const { data: rawCases, count, error } = await query;
+  // Parallel fetch: paginated list + all visible cases for authoritative KPI counters
+  const [
+    { data: rawCases, count, error },
+    { data: allVisibleCases },
+  ] = await Promise.all([
+    query,
+    supabase.from('cases').select('status, due_date'),
+  ]);
 
   if (error) {
     console.error('Error fetching cases:', error);
   }
 
   const totalCount = count ?? 0;
+  const nowIso = new Date().toISOString();
+
+  const kpiStats = {
+    openCount: (allVisibleCases ?? []).filter((c) => c.status === 'open' || c.status === 'reopened').length,
+    inProgressCount: (allVisibleCases ?? []).filter((c) => c.status === 'on_progress' || c.status === 'waiting_repair').length,
+    waitingQcCount: (allVisibleCases ?? []).filter((c) => c.status === 'waiting_verification').length,
+    overdueCount: (allVisibleCases ?? []).filter((c) => c.status !== 'closed' && c.due_date && c.due_date < nowIso).length,
+  };
 
   // Normalize case data
   const normalizedCases: CaseCardData[] = (rawCases ?? []).map((c: any) => {
@@ -144,12 +159,13 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
   });
 
   return (
-    <div className="page-padding py-5 max-w-6xl mx-auto">
+    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4">
       <CasesListClient
         initialCases={normalizedCases}
         totalCount={totalCount}
         currentPage={currentPage}
         pageSize={PAGE_SIZE}
+        kpiStats={kpiStats}
       />
     </div>
   );
