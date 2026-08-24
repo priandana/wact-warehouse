@@ -16,6 +16,7 @@ import { AssetTableView } from './AssetTableView';
 import { CreateAssetModal } from './CreateAssetModal';
 import { AssetQRModal } from './AssetQRModal';
 import { QRScannerModal } from './QRScannerModal';
+import { Select } from '@/components/shared/Select';
 
 interface CategoryItem {
   id: string;
@@ -185,58 +186,62 @@ export function AssetListContainer({
           </div>
 
           {/* Category Filter */}
-          <select
+          <Select
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          >
-            <option value="">Semua Kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedCategory}
+            variant="filter"
+            size="sm"
+            placeholder="Semua Kategori"
+            options={[
+              { value: '', label: 'Semua Kategori' },
+              ...categories.map((c) => ({ value: c.id, label: c.name })),
+            ]}
+          />
 
           {/* Area Filter */}
-          <select
+          <Select
             value={selectedArea}
-            onChange={(e) => setSelectedArea(e.target.value)}
-            className="px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          >
-            <option value="">Semua Area</option>
-            {areas.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedArea}
+            variant="filter"
+            size="sm"
+            placeholder="Semua Area"
+            options={[
+              { value: '', label: 'Semua Area' },
+              ...areas.map((a) => ({ value: a.id, label: a.name })),
+            ]}
+          />
 
           {/* Status & Condition Filters */}
           <div className="grid grid-cols-2 gap-1.5">
-            <select
+            <Select
               value={selectedCondition}
-              onChange={(e) => setSelectedCondition(e.target.value)}
-              className="px-2 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              <option value="">Kondisi</option>
-              <option value="good">Baik</option>
-              <option value="fair">Cukup</option>
-              <option value="damaged">Rusak</option>
-              <option value="critical">Kritis</option>
-            </select>
+              onChange={setSelectedCondition}
+              variant="filter"
+              size="sm"
+              placeholder="Kondisi"
+              options={[
+                { value: '', label: 'Kondisi' },
+                { value: 'good', label: 'Baik' },
+                { value: 'fair', label: 'Cukup' },
+                { value: 'damaged', label: 'Rusak' },
+                { value: 'critical', label: 'Kritis' },
+              ]}
+            />
 
-            <select
+            <Select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-2 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              <option value="">Status</option>
-              <option value="active">Aktif</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="inactive">Non-Aktif</option>
-              <option value="retired">Afkir</option>
-            </select>
+              onChange={setSelectedStatus}
+              variant="filter"
+              size="sm"
+              placeholder="Status"
+              options={[
+                { value: '', label: 'Status' },
+                { value: 'active', label: 'Aktif' },
+                { value: 'maintenance', label: 'Maintenance' },
+                { value: 'inactive', label: 'Non-Aktif' },
+                { value: 'retired', label: 'Afkir' },
+              ]}
+            />
           </div>
         </div>
 

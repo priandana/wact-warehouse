@@ -9,6 +9,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PriorityBadge } from '@/components/shared/PriorityBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { SkeletonList } from '@/components/shared/SkeletonCard';
+import { Select } from '@/components/shared/Select';
 import Link from 'next/link';
 import {
   Search,
@@ -221,36 +222,24 @@ export function CasesListClient({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Priority Select */}
-              <div>
-                <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Prioritas Kasus
-                </label>
-                <select
-                  value={currentPriority}
-                  onChange={(e) => updateFilters({ priority: e.target.value })}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  {priorityOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                label="Prioritas Kasus"
+                value={currentPriority}
+                onChange={(val) => updateFilters({ priority: val })}
+                options={priorityOptions}
+                size="sm"
+                variant="filter"
+              />
 
               {/* Date Select */}
-              <div>
-                <label className="block text-[10.5px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Rentang Tanggal
-                </label>
-                <select
-                  value={currentDate}
-                  onChange={(e) => updateFilters({ date: e.target.value })}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  {dateOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                label="Rentang Tanggal"
+                value={currentDate}
+                onChange={(val) => updateFilters({ date: val })}
+                options={dateOptions}
+                size="sm"
+                variant="filter"
+              />
             </div>
           </div>
         )}

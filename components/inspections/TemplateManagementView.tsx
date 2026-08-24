@@ -23,6 +23,7 @@ import {
   createInspectionTemplateAction,
   deactivateInspectionTemplateAction,
 } from '@/app/actions/inspections';
+import { Select } from '@/components/shared/Select';
 
 export interface CategoryItem {
   id: string;
@@ -378,23 +379,15 @@ export function TemplateManagementView({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
-                    Kategori Aset (Opsional)
-                  </label>
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  >
-                    <option value="">Global / Berlaku untuk Semua Aset</option>
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Kategori Aset (Opsional)"
+                  value={categoryId}
+                  onChange={setCategoryId}
+                  options={[
+                    { value: '', label: 'Global / Berlaku untuk Semua Aset' },
+                    ...categories.map((c) => ({ value: c.id, label: c.name })),
+                  ]}
+                />
 
                 <div>
                   <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">

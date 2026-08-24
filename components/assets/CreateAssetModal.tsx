@@ -15,6 +15,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { BUCKETS, uploadFile } from '@/lib/supabase/storage';
 import { createAssetAction } from '@/app/actions/assets';
+import { Select } from '@/components/shared/Select';
 
 interface CategoryItem {
   id: string;
@@ -194,63 +195,33 @@ export function CreateAssetModal({
 
           {/* Row 2: Category & Area */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Kategori Aset
-              </label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">-- Pilih Kategori --</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Kategori Aset"
+              value={categoryId}
+              onChange={setCategoryId}
+              placeholder="-- Pilih Kategori --"
+              options={categories.map((c) => ({ value: c.id, label: c.name }))}
+            />
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Area Penempatan
-              </label>
-              <select
-                value={areaId}
-                onChange={(e) => {
-                  setAreaId(e.target.value);
-                  setLocationId('');
-                }}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">-- Pilih Area --</option>
-                {areas.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Area Penempatan"
+              value={areaId}
+              onChange={(val) => {
+                setAreaId(val);
+                setLocationId('');
+              }}
+              placeholder="-- Pilih Area --"
+              options={areas.map((a) => ({ value: a.id, label: a.name }))}
+            />
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Lokasi Spesifik
-              </label>
-              <select
-                value={locationId}
-                disabled={!areaId}
-                onChange={(e) => setLocationId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
-              >
-                <option value="">-- Pilih Lokasi --</option>
-                {filteredLocations.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Lokasi Spesifik"
+              value={locationId}
+              disabled={!areaId}
+              onChange={setLocationId}
+              placeholder={areaId ? '-- Pilih Lokasi --' : 'Pilih Area dulu'}
+              options={filteredLocations.map((l) => ({ value: l.id, label: l.name }))}
+            />
           </div>
 
           {/* Row 3: Brand, Model, Serial Number */}
@@ -297,37 +268,29 @@ export function CreateAssetModal({
 
           {/* Row 4: Condition, Status, Installed Date */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Kondisi Fisik
-              </label>
-              <select
-                value={condition}
-                onChange={(e) => setCondition(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="good">Baik (Good)</option>
-                <option value="fair">Cukup (Fair)</option>
-                <option value="damaged">Ada Kerusakan (Damaged)</option>
-                <option value="critical">Kritis (Critical)</option>
-              </select>
-            </div>
+            <Select
+              label="Kondisi Fisik"
+              value={condition}
+              onChange={(val) => setCondition(val as any)}
+              options={[
+                { value: 'good', label: 'Baik (Good)' },
+                { value: 'fair', label: 'Cukup (Fair)' },
+                { value: 'damaged', label: 'Ada Kerusakan (Damaged)' },
+                { value: 'critical', label: 'Kritis (Critical)' },
+              ]}
+            />
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Status Operasional
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="active">Aktif (Ready)</option>
-                <option value="maintenance">Dalam Maintenance</option>
-                <option value="inactive">Non-Aktif / Idle</option>
-                <option value="retired">Afkir (Retired)</option>
-              </select>
-            </div>
+            <Select
+              label="Status Operasional"
+              value={status}
+              onChange={(val) => setStatus(val as any)}
+              options={[
+                { value: 'active', label: 'Aktif (Ready)' },
+                { value: 'maintenance', label: 'Dalam Maintenance' },
+                { value: 'inactive', label: 'Non-Aktif / Idle' },
+                { value: 'retired', label: 'Afkir (Retired)' },
+              ]}
+            />
 
             <div className="space-y-1">
               <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">

@@ -34,6 +34,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { Select } from '@/components/shared/Select';
 
 export interface AssignableUser {
   id: string;
@@ -812,21 +813,15 @@ export function CaseWorkflowActionPanel({
             )}
 
             {/* Root Cause Selection */}
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Akar Masalah (Root Cause)
-              </label>
-              <select
-                value={selectedRootCauseId}
-                onChange={(e) => setSelectedRootCauseId(e.target.value)}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">-- Pilih Akar Masalah --</option>
-                {rootCauses.map((rc) => (
-                  <option key={rc.id} value={rc.id}>{rc.name}</option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="Akar Masalah (Root Cause)"
+              value={selectedRootCauseId}
+              onChange={setSelectedRootCauseId}
+              placeholder="-- Pilih Akar Masalah --"
+              searchable={true}
+              searchPlaceholder="Cari akar masalah..."
+              options={rootCauses.map((rc) => ({ value: rc.id, label: rc.name }))}
+            />
 
             {/* Corrective Action */}
             <div className="space-y-1">
@@ -1189,21 +1184,17 @@ export function CaseWorkflowActionPanel({
               </div>
             )}
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Tingkat Prioritas Kasus
-              </label>
-              <select
-                value={selectedPriority}
-                onChange={(e) => setSelectedPriority(e.target.value)}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-              >
-                <option value="low">Rendah (Low) — SLA 72 Jam</option>
-                <option value="medium">Sedang (Medium) — SLA 24 Jam</option>
-                <option value="high">Tinggi (High) — SLA 8 Jam</option>
-                <option value="critical">Kritis (Critical) — SLA 2 Jam</option>
-              </select>
-            </div>
+            <Select
+              label="Tingkat Prioritas Kasus"
+              value={selectedPriority}
+              onChange={setSelectedPriority}
+              options={[
+                { value: 'low', label: 'Rendah (Low) — SLA 72 Jam' },
+                { value: 'medium', label: 'Sedang (Medium) — SLA 24 Jam' },
+                { value: 'high', label: 'Tinggi (High) — SLA 8 Jam' },
+                { value: 'critical', label: 'Kritis (Critical) — SLA 2 Jam' },
+              ]}
+            />
 
             <div className="flex items-center gap-2 pt-2">
               <button

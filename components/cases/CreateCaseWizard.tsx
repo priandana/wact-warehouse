@@ -14,6 +14,7 @@ import {
   uploadFile,
 } from '@/lib/supabase/storage';
 import { PriorityBadge, type Priority } from '@/components/shared/PriorityBadge';
+import { Select } from '@/components/shared/Select';
 import {
   ChevronLeft,
   ChevronRight,
@@ -766,23 +767,19 @@ export function CreateCaseWizard({
           )}
 
           {/* Asset Selection (Optional) */}
-          <div className="space-y-1.5 pt-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-              Aset / Mesin Terkait (Opsional)
-            </label>
-            <select
-              value={assetId}
-              onChange={(e) => setAssetId(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              <option value="">-- Tidak Terkait Aset Tertentu --</option>
-              {filteredAssets.map((ast) => (
-                <option key={ast.id} value={ast.id}>
-                  {ast.asset_code} — {ast.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label="Aset / Mesin Terkait (Opsional)"
+            value={assetId}
+            onChange={setAssetId}
+            placeholder="-- Tidak Terkait Aset Tertentu --"
+            searchable={true}
+            clearable={true}
+            searchPlaceholder="Cari kode atau nama aset..."
+            options={filteredAssets.map((ast) => ({
+              value: ast.id,
+              label: `${ast.asset_code} — ${ast.name}`,
+            }))}
+          />
         </div>
       )}
 

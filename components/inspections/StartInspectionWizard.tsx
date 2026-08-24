@@ -21,6 +21,7 @@ import {
 import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider';
 import { startInspectionAction } from '@/app/actions/inspections';
 import { QRScannerModal } from '@/components/assets/QRScannerModal';
+import { Select } from '@/components/shared/Select';
 
 export interface AssetItem {
   id: string;
@@ -239,25 +240,18 @@ export function StartInspectionWizard({
 
         {/* Warehouse Picker (if multiple) */}
         {warehouses.length > 1 && (
-          <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-1">
-              Gudang Operasional
-            </label>
-            <select
-              value={selectedWarehouseId}
-              onChange={(e) => {
-                setSelectedWarehouseId(e.target.value);
-                setSelectedAssetId('');
-              }}
-              className="w-full text-xs rounded-xl bg-slate-50 border border-slate-200 p-2.5 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              {warehouses.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.code} - {w.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label="Gudang Operasional"
+            value={selectedWarehouseId}
+            onChange={(val) => {
+              setSelectedWarehouseId(val);
+              setSelectedAssetId('');
+            }}
+            options={warehouses.map((w) => ({
+              value: w.id,
+              label: `${w.code} - ${w.name}`,
+            }))}
+          />
         )}
 
         {/* Asset Search & Selector */}

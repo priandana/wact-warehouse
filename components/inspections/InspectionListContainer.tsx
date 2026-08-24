@@ -28,6 +28,7 @@ import {
   type OverallResult,
 } from './InspectionStatusBadge';
 import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider';
+import { Select } from '@/components/shared/Select';
 
 export interface InspectionListItem {
   id: string;
@@ -230,18 +231,21 @@ export function InspectionListContainer({
 
           {/* Warehouse Selector */}
           {warehouses.length > 1 && (
-            <select
-              value={selectedWarehouse}
-              onChange={(e) => setSelectedWarehouse(e.target.value)}
-              className="text-xs rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              <option value="all">Semua Gudang</option>
-              {warehouses.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.code} - {w.name}
-                </option>
-              ))}
-            </select>
+            <div className="w-full sm:w-56">
+              <Select
+                value={selectedWarehouse}
+                onChange={setSelectedWarehouse}
+                variant="filter"
+                size="sm"
+                options={[
+                  { value: 'all', label: 'Semua Gudang' },
+                  ...warehouses.map((w) => ({
+                    value: w.id,
+                    label: `${w.code} - ${w.name}`,
+                  })),
+                ]}
+              />
+            </div>
           )}
         </div>
 
