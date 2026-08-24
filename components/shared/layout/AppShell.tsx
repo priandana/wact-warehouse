@@ -6,6 +6,7 @@ import { useIsDesktop } from '@/lib/hooks/useMediaQuery';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
 import { WarehouseSelector } from '@/components/shared/WarehouseSelector';
+import { NavigationProgressBar } from './NavigationProgressBar';
 import Link from 'next/link';
 import { Bell } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -46,6 +47,7 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
 
     return (
       <div className="flex min-h-screen bg-[#F8FAFC]">
+        <NavigationProgressBar />
         <Sidebar
           warehouseName={warehouseName}
           warehouseCode={warehouseCode}
@@ -90,6 +92,7 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
   // Mobile Composition
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+      <NavigationProgressBar />
       {/* Mobile Integrated Top Header */}
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/60 px-4 py-2.5 flex items-center justify-between">
         <WarehouseSelector />

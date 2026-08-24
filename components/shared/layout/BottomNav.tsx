@@ -66,8 +66,13 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => {
+                if (isActive && pathname === item.href) {
+                  e.preventDefault();
+                }
+              }}
               className={cn(
-                'flex flex-col items-center justify-center w-14 h-14 rounded-2xl gap-1 tap-active touch-target transition-all',
+                'flex flex-col items-center justify-center w-14 h-14 rounded-2xl gap-1 tap-active touch-target transition-all active:scale-95',
                 isActive
                   ? 'text-blue-600 font-semibold'
                   : 'text-slate-500 hover:text-slate-800 font-medium',

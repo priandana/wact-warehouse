@@ -149,8 +149,13 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={(e) => {
+                        if (isActive && pathname === item.href) {
+                          e.preventDefault();
+                        }
+                      }}
                       className={cn(
-                        'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150',
+                        'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-[0.97]',
                         isActive
                           ? 'bg-blue-50/90 text-blue-700 font-bold shadow-2xs'
                           : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
