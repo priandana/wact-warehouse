@@ -20,15 +20,9 @@ interface StatusBadgeProps {
 
 export function InspectionStatusBadge({ status, size = 'sm', className }: StatusBadgeProps) {
   const sizeClasses = {
-    sm: 'text-[10.5px] px-2 py-0.5 font-black uppercase tracking-wider',
-    md: 'text-xs px-2.5 py-1 font-black uppercase tracking-wider',
+    sm: 'text-[10px] sm:text-[11px] px-2.5 py-0.5 font-extrabold uppercase tracking-wider',
+    md: 'text-xs px-3 py-1 font-extrabold uppercase tracking-wider',
     lg: 'text-sm px-3.5 py-1.5 font-black uppercase tracking-wider',
-  }[size];
-
-  const iconSizes = {
-    sm: 'w-3 h-3',
-    md: 'w-3.5 h-3.5',
-    lg: 'w-4 h-4',
   }[size];
 
   switch (status?.toLowerCase()) {
@@ -36,12 +30,12 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 shadow-2xs',
+            'inline-flex items-center gap-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          <FileEdit className={iconSizes} />
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
           <span>Draft (Berjalan)</span>
         </span>
       );
@@ -49,12 +43,12 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs',
+            'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          <CheckCircle className={iconSizes} />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
           <span>Selesai</span>
         </span>
       );
@@ -62,12 +56,12 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shadow-2xs',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          <XCircle className={iconSizes} />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
           <span>Dibatalkan</span>
         </span>
       );
@@ -75,7 +69,7 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-bold',
             sizeClasses,
             className
           )}
@@ -100,8 +94,8 @@ export function OverallResultBadge({
   className,
 }: OverallResultBadgeProps) {
   const sizeClasses = {
-    sm: 'text-[10.5px] px-2 py-0.5 font-black uppercase tracking-wider',
-    md: 'text-xs px-2.5 py-1 font-black uppercase tracking-wider',
+    sm: 'text-[10px] sm:text-[11px] px-2.5 py-0.5 font-extrabold uppercase tracking-wider',
+    md: 'text-xs px-3 py-1 font-extrabold uppercase tracking-wider',
     lg: 'text-sm px-3.5 py-1.5 font-black uppercase tracking-wider',
   }[size];
 
@@ -116,12 +110,12 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-emerald-600 text-white shadow-2xs font-black',
+            'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          {showIcon && <CheckCircle2 className={iconSizes} />}
+          {showIcon && <CheckCircle2 className={cn(iconSizes, 'text-emerald-600')} />}
           <span>LOLOS (OK)</span>
         </span>
       );
@@ -129,12 +123,12 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-rose-600 text-white shadow-2xs font-black animate-pulse-subtle',
+            'inline-flex items-center gap-1.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200/80 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          {showIcon && <AlertOctagon className={iconSizes} />}
+          {showIcon && <AlertOctagon className={cn(iconSizes, 'text-rose-600 animate-pulse')} />}
           <span>TEMUAN DEFECT (NG)</span>
         </span>
       );
@@ -142,13 +136,13 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-200 text-slate-700 border border-slate-300 font-black',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs font-bold',
             sizeClasses,
             className
           )}
         >
-          {showIcon && <MinusCircle className={iconSizes} />}
-          <span>N/A</span>
+          {showIcon && <MinusCircle className={cn(iconSizes, 'text-slate-400')} />}
+          <span>TIDAK BERLAKU (N/A)</span>
         </span>
       );
     default:

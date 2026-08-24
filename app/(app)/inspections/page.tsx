@@ -112,10 +112,12 @@ export default async function InspectionsPage() {
   }));
 
   return (
-    <InspectionListContainer
-      initialInspections={formattedInspections}
-      canManageTemplates={canManageTemplates}
-      warehouses={warehouses}
-    />
+    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4">
+      <InspectionListContainer
+        initialInspections={formattedInspections}
+        canManageTemplates={canManageTemplates}
+        warehouses={warehouses}
+      />
+    </div>
   );
 }

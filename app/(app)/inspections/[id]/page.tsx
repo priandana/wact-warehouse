@@ -199,8 +199,16 @@ export default async function InspectionDetailPage({ params }: PageProps) {
   const linkedCase = linkedCases && linkedCases.length > 0 ? linkedCases[0] : null;
 
   if (inspection.status === 'draft') {
-    return <InspectionChecklistView inspection={fullInspectionData} />;
+    return (
+      <div className="page-padding py-4 sm:py-5 max-w-4xl mx-auto space-y-4">
+        <InspectionChecklistView inspection={fullInspectionData} />
+      </div>
+    );
   }
 
-  return <InspectionDetailRecord inspection={fullInspectionData} linkedCase={linkedCase} />;
+  return (
+    <div className="page-padding py-4 sm:py-5 max-w-4xl mx-auto space-y-4">
+      <InspectionDetailRecord inspection={fullInspectionData} linkedCase={linkedCase} />
+    </div>
+  );
 }

@@ -174,8 +174,8 @@ export function TemplateManagementView({
   };
 
   return (
-    <div className="page-padding py-5 max-w-5xl mx-auto space-y-5">
-      {/* Top Breadcrumb */}
+    <div className="space-y-4 sm:space-y-5">
+      {/* ── 1. Top Back Navigation ──────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <Link
           href="/inspections"
@@ -186,18 +186,20 @@ export function TemplateManagementView({
         </Link>
       </div>
 
-      {/* Header Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
+      {/* ── 2. Header Banner ────────────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+
+        <div className="relative z-10 space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               Master Template Checklist QC
             </h1>
-            <span className="text-xs font-mono font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
+            <span className="text-xs font-mono font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200/70 shadow-2xs">
               {templates.length} Aktif
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">
             Standar audit keselamatan, kebersihan, dan integritas mekanis per kategori aset
           </p>
         </div>
@@ -206,7 +208,7 @@ export function TemplateManagementView({
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-sm shadow-blue-500/20 active:scale-95 transition-all self-start sm:self-center"
+            className="relative z-10 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all self-start sm:self-center"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Template Baru</span>
@@ -215,14 +217,14 @@ export function TemplateManagementView({
       </div>
 
       {!canManage && (
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center gap-2 font-medium">
-          <ShieldCheck className="w-4 h-4 text-slate-400" />
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-center gap-2 font-medium">
+          <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
           <span>Mode Read-Only: Hanya Administrator yang berwenang menambah atau menonaktifkan template master.</span>
         </div>
       )}
 
-      {/* Templates List */}
-      <div className="space-y-4">
+      {/* ── 3. Templates List ───────────────────────────────────────────── */}
+      <div className="space-y-3 sm:space-y-4">
         {templates.map((tpl) => {
           const isExpanded = expandedTemplateIds[tpl.id] ?? false;
           const totalItems = tpl.sections.reduce((acc, s) => acc + s.items.length, 0);
@@ -230,17 +232,18 @@ export function TemplateManagementView({
           return (
             <div
               key={tpl.id}
-              className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all"
+              className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden transition-all"
             >
               {/* Header */}
-              <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                    <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
                       Kategori: {tpl.category?.name || 'Global / Semua Aset'}
                     </span>
-                    <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      Aktif
+                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                      <span>Aktif</span>
                     </span>
                   </div>
 
@@ -254,7 +257,7 @@ export function TemplateManagementView({
                     </p>
                   )}
 
-                  <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400 pt-1">
+                  <div className="flex items-center gap-2.5 text-[11px] font-bold text-slate-400 pt-0.5 flex-wrap">
                     <span>{tpl.sections.length} Section</span>
                     <span>&bull;</span>
                     <span>{totalItems} Poin Checklist</span>
@@ -269,11 +272,11 @@ export function TemplateManagementView({
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0 pt-1 sm:pt-0">
                   <button
                     type="button"
                     onClick={() => toggleExpand(tpl.id)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
                   >
                     <span>{isExpanded ? 'Tutup Poin' : 'Lihat Poin Audit'}</span>
                     {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -284,7 +287,7 @@ export function TemplateManagementView({
                       type="button"
                       onClick={() => handleDeactivate(tpl.id, tpl.name)}
                       disabled={deactivatingId === tpl.id}
-                      className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors disabled:opacity-50"
+                      className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors disabled:opacity-50 active:scale-95"
                       title="Nonaktifkan Template"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -295,14 +298,14 @@ export function TemplateManagementView({
 
               {/* Accordion Detail: Sections & Items */}
               {isExpanded && (
-                <div className="bg-slate-50/70 p-5 border-t border-slate-100 space-y-4 animate-in fade-in duration-100">
+                <div className="bg-slate-50/70 p-4 sm:p-5 border-t border-slate-100 space-y-3 animate-in fade-in duration-100">
                   {tpl.sections.map((sec, sIdx) => (
                     <div
                       key={sec.id}
-                      className="bg-white rounded-2xl border border-slate-200 p-4 space-y-2.5"
+                      className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 p-3.5 sm:p-4 space-y-2.5"
                     >
                       <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                        <span className="w-4 h-4 rounded bg-slate-100 text-slate-700 font-mono font-black text-[10px] flex items-center justify-center">
+                        <span className="w-4 h-4 rounded bg-blue-50 text-blue-700 font-mono font-black text-[10px] flex items-center justify-center border border-blue-200">
                           {sIdx + 1}
                         </span>
                         <h4 className="text-xs font-black text-slate-900">
@@ -313,12 +316,12 @@ export function TemplateManagementView({
                       <div className="divide-y divide-slate-100 text-xs">
                         {sec.items.map((item, iIdx) => (
                           <div key={item.id} className="py-2 space-y-0.5">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-2">
                               <span className="font-bold text-slate-800">
                                 {iIdx + 1}. {item.label}
                               </span>
                               {item.is_required && (
-                                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/60 shrink-0">
                                   Wajib
                                 </span>
                               )}
@@ -340,95 +343,101 @@ export function TemplateManagementView({
         })}
       </div>
 
-      {/* Create Modal */}
+      {/* ── 4. Create Modal ─────────────────────────────────────────────── */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2rem)] sm:max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 relative">
+            <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
               <h3 className="text-base font-black text-slate-900">
                 Buat Master Template Baru
               </h3>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateTemplate} className="p-6 overflow-y-auto space-y-4 flex-1">
-              {error && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-                  {error}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
-                  Nama Template <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: Checklist Inspeksi Forklift Listrik"
-                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Select
-                  label="Kategori Aset (Opsional)"
-                  value={categoryId}
-                  onChange={setCategoryId}
-                  options={[
-                    { value: '', label: 'Global / Berlaku untuk Semua Aset' },
-                    ...categories.map((c) => ({ value: c.id, label: c.name })),
-                  ]}
-                />
+            <form onSubmit={handleCreateTemplate} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 sm:p-6 overflow-y-auto overscroll-contain touch-pan-y space-y-4 flex-1">
+                {error && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                    {error}
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
-                    Interval Siklus (Hari)
+                    Nama Template <span className="text-rose-500">*</span>
                   </label>
                   <input
-                    type="number"
-                    value={intervalDays}
-                    onChange={(e) => setIntervalDays(e.target.value)}
-                    placeholder="Kosongkan jika manual"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Contoh: Checklist Inspeksi Forklift Listrik"
                     className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Select
+                    label="Kategori Aset (Opsional)"
+                    value={categoryId}
+                    onChange={setCategoryId}
+                    options={[
+                      { value: '', label: 'Global / Berlaku untuk Semua Aset' },
+                      ...categories.map((c) => ({ value: c.id, label: c.name })),
+                    ]}
+                  />
+
+                  <div>
+                    <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+                      Interval Siklus (Hari)
+                    </label>
+                    <input
+                      type="number"
+                      value={intervalDays}
+                      onChange={(e) => setIntervalDays(e.target.value)}
+                      placeholder="Kosongkan jika manual"
+                      className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+                    Deskripsi Panduan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Instruksi singkat bagi inspector saat melakukan audit..."
+                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
-                  Deskripsi Panduan
-                </label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Instruksi singkat bagi inspector saat melakukan audit..."
-                  className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+              {/* Sticky Actions Footer */}
+              <div
+                className="flex items-center gap-2 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/90 backdrop-blur-xs shrink-0"
+                style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+              >
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={isSubmitting}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !name.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-xs disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
                 >
                   {isSubmitting ? (
                     <>

@@ -99,8 +99,8 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
   const createCaseUrl = `/cases/new?inspection_id=${inspection.id}&source=inspection`;
 
   return (
-    <div className="page-padding py-5 max-w-4xl mx-auto space-y-5">
-      {/* Top Navigation */}
+    <div className="space-y-4 sm:space-y-5">
+      {/* ── 1. Top Navigation ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <Link
           href="/inspections"
@@ -111,12 +111,14 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
         </Link>
       </div>
 
-      {/* Main Banner Card */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 sm:p-7 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-2">
+      {/* ── 2. Main Executive Summary Card ──────────────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-sm font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">
+              <span className="font-mono text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200/70 shadow-2xs">
                 {inspection.inspection_number}
               </span>
               <InspectionStatusBadge status={inspection.status} size="md" />
@@ -129,12 +131,14 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
               {inspection.template?.name || 'Audit Inspeksi QC'}
             </h1>
 
-            <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold flex-wrap">
-              <span className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">
-                <Layers className="w-3.5 h-3.5 text-slate-500" />
-                <span>{inspection.asset?.category?.name || 'Aset Operasional'}</span>
-              </span>
-              <span className="flex items-center gap-1">
+            <div className="flex items-center gap-2.5 text-xs text-slate-500 font-semibold flex-wrap">
+              {inspection.asset?.category?.name && (
+                <span className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                  <Layers className="w-3.5 h-3.5 text-slate-500" />
+                  <span>{inspection.asset.category.name}</span>
+                </span>
+              )}
+              <span className="flex items-center gap-1 text-[11.5px]">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
                 <span>
                   {inspection.warehouse?.code} &bull; {inspection.asset?.area?.name || 'Area Umum'}
@@ -143,19 +147,19 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
             </div>
           </div>
 
-          {/* Link to Asset */}
+          {/* Link to Asset Detail */}
           <Link
             href={`/assets/${inspection.asset_id}`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition-colors self-start sm:self-center"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors self-start sm:self-center shrink-0 active:scale-95"
           >
             <span>Detail Aset ({inspection.asset?.asset_code})</span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </Link>
         </div>
 
         {/* Audit Meta Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
-          <div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-slate-100 text-xs">
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Inspector (Auditor)
             </span>
@@ -164,7 +168,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
             </span>
           </div>
 
-          <div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Waktu Selesai
             </span>
@@ -181,7 +185,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
             </span>
           </div>
 
-          <div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Durasi Inspeksi
             </span>
@@ -190,7 +194,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
             </span>
           </div>
 
-          <div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Status Kesimpulan
             </span>
@@ -203,7 +207,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
 
       {/* Cancellation Notice (if cancelled) */}
       {isCancelled && (
-        <div className="p-5 rounded-3xl bg-slate-100 border border-slate-200 space-y-1">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-slate-100 border border-slate-200 space-y-1">
           <div className="flex items-center gap-2 text-slate-700">
             <XCircle className="w-4 h-4 text-slate-500" />
             <h3 className="text-xs font-black">
@@ -216,11 +220,11 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
         </div>
       )}
 
-      {/* Action Banner for Defect (NG): Create Case */}
+      {/* ── 3. Action Banner for Defect (NG): Create Case ────────────────── */}
       {isCompleted && isNG && (
-        <div className="p-5 rounded-3xl bg-rose-50 border border-rose-200/90 shadow-2xs space-y-3">
+        <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-rose-50/90 border border-rose-200/90 shadow-2xs space-y-3">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-rose-600 text-white shrink-0">
+            <div className="p-2.5 rounded-xl bg-rose-600 text-white shrink-0 shadow-2xs">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div className="space-y-1 flex-1">
@@ -228,12 +232,12 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                 Temuan Defect / Kerusakan ({metrics.ng} Poin Checklist NG)
               </h3>
               <p className="text-xs text-rose-800 leading-relaxed">
-                Unit aset ini membutuhkan tindakan perbaikan atau pemeliharaan teknis. Buat tiket kendala / kasus untuk menugaskan PIC Warehouse.
+                Unit aset ini membutuhkan tindakan perbaikan atau pemeliharaan teknis. Buat tiket kendala / kasus untuk menugaskan tim perbaikan.
               </p>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-rose-200/60 flex items-center justify-between gap-3 flex-wrap">
+          <div className="pt-2 border-t border-rose-200/70 flex items-center justify-between gap-3 flex-wrap">
             {linkedCase ? (
               <>
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
@@ -248,14 +252,14 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/cases/${linkedCase.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all shadow-xs"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs active:scale-95"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Lihat Kasus Terkait</span>
                   </Link>
                   <Link
                     href={createCaseUrl}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition-all"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition-all active:scale-95"
                   >
                     <span>Buat Kasus Tambahan</span>
                   </Link>
@@ -265,7 +269,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
               <div className="w-full flex justify-end">
                 <Link
                   href={createCaseUrl}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-sm shadow-rose-500/20 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-xs shadow-rose-500/20 active:scale-95 transition-all"
                 >
                   <Wrench className="w-4 h-4" />
                   <span>Buat Kasus / Tiket Perbaikan dari Temuan Ini</span>
@@ -276,46 +280,52 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
         </div>
       )}
 
-      {/* 4 Metrics Tiles */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+      {/* ── 4. 4 Summary Metric Tiles ────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1">
+          <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
             Total Poin Diperiksa
           </span>
-          <span className="text-xl font-black text-slate-900 mt-0.5 block">
+          <span className="text-xl sm:text-2xl font-black text-slate-900 block tracking-tight">
             {metrics.total}
           </span>
         </div>
 
-        <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <span className="block text-[10px] font-extrabold uppercase text-emerald-500">
-            Kondisi Normal (OK)
-          </span>
-          <span className="text-xl font-black text-emerald-600 mt-0.5 block">
+        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+            <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-emerald-700">
+              Kondisi Normal (OK)
+            </span>
+          </div>
+          <span className="text-xl sm:text-2xl font-black text-emerald-700 block tracking-tight">
             {metrics.ok}
           </span>
         </div>
 
-        <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <span className="block text-[10px] font-extrabold uppercase text-rose-500">
-            Kondisi Rusak (NG)
-          </span>
-          <span className="text-xl font-black text-rose-600 mt-0.5 block">
+        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+            <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-rose-700">
+              Kondisi Rusak (NG)
+            </span>
+          </div>
+          <span className="text-xl sm:text-2xl font-black text-rose-700 block tracking-tight">
             {metrics.ng}
           </span>
         </div>
 
-        <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
-          <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-1">
+          <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
             Tidak Berlaku (N/A)
           </span>
-          <span className="text-xl font-black text-slate-700 mt-0.5 block">
+          <span className="text-xl sm:text-2xl font-black text-slate-700 block tracking-tight">
             {metrics.na}
           </span>
         </div>
       </div>
 
-      {/* Detailed Checklist Breakdown by Section */}
+      {/* ── 5. Detailed Checklist Breakdown by Section ──────────────────── */}
       <div className="space-y-4">
         <h2 className="text-sm font-black text-slate-900 tracking-tight">
           Rincian Hasil Poin Audit
@@ -324,12 +334,12 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
         {inspection.sections.map((section, sIndex) => (
           <div
             key={section.id}
-            className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs overflow-hidden"
+            className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden"
           >
             {/* Section Header */}
-            <div className="bg-slate-50/80 px-5 py-3 border-b border-slate-200/80 flex items-center justify-between">
+            <div className="bg-slate-50/90 px-4 sm:px-5 py-3 border-b border-slate-200/80 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-md bg-slate-200 text-slate-800 font-mono font-black text-[11px] flex items-center justify-center">
+                <span className="w-5 h-5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-black text-[11px] flex items-center justify-center">
                   {sIndex + 1}
                 </span>
                 <h3 className="text-xs sm:text-sm font-black text-slate-900">
@@ -347,14 +357,14 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                 return (
                   <div
                     key={item.id}
-                    className={`p-4 sm:p-5 space-y-2.5 ${
-                      val === 'ng' ? 'bg-rose-50/30' : ''
+                    className={`p-3.5 sm:p-4 space-y-2.5 ${
+                      val === 'ng' ? 'bg-rose-50/20' : ''
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="space-y-0.5 flex-1 pr-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-black text-slate-900">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs sm:text-sm font-black text-slate-900">
                             {item.label}
                           </span>
                           {item.is_required && (
@@ -364,7 +374,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                           )}
                         </div>
                         {item.description && (
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 leading-relaxed">
                             {item.description}
                           </p>
                         )}
@@ -373,20 +383,20 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                       {/* Value Badge */}
                       <div className="shrink-0 self-start sm:self-center">
                         {val === 'ok' && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-100 text-emerald-800 font-black text-xs">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-black text-xs shadow-2xs">
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                             <span>OK</span>
                           </span>
                         )}
                         {val === 'ng' && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-rose-600 text-white font-black text-xs shadow-2xs">
-                            <AlertOctagon className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-rose-50 text-rose-800 border border-rose-200/80 font-black text-xs shadow-2xs">
+                            <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
                             <span>NG (DEFECT)</span>
                           </span>
                         )}
                         {val === 'na' && (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs">
-                            <MinusCircle className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs">
+                            <MinusCircle className="w-3.5 h-3.5 text-slate-400" />
                             <span>N/A</span>
                           </span>
                         )}
@@ -429,7 +439,7 @@ export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDet
                                 <div
                                   key={idx}
                                   onClick={() => url && setSelectedPhoto(url)}
-                                  className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 shrink-0 cursor-pointer hover:opacity-90 transition-opacity bg-slate-100"
+                                  className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 shrink-0 cursor-pointer hover:opacity-90 transition-opacity bg-slate-100 shadow-2xs"
                                 >
                                   {url ? (
                                     <img

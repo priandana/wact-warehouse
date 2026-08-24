@@ -55,12 +55,14 @@ export function CancelInspectionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 duration-150 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-rose-600">
-            <AlertTriangle className="w-5 h-5" />
-            <h3 className="text-base font-extrabold text-slate-900">
+            <div className="p-2 rounded-xl bg-rose-50 border border-rose-200/80">
+              <AlertTriangle className="w-4 h-4 text-rose-600" />
+            </div>
+            <h3 className="text-base font-black text-slate-900">
               Batalkan Inspeksi
             </h3>
           </div>
@@ -76,7 +78,9 @@ export function CancelInspectionModal({
         <p className="text-xs text-slate-600 leading-relaxed">
           Apakah Anda yakin ingin membatalkan inspeksi{' '}
           {inspectionNumber ? (
-            <span className="font-mono font-bold text-slate-900">{inspectionNumber}</span>
+            <span className="font-mono font-black text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+              {inspectionNumber}
+            </span>
           ) : (
             'ini'
           )}
@@ -84,7 +88,7 @@ export function CancelInspectionModal({
         </p>
 
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold shadow-2xs">
             {error}
           </div>
         )}
@@ -104,7 +108,7 @@ export function CancelInspectionModal({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
@@ -116,7 +120,7 @@ export function CancelInspectionModal({
             <button
               type="submit"
               disabled={isSubmitting || !reason.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-xs active:scale-95 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

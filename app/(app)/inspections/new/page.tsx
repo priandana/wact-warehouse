@@ -106,12 +106,14 @@ export default async function NewInspectionPage({ searchParams }: PageProps) {
     .filter(Boolean);
 
   return (
-    <StartInspectionWizard
-      assets={(assetsRes.data || []) as any}
-      templates={(templatesRes.data || []) as any}
-      activeDrafts={(draftsRes.data || []) as any}
-      initialAssetId={initialAssetId}
-      warehouses={warehouses}
-    />
+    <div className="page-padding py-4 sm:py-5 max-w-5xl mx-auto space-y-4">
+      <StartInspectionWizard
+        assets={(assetsRes.data || []) as any}
+        templates={(templatesRes.data || []) as any}
+        activeDrafts={(draftsRes.data || []) as any}
+        initialAssetId={initialAssetId}
+        warehouses={warehouses}
+      />
+    </div>
   );
 }

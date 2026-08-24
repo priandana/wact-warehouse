@@ -198,8 +198,8 @@ export function StartInspectionWizard({
   };
 
   return (
-    <div className="page-padding py-5 max-w-4xl mx-auto space-y-5">
-      {/* Back Link */}
+    <div className="space-y-4 sm:space-y-5">
+      {/* ── 1. Top Back Navigation ──────────────────────────────────────── */}
       <Link
         href="/inspections"
         className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
@@ -208,17 +208,19 @@ export function StartInspectionWizard({
         <span>Kembali ke Daftar Inspeksi</span>
       </Link>
 
-      {/* Page Header */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-7 space-y-2">
-        <div className="flex items-center gap-2">
-          <div className="p-2.5 rounded-2xl bg-blue-50 text-blue-700">
-            <ClipboardCheck className="w-6 h-6" />
+      {/* ── 2. Header Banner Card ───────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-1 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/70 shadow-2xs shrink-0">
+            <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               Mulai Sesi Inspeksi QC
             </h1>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
               Pilih aset gudang dan template checklist standar untuk memulai audit fisik
             </p>
           </div>
@@ -226,17 +228,17 @@ export function StartInspectionWizard({
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-start gap-2.5">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-start gap-2.5 shadow-2xs">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
           <div className="flex-1">{serverError}</div>
         </div>
       )}
 
-      {/* Step 1: Warehouse & Asset Selection */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 space-y-4">
+      {/* ── 3. Step 1: Warehouse & Asset Selection ──────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <span className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
               1
             </span>
             <h2 className="text-sm font-black text-slate-900">
@@ -247,9 +249,9 @@ export function StartInspectionWizard({
           <button
             type="button"
             onClick={() => setIsQRScannerOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 font-extrabold text-xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
           >
-            <QrCode className="w-3.5 h-3.5" />
+            <QrCode className="w-3.5 h-3.5 text-blue-600" />
             <span>Scan QR Aset</span>
           </button>
         </div>
@@ -268,22 +270,22 @@ export function StartInspectionWizard({
         )}
 
         {/* Asset Search & Selector */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={assetSearchQuery}
               onChange={(e) => setAssetSearchQuery(e.target.value)}
-              placeholder="Ketik kode aset (contoh: HP-001) atau nama alat..."
-              className="w-full text-xs rounded-xl bg-slate-50 border border-slate-200 pl-9 pr-4 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              placeholder="Ketik kode aset (contoh: BDG-LS-01) atau nama alat..."
+              className="w-full text-xs rounded-xl bg-slate-50 border border-slate-200 pl-9 pr-4 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
           {/* Asset Choice Cards */}
-          <div className="max-h-56 overflow-y-auto space-y-2 pr-1 divide-y divide-slate-100 border border-slate-100 rounded-2xl p-2 bg-slate-50/50">
+          <div className="max-h-60 overflow-y-auto space-y-2 pr-1 rounded-2xl p-2 bg-slate-50/70 border border-slate-200/80">
             {filteredAssets.length === 0 ? (
-              <div className="py-6 text-center text-xs text-slate-400">
+              <div className="py-8 text-center text-xs text-slate-400">
                 Tidak ada aset yang sesuai di gudang ini.
               </div>
             ) : (
@@ -297,23 +299,27 @@ export function StartInspectionWizard({
                       setSelectedAssetId(asset.id);
                       setServerError(null);
                     }}
-                    className={`w-full text-left p-2.5 rounded-xl transition-all flex items-center justify-between gap-3 ${
+                    className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-blue-50 border border-blue-200 shadow-2xs'
-                        : 'hover:bg-white'
+                        ? 'bg-blue-50/90 border border-blue-300 shadow-2xs ring-1 ring-blue-500/30'
+                        : 'bg-white border border-slate-200/80 hover:border-slate-300'
                     }`}
                   >
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-black text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-100">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-xs font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 shadow-2xs">
                           {asset.asset_code}
                         </span>
-                        <span className="text-xs font-black text-slate-900">
+                        <span className="text-xs font-black text-slate-900 truncate">
                           {asset.name}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                        <span>{asset.category?.name || 'Kategori Umum'}</span>
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                        {asset.category?.name && (
+                          <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10.5px]">
+                            {asset.category.name}
+                          </span>
+                        )}
                         <span>&bull;</span>
                         <span>{asset.area?.name || 'Area Belum Diatur'}</span>
                       </div>
@@ -332,7 +338,7 @@ export function StartInspectionWizard({
 
       {/* Draft Conflict Notice (if active draft exists) */}
       {activeDraft && (
-        <div className="p-5 rounded-3xl bg-amber-50 border border-amber-200/90 shadow-2xs space-y-3">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-amber-50 border border-amber-200/90 shadow-2xs space-y-3">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div className="space-y-1 flex-1">
@@ -352,7 +358,7 @@ export function StartInspectionWizard({
           <div className="flex items-center justify-end gap-2 pt-1">
             <Link
               href={`/inspections/${activeDraft.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-xs active:scale-95 transition-all"
             >
               <FileEdit className="w-4 h-4" />
               <span>Lanjutkan Sesi Draft Sekarang</span>
@@ -361,12 +367,12 @@ export function StartInspectionWizard({
         </div>
       )}
 
-      {/* Step 2: Template Selection (Category-Matched) */}
+      {/* ── 4. Step 2: Template Selection (Category-Matched) ─────────────── */}
       {selectedAsset && !activeDraft && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center">
+            <div className="flex items-center gap-2.5">
+              <span className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
                 2
               </span>
               <h2 className="text-sm font-black text-slate-900">
@@ -374,7 +380,7 @@ export function StartInspectionWizard({
               </h2>
             </div>
 
-            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+            <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg">
               Kategori: {selectedAsset.category?.name || 'Semua'}
             </span>
           </div>
@@ -391,7 +397,7 @@ export function StartInspectionWizard({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-2.5">
               {matchingTemplates.map((tpl) => {
                 const isSelected = selectedTemplateId === tpl.id;
                 const sectionCount = tpl.sections?.length || 0;
@@ -403,15 +409,15 @@ export function StartInspectionWizard({
                     key={tpl.id}
                     type="button"
                     onClick={() => setSelectedTemplateId(tpl.id)}
-                    className={`text-left p-4 rounded-2xl border transition-all space-y-2 ${
+                    className={`text-left p-4 rounded-xl border transition-all space-y-2 ${
                       isSelected
                         ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-2xs'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
+                        : 'bg-white border-slate-200/80 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-black text-slate-900">
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">
                           {tpl.name}
                         </h4>
                         {tpl.description && (
@@ -428,7 +434,7 @@ export function StartInspectionWizard({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 text-[10.5px] font-bold text-slate-400 pt-1 border-t border-slate-100/80">
+                    <div className="flex items-center gap-2.5 text-[10.5px] font-bold text-slate-400 pt-1.5 border-t border-slate-100/80 flex-wrap">
                       <span>{sectionCount} Bagian / Section</span>
                       <span>&bull;</span>
                       <span>{itemCount} Poin Checklist</span>
@@ -453,7 +459,7 @@ export function StartInspectionWizard({
                 type="button"
                 onClick={handleStartInspection}
                 disabled={isSubmitting || !selectedTemplateId}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-sm shadow-blue-500/20 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

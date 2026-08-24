@@ -92,10 +92,12 @@ export default async function TemplatesPage() {
   }));
 
   return (
-    <TemplateManagementView
-      templates={formattedTemplates}
-      categories={(categories || []) as CategoryItem[]}
-      canManage={canManage}
-    />
+    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4">
+      <TemplateManagementView
+        templates={formattedTemplates}
+        categories={(categories || []) as CategoryItem[]}
+        canManage={canManage}
+      />
+    </div>
   );
 }
