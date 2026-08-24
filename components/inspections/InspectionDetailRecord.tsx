@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -29,9 +29,15 @@ import { getSignedUrls, BUCKETS } from '@/lib/supabase/storage';
 
 interface InspectionDetailRecordProps {
   inspection: InspectionData;
+  linkedCase?: {
+    id: string;
+    case_number: string;
+    title: string;
+    status: string;
+  } | null;
 }
 
-export function InspectionDetailRecord({ inspection }: InspectionDetailRecordProps) {
+export function InspectionDetailRecord({ inspection, linkedCase }: InspectionDetailRecordProps) {
   const isCompleted = inspection.status === 'completed';
   const isCancelled = inspection.status === 'cancelled';
   const isNG = inspection.overall_result === 'ng';
@@ -89,10 +95,8 @@ export function InspectionDetailRecord({ inspection }: InspectionDetailRecordPro
     }
   }, [inspection.initialEvidences]);
 
-  // Prefilled link to create case from defect
-  const createCaseUrl = `/cases/new?asset_id=${inspection.asset_id}&warehouse_id=${inspection.warehouse_id}${
-    inspection.asset?.area ? `&area_id=${(inspection.asset as any).area_id || ''}` : ''
-  }`;
+  // Clean, minimal URL carrying only authoritative identifier & source
+  const createCaseUrl = `/cases/new?inspection_id=${inspection.id}&source=inspection`;
 
   return (
     <div className="page-padding py-5 max-w-4xl mx-auto space-y-5">
@@ -229,14 +233,45 @@ export function InspectionDetailRecord({ inspection }: InspectionDetailRecordPro
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-1 border-t border-rose-200/60">
-            <Link
-              href={createCaseUrl}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-sm shadow-rose-500/20 active:scale-95 transition-all"
-            >
-              <Wrench className="w-4 h-4" />
-              <span>Buat Kasus / Tiket Perbaikan dari Temuan Ini</span>
-            </Link>
+          <div className="pt-2 border-t border-rose-200/60 flex items-center justify-between gap-3 flex-wrap">
+            {linkedCase ? (
+              <>
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                  <span className="text-slate-500">Kasus Terkait:</span>
+                  <span className="font-mono bg-white px-2 py-0.5 rounded-lg border border-slate-200 text-slate-900 font-extrabold">
+                    {linkedCase.case_number}
+                  </span>
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold">
+                    ({linkedCase.status})
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/cases/${linkedCase.id}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all shadow-xs"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Lihat Kasus Terkait</span>
+                  </Link>
+                  <Link
+                    href={createCaseUrl}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition-all"
+                  >
+                    <span>Buat Kasus Tambahan</span>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="w-full flex justify-end">
+                <Link
+                  href={createCaseUrl}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-sm shadow-rose-500/20 active:scale-95 transition-all"
+                >
+                  <Wrench className="w-4 h-4" />
+                  <span>Buat Kasus / Tiket Perbaikan dari Temuan Ini</span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -425,7 +460,7 @@ export function InspectionDetailRecord({ inspection }: InspectionDetailRecordPro
       {/* Photo Lightbox Modal */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
           onClick={() => setSelectedPhoto(null)}
         >
           <div className="relative max-w-2xl w-full max-h-[85vh] rounded-3xl overflow-hidden shadow-2xl bg-black">

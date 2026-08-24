@@ -138,10 +138,10 @@ export function CreateAssetModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in overflow-y-auto">
-      <div className="w-full max-w-xl bg-white rounded-3xl p-6 sm:p-7 shadow-2xl space-y-4 my-8 animate-in zoom-in-95 relative">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+    <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95 relative">
+        {/* Header (Sticky / Shrink-0) */}
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-white">
           <div className="flex items-center gap-2">
             <Package className="w-5 h-5 text-blue-600" />
             <h3 className="text-base font-extrabold text-slate-900">Tambah Master Aset Baru</h3>
@@ -154,15 +154,17 @@ export function CreateAssetModal({
           </button>
         </div>
 
-        {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+          {/* Scrollable Form Body */}
+          <div className="px-5 sm:px-6 py-4 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+            {errorMessage && (
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Row 1: Asset Code & Name */}
+            {/* Row 1: Asset Code & Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
@@ -351,37 +353,41 @@ export function CreateAssetModal({
               className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !assetCode.trim() || !name.trim()}
-              className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Menyimpan...</span>
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4" />
-                  <span>Simpan Master Aset</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Sticky Actions Footer */}
+        <div
+          className="flex items-center gap-2 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/90 backdrop-blur-xs shrink-0 rounded-b-3xl"
+          style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            disabled={loading || !assetCode.trim() || !name.trim()}
+            className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" />
+                <span>Simpan Master Aset</span>
+              </>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
   );
 }

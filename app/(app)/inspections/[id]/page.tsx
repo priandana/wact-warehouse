@@ -52,6 +52,8 @@ export default async function InspectionDetailPage({ params }: PageProps) {
         id,
         asset_code,
         name,
+        area_id,
+        location_id,
         category:category_id(name),
         area:area_id(name),
         location:location_id(name)
@@ -140,6 +142,8 @@ export default async function InspectionDetailPage({ params }: PageProps) {
         id: rawAsset.id,
         asset_code: rawAsset.asset_code,
         name: rawAsset.name,
+        area_id: rawAsset.area_id || null,
+        location_id: rawAsset.location_id || null,
         category: Array.isArray(rawAsset.category) ? rawAsset.category[0] : rawAsset.category,
         area: Array.isArray(rawAsset.area) ? rawAsset.area[0] : rawAsset.area,
         location: Array.isArray(rawAsset.location) ? rawAsset.location[0] : rawAsset.location,
@@ -184,9 +188,19 @@ export default async function InspectionDetailPage({ params }: PageProps) {
     })),
   };
 
+  // 5. Fetch any existing case created from this inspection (duplicate detection)
+  const { data: linkedCases } = await supabase
+    .from('cases')
+    .select('id, case_number, title, status, created_at')
+    .eq('inspection_id', inspectionId)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const linkedCase = linkedCases && linkedCases.length > 0 ? linkedCases[0] : null;
+
   if (inspection.status === 'draft') {
     return <InspectionChecklistView inspection={fullInspectionData} />;
   }
 
-  return <InspectionDetailRecord inspection={fullInspectionData} />;
+  return <InspectionDetailRecord inspection={fullInspectionData} linkedCase={linkedCase} />;
 }

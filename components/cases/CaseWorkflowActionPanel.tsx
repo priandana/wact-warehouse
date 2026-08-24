@@ -703,9 +703,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 1: ASSIGN PIC                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'assign' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-4 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-blue-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Tugaskan PIC Kasus</h3>
@@ -714,6 +714,8 @@ export function CaseWorkflowActionPanel({
                 <XCircle className="w-4 h-4" />
               </button>
             </div>
+
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
 
             {errorMessage && (
               <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
@@ -766,12 +768,18 @@ export function CaseWorkflowActionPanel({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            </div>
+
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -793,9 +801,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 2: UPDATE PROGRESS & KOREKSI                                  */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'progress' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-lg bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto no-scrollbar animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-blue-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Update Progres & Akar Masalah</h3>
@@ -805,58 +813,64 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {/* Root Cause Selection */}
+              <Select
+                label="Akar Masalah (Root Cause)"
+                value={selectedRootCauseId}
+                onChange={setSelectedRootCauseId}
+                placeholder="-- Pilih Akar Masalah --"
+                searchable={true}
+                searchPlaceholder="Cari akar masalah..."
+                options={rootCauses.map((rc) => ({ value: rc.id, label: rc.name }))}
+              />
+
+              {/* Corrective Action */}
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Tindakan Korektif (Corrective Action)
+                </label>
+                <textarea
+                  rows={2}
+                  value={correctiveAction}
+                  onChange={(e) => setCorrectiveAction(e.target.value)}
+                  placeholder="Tindakan langsung yang telah dilakukan untuk mengatasi masalah..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
               </div>
-            )}
 
-            {/* Root Cause Selection */}
-            <Select
-              label="Akar Masalah (Root Cause)"
-              value={selectedRootCauseId}
-              onChange={setSelectedRootCauseId}
-              placeholder="-- Pilih Akar Masalah --"
-              searchable={true}
-              searchPlaceholder="Cari akar masalah..."
-              options={rootCauses.map((rc) => ({ value: rc.id, label: rc.name }))}
-            />
-
-            {/* Corrective Action */}
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Tindakan Korektif (Corrective Action)
-              </label>
-              <textarea
-                rows={2}
-                value={correctiveAction}
-                onChange={(e) => setCorrectiveAction(e.target.value)}
-                placeholder="Tindakan langsung yang telah dilakukan untuk mengatasi masalah..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              />
+              {/* Preventive Action */}
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Tindakan Pencegahan (Preventive Action)
+                </label>
+                <textarea
+                  rows={2}
+                  value={preventiveAction}
+                  onChange={(e) => setPreventiveAction(e.target.value)}
+                  placeholder="Langkah pencegahan agar masalah serupa tidak terulang kembali..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
             </div>
 
-            {/* Preventive Action */}
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Tindakan Pencegahan (Preventive Action)
-              </label>
-              <textarea
-                rows={2}
-                value={preventiveAction}
-                onChange={(e) => setPreventiveAction(e.target.value)}
-                placeholder="Langkah pencegahan agar masalah serupa tidak terulang kembali..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -878,9 +892,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 3: UPLOAD AFTER / DURING EVIDENCE                             */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'evidence' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <Camera className="w-4 h-4 text-emerald-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Unggah Bukti Hasil Perbaikan</h3>
@@ -890,77 +904,83 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              ref={photoInputRef}
-              onChange={handleSelectEvidenceFile}
-              className="hidden"
-            />
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                ref={photoInputRef}
+                onChange={handleSelectEvidenceFile}
+                className="hidden"
+              />
 
-            {/* Photo Picker / Preview */}
-            {evidencePreview ? (
-              <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
-                <img src={evidencePreview} alt="Preview" className="w-full h-full object-contain" />
+              {/* Photo Picker / Preview */}
+              {evidencePreview ? (
+                <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
+                  <img src={evidencePreview} alt="Preview" className="w-full h-full object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEvidenceFile(null);
+                      setEvidencePreview(null);
+                    }}
+                    className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setEvidenceFile(null);
-                    setEvidencePreview(null);
-                  }}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
+                  disabled={evidenceProcessing}
+                  onClick={() => photoInputRef.current?.click()}
+                  className="w-full py-8 rounded-2xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50/40 flex flex-col items-center justify-center gap-2 text-slate-600 hover:text-emerald-700 transition-all"
                 >
-                  <XCircle className="w-4 h-4" />
+                  {evidenceProcessing ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
+                      <span className="text-xs font-bold">Memproses foto...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="w-7 h-7 text-slate-400" />
+                      <span className="text-xs font-extrabold">Ambil / Pilih Foto Hasil Selesai (After)</span>
+                    </>
+                  )}
                 </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                disabled={evidenceProcessing}
-                onClick={() => photoInputRef.current?.click()}
-                className="w-full py-8 rounded-2xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50/40 flex flex-col items-center justify-center gap-2 text-slate-600 hover:text-emerald-700 transition-all"
-              >
-                {evidenceProcessing ? (
-                  <>
-                    <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
-                    <span className="text-xs font-bold">Memproses foto...</span>
-                  </>
-                ) : (
-                  <>
-                    <Camera className="w-7 h-7 text-slate-400" />
-                    <span className="text-xs font-extrabold">Ambil / Pilih Foto Hasil Selesai (After)</span>
-                  </>
-                )}
-              </button>
-            )}
+              )}
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Keterangan Foto (Caption)
-              </label>
-              <input
-                type="text"
-                value={evidenceCaption}
-                onChange={(e) => setEvidenceCaption(e.target.value)}
-                placeholder="Contoh: Penggantian bearing dan kabel sensor selesai diuji"
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              />
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Keterangan Foto (Caption)
+                </label>
+                <input
+                  type="text"
+                  value={evidenceCaption}
+                  onChange={(e) => setEvidenceCaption(e.target.value)}
+                  placeholder="Contoh: Penggantian bearing dan kabel sensor selesai diuji"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -982,9 +1002,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 4: QC APPROVE & CLOSE                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'verify' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Verifikasi & Tutup Kasus</h3>
@@ -994,36 +1014,42 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-600">
+                Apakah Anda yakin pekerjaan perbaikan pada kasus <strong>{caseNumber}</strong> telah sesuai standar QC operasional gudang?
+              </p>
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Catatan Verifikasi (Opsional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={verificationNote}
+                  onChange={(e) => setVerificationNote(e.target.value)}
+                  placeholder="Contoh: Telah diuji running test selama 30 menit, kondisi normal..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                />
               </div>
-            )}
-
-            <p className="text-xs text-slate-600">
-              Apakah Anda yakin pekerjaan perbaikan pada kasus <strong>{caseNumber}</strong> telah sesuai standar QC operasional gudang?
-            </p>
-
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Catatan Verifikasi (Opsional)
-              </label>
-              <textarea
-                rows={2}
-                value={verificationNote}
-                onChange={(e) => setVerificationNote(e.target.value)}
-                placeholder="Contoh: Telah diuji running test selama 30 menit, kondisi normal..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              />
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -1045,9 +1071,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 5: QC REJECT (REWORK)                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'reject' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <XCircle className="w-4 h-4 text-rose-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Tolak Verifikasi (Minta Perbaikan)</h3>
@@ -1057,33 +1083,39 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Alasan Penolakan / Catatan Perbaikan <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                rows={3}
-                value={rejectionNote}
-                onChange={(e) => setRejectionNote(e.target.value)}
-                placeholder="Jelaskan bagian yang belum tuntas atau perlu diperbaiki ulang oleh PIC..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
-                autoFocus
-              />
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Alasan Penolakan / Catatan Perbaikan <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={rejectionNote}
+                  onChange={(e) => setRejectionNote(e.target.value)}
+                  placeholder="Jelaskan bagian yang belum tuntas atau perlu diperbaiki ulang oleh PIC..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                  autoFocus
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -1105,9 +1137,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 6: REOPEN CASE                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'reopen' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <RotateCw className="w-4 h-4 text-amber-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Buka Kembali Kasus (Reopen)</h3>
@@ -1117,33 +1149,39 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Alasan Membuka Kembali <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                rows={3}
-                value={reopenReason}
-                onChange={(e) => setReopenReason(e.target.value)}
-                placeholder="Jelaskan alasan mengapa kasus ini perlu dibuka dan diinvestigasi kembali..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                autoFocus
-              />
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Alasan Membuka Kembali <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={reopenReason}
+                  onChange={(e) => setReopenReason(e.target.value)}
+                  placeholder="Jelaskan alasan mengapa kasus ini perlu dibuka dan diinvestigasi kembali..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                  autoFocus
+                />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -1165,9 +1203,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 7: CHANGE PRIORITY                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'priority' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <Tag className="w-4 h-4 text-indigo-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Ubah Prioritas Kasus</h3>
@@ -1177,31 +1215,37 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            <Select
-              label="Tingkat Prioritas Kasus"
-              value={selectedPriority}
-              onChange={setSelectedPriority}
-              options={[
-                { value: 'low', label: 'Rendah (Low) — SLA 72 Jam' },
-                { value: 'medium', label: 'Sedang (Medium) — SLA 24 Jam' },
-                { value: 'high', label: 'Tinggi (High) — SLA 8 Jam' },
-                { value: 'critical', label: 'Kritis (Critical) — SLA 2 Jam' },
-              ]}
-            />
+              <Select
+                label="Tingkat Prioritas Kasus"
+                value={selectedPriority}
+                onChange={setSelectedPriority}
+                options={[
+                  { value: 'low', label: 'Rendah (Low) — SLA 72 Jam' },
+                  { value: 'medium', label: 'Sedang (Medium) — SLA 24 Jam' },
+                  { value: 'high', label: 'Tinggi (High) — SLA 8 Jam' },
+                  { value: 'critical', label: 'Kritis (Critical) — SLA 2 Jam' },
+                ]}
+              />
+            </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -1223,9 +1267,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 8: OVERRIDE DUE DATE                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'due_date' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-purple-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Ubah Batas Waktu SLA Kasus</h3>
@@ -1235,45 +1279,51 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Batas Waktu Baru (Due Date) <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="datetime-local"
+                  value={newDueDate}
+                  onChange={(e) => setNewDueDate(e.target.value)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
               </div>
-            )}
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Batas Waktu Baru (Due Date) <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="datetime-local"
-                value={newDueDate}
-                onChange={(e) => setNewDueDate(e.target.value)}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              />
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Alasan Perubahan Batas Waktu <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={dueDateReason}
+                  onChange={(e) => setDueDateReason(e.target.value)}
+                  placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  autoFocus
+                />
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Alasan Perubahan Batas Waktu <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                rows={2}
-                value={dueDateReason}
-                onChange={(e) => setDueDateReason(e.target.value)}
-                placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                autoFocus
-              />
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>
@@ -1295,9 +1345,9 @@ export function CaseWorkflowActionPanel({
       {/* MODAL 9: FORCE CLOSE (ADMIN ONLY)                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {activeModal === 'force_close' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl p-5 shadow-2xl space-y-3.5 animate-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-rose-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">Tutup Paksa Kasus (Admin Only)</h3>
@@ -1307,37 +1357,43 @@ export function CaseWorkflowActionPanel({
               </button>
             </div>
 
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
+                ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
               </div>
-            )}
 
-            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
-              ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
+              <div className="space-y-1">
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Alasan Penutupan Paksa <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={forceCloseReason}
+                  onChange={(e) => setForceCloseReason(e.target.value)}
+                  placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                  autoFocus
+                />
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Alasan Penutupan Paksa <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                rows={3}
-                value={forceCloseReason}
-                onChange={(e) => setForceCloseReason(e.target.value)}
-                placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
-                autoFocus
-              />
-            </div>
-
-            <div className="flex items-center gap-2 pt-2">
+            {/* Sticky Actions Footer */}
+            <div
+              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={closeModal}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
               >
                 Batal
               </button>

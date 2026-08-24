@@ -167,7 +167,7 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
       {/* ── Fullscreen Lightbox Modal ────────────────────────────────────── */}
       {selectedIdx !== null && currentItem && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
           onClick={() => setSelectedIdx(null)}
         >
           {/* Top Bar: Info & Close Button */}

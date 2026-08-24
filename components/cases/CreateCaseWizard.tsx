@@ -15,6 +15,8 @@ import {
 } from '@/lib/supabase/storage';
 import { PriorityBadge, type Priority } from '@/components/shared/PriorityBadge';
 import { Select } from '@/components/shared/Select';
+import Link from 'next/link';
+import { type ServerInspectionContext } from '@/app/(app)/cases/new/page';
 import {
   ChevronLeft,
   ChevronRight,
@@ -31,6 +33,7 @@ import {
   Sparkles,
   ShieldAlert,
   RotateCw,
+  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -38,14 +41,12 @@ export interface CategoryItem {
   id: string;
   name: string;
   icon?: string | null;
-  sort_order: number;
 }
 
 export interface SubcategoryItem {
   id: string;
   category_id: string;
   name: string;
-  sort_order: number;
 }
 
 export interface AreaItem {
@@ -77,10 +78,17 @@ interface CreateCaseWizardProps {
   areas: AreaItem[];
   locations: LocationItem[];
   assets: AssetItem[];
+  inspectionContext?: ServerInspectionContext | null;
   initialAssetId?: string;
   initialAreaId?: string;
   initialLocationId?: string;
   initialWarehouseId?: string;
+  initialInspectionId?: string;
+  initialInspectionNumber?: string;
+  initialTitle?: string;
+  initialDescription?: string;
+  initialSource?: string;
+  initialPriority?: string;
 }
 
 export interface PhotoItem {
@@ -101,14 +109,22 @@ export function CreateCaseWizard({
   areas,
   locations,
   assets,
+  inspectionContext,
   initialAssetId,
   initialAreaId,
   initialLocationId,
   initialWarehouseId,
+  initialInspectionId,
+  initialInspectionNumber,
+  initialTitle,
+  initialDescription,
+  initialSource,
+  initialPriority,
 }: CreateCaseWizardProps) {
   const router = useRouter();
   const { activeWarehouse } = useActiveWarehouse();
-  const activeWarehouseId = initialWarehouseId || activeWarehouse?.warehouseId;
+  const activeWarehouseId =
+    inspectionContext?.warehouseId || initialWarehouseId || activeWarehouse?.warehouseId;
 
   const [step, setStep] = useState<number>(1);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -123,18 +139,43 @@ export function CreateCaseWizard({
   const [clientRequestId, setClientRequestId] = useState<string>('');
 
   // Form State
-  const [title, setTitle] = useState<string>('');
+  const [title, setTitle] = useState<string>(
+    inspectionContext?.defaultTitle || initialTitle || ''
+  );
   const [categoryId, setCategoryId] = useState<string>('');
   const [subcategoryId, setSubcategoryId] = useState<string>('');
-  const [priority, setPriority] = useState<Priority>('medium');
+  const [priority, setPriority] = useState<Priority>(
+    initialPriority && ['low', 'medium', 'high', 'critical'].includes(initialPriority)
+      ? (initialPriority as Priority)
+      : 'medium'
+  );
 
-  const [areaId, setAreaId] = useState<string>(initialAreaId || '');
-  const [locationId, setLocationId] = useState<string>(initialLocationId || '');
-  const [assetId, setAssetId] = useState<string>(initialAssetId || '');
+  const [areaId, setAreaId] = useState<string>(() => {
+    if (inspectionContext?.areaId) return inspectionContext.areaId;
+    if (initialAreaId) return initialAreaId;
+    const targetAssetId = inspectionContext?.assetId || initialAssetId;
+    if (targetAssetId) {
+      const match = assets.find((a) => a.id === targetAssetId);
+      return match?.area_id || '';
+    }
+    return '';
+  });
+  const [locationId, setLocationId] = useState<string>(
+    inspectionContext?.locationId || initialLocationId || ''
+  );
+  const [assetId, setAssetId] = useState<string>(
+    inspectionContext?.assetId || initialAssetId || ''
+  );
 
-  const [description, setDescription] = useState<string>('');
-  const [hasOperationalImpact, setHasOperationalImpact] = useState<boolean>(Boolean(initialAssetId));
-  const [requiresMaintenance, setRequiresMaintenance] = useState<boolean>(Boolean(initialAssetId));
+  const [description, setDescription] = useState<string>(
+    inspectionContext?.defaultDescription || initialDescription || ''
+  );
+  const [hasOperationalImpact, setHasOperationalImpact] = useState<boolean>(
+    Boolean(inspectionContext || initialAssetId || initialInspectionId)
+  );
+  const [requiresMaintenance, setRequiresMaintenance] = useState<boolean>(
+    Boolean(inspectionContext || initialAssetId || initialInspectionId)
+  );
 
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -143,11 +184,25 @@ export function CreateCaseWizard({
   // Initialize draft and clientRequestId
   useEffect(() => {
     try {
-      if (initialAssetId) {
-        setAssetId(initialAssetId);
-        if (initialAreaId) setAreaId(initialAreaId);
+      if (initialAssetId || initialInspectionId) {
+        if (initialAssetId) setAssetId(initialAssetId);
+        if (initialTitle) setTitle(initialTitle);
+        if (initialDescription) setDescription(initialDescription);
+        if (
+          initialPriority &&
+          ['low', 'medium', 'high', 'critical'].includes(initialPriority)
+        ) {
+          setPriority(initialPriority as Priority);
+        }
+        if (initialAreaId) {
+          setAreaId(initialAreaId);
+        } else if (initialAssetId) {
+          const match = assets.find((a) => a.id === initialAssetId);
+          if (match?.area_id) setAreaId(match.area_id);
+        }
         if (initialLocationId) setLocationId(initialLocationId);
         setRequiresMaintenance(true);
+        setHasOperationalImpact(true);
         setClientRequestId(crypto.randomUUID());
         return;
       }
@@ -173,7 +228,16 @@ export function CreateCaseWizard({
     } catch {
       setClientRequestId(crypto.randomUUID());
     }
-  }, [initialAssetId, initialAreaId, initialLocationId]);
+  }, [
+    initialAssetId,
+    initialAreaId,
+    initialLocationId,
+    initialInspectionId,
+    initialTitle,
+    initialDescription,
+    initialPriority,
+    assets,
+  ]);
 
   // Persist draft on changes
   useEffect(() => {
@@ -390,7 +454,7 @@ export function CreateCaseWizard({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = createClient() as any;
 
-      // 1. Call create_case RPC (source must be 'direct')
+      // 1. Call create_case RPC
       const { data: caseId, error: createErr } = await supabase.rpc('create_case', {
         p_warehouse_id: activeWarehouseId,
         p_title: title.trim(),
@@ -401,10 +465,11 @@ export function CreateCaseWizard({
         p_area_id: areaId || null,
         p_location_id: locationId || null,
         p_asset_id: assetId || null,
+        p_inspection_id: inspectionContext ? inspectionContext.inspectionId : (initialInspectionId || null),
         p_priority: priority,
         p_has_operational_impact: hasOperationalImpact,
         p_requires_maintenance: requiresMaintenance,
-        p_source: 'direct', // strictly 'direct' or 'inspection'
+        p_source: inspectionContext || initialInspectionId || initialSource === 'inspection' ? 'inspection' : 'direct',
       });
 
       if (createErr) {
@@ -546,6 +611,82 @@ export function CreateCaseWizard({
               Jelaskan masalah atau temuan yang Anda temukan
             </p>
           </div>
+
+          {/* Existing Case Notice (Duplicate Protection) */}
+          {inspectionContext?.existingCase && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 flex items-start gap-3 shadow-2xs">
+              <div className="p-2 rounded-xl bg-amber-500 text-white shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-black text-amber-900">
+                    Perhatian: Kasus Sudah Pernah Dibuat
+                  </span>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 bg-white border border-amber-300 text-amber-900 rounded-md">
+                    {inspectionContext.existingCase.case_number}
+                  </span>
+                  <span className="text-[10px] text-amber-800 uppercase font-semibold">
+                    ({inspectionContext.existingCase.status})
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
+                  Inspeksi ini telah ditindaklanjuti dengan kasus #{inspectionContext.existingCase.case_number}. Anda dapat membuka kasus tersebut atau tetap membuat kasus baru.
+                </p>
+                <div className="pt-1">
+                  <Link
+                    href={`/cases/${inspectionContext.existingCase.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-all shadow-xs"
+                  >
+                    <span>Buka Kasus #{inspectionContext.existingCase.case_number}</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Inspection Reference Banner */}
+          {(inspectionContext?.inspectionNumber || initialInspectionNumber) && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/90 flex items-start gap-3 shadow-2xs">
+              <div className="p-2 rounded-xl bg-amber-500 text-white shrink-0">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div className="space-y-1.5 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-black text-amber-900">
+                    Dibuat dari Temuan Inspeksi QC
+                  </span>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 bg-amber-100 border border-amber-300 text-amber-900 rounded-md">
+                    {inspectionContext?.inspectionNumber || initialInspectionNumber}
+                  </span>
+                  {inspectionContext?.assetCode && (
+                    <span className="text-[11px] text-slate-700 font-bold">
+                      &bull; {inspectionContext.assetCode} ({inspectionContext.assetName})
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
+                  Data aset, area gudang, dan rincian temuan checklist NG telah diverifikasi secara authoritative dari server.
+                </p>
+                {inspectionContext?.ngFindings && inspectionContext.ngFindings.length > 0 && (
+                  <div className="pt-1 border-t border-amber-200/60 space-y-1">
+                    <span className="block text-[10px] font-extrabold uppercase text-amber-900">
+                      Rincian Temuan NG:
+                    </span>
+                    <ul className="text-[11px] text-amber-900 space-y-0.5 list-disc list-inside font-medium">
+                      {inspectionContext.ngFindings.map((ng, i) => (
+                        <li key={i}>
+                          <strong>{ng.label}</strong>
+                          {ng.notes ? ` — ${ng.notes}` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Title Input */}
           <div className="space-y-1.5">
