@@ -147,9 +147,9 @@ export function AssetDetailView({
   };
 
   return (
-    <div className="space-y-5">
-      {/* Back Link & Breadcrumb */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-5">
+      {/* ── 1. Back Link & Top Management Actions ───────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <Link
           href="/assets"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
@@ -158,37 +158,38 @@ export function AssetDetailView({
           <span>Kembali ke Daftar Aset</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          {canManage && (
-            <>
-              <button
-                type="button"
-                onClick={() => setIsEditOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
-              >
-                <Edit3 className="w-3.5 h-3.5" />
-                <span>Ubah Data</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition-colors disabled:opacity-50"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Hapus / Retire</span>
-              </button>
-            </>
-          )}
-        </div>
+        {canManage && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsEditOpen(true)}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Ubah Data</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/60 font-bold text-xs transition-colors disabled:opacity-50 active:scale-95"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Hapus / Retire</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Main Header Banner Card */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 sm:p-7 space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* ── 2. Main Executive Identity Banner Card ───────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 relative overflow-hidden">
+        {/* Subtle ambient gradient */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-sm font-black text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/70 shadow-2xs">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="font-mono text-xs sm:text-sm font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200/70 shadow-2xs">
                 {asset.asset_code}
               </span>
               <AssetStatusBadge status={asset.status} size="md" />
@@ -199,14 +200,14 @@ export function AssetDetailView({
               {asset.name}
             </h1>
 
-            <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold flex-wrap">
+            <div className="flex items-center gap-2.5 text-xs text-slate-500 font-semibold flex-wrap">
               {asset.category?.name && (
-                <span className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                <span className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
                   <Layers className="w-3.5 h-3.5 text-slate-500" />
                   <span>{asset.category.name}</span>
                 </span>
               )}
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 text-[11.5px]">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
                 <span>
                   {asset.warehouse?.name || 'Gudang'} &bull; {asset.area?.name || 'Area Belum Diatur'}
@@ -216,20 +217,21 @@ export function AssetDetailView({
             </div>
           </div>
 
-          {/* Action Buttons: Laporkan Masalah & Mulai Inspeksi & QR */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Primary Action Buttons */}
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap pt-2 lg:pt-0">
             <button
               type="button"
               onClick={() => setIsQROpen(true)}
-              className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shadow-2xs"
+              className="p-2.5 sm:p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0 active:scale-95"
               title="Tampilkan Label QR Code"
+              aria-label="Tampilkan Label QR Code"
             >
               <QrCode className="w-5 h-5 text-blue-600" />
             </button>
 
             <Link
               href={`/inspections/new?asset_id=${asset.id}`}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs shadow-2xs active:scale-95 transition-all"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs shadow-2xs active:scale-95 transition-all"
             >
               <ClipboardCheck className="w-4 h-4 text-emerald-600" />
               <span>Mulai Inspeksi</span>
@@ -237,7 +239,7 @@ export function AssetDetailView({
 
             <Link
               href={reportProblemUrl}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-xs shadow-rose-500/20 active:scale-95 transition-all"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-xs shadow-rose-500/20 active:scale-95 transition-all"
             >
               <AlertTriangle className="w-4 h-4" />
               <span>Laporkan Masalah</span>
@@ -245,18 +247,18 @@ export function AssetDetailView({
           </div>
         </div>
 
-        {/* 4 Summary Stat Tiles */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100">
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+        {/* 4 Summary Stat Tiles (2x2 on mobile, 4-col on desktop) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Kendala Aktif
             </span>
-            <span className="text-lg font-black text-rose-600 mt-0.5 block">
+            <span className={`text-lg font-black mt-0.5 block ${openCasesCount > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
               {openCasesCount}
             </span>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Total Riwayat Kasus
             </span>
@@ -265,11 +267,11 @@ export function AssetDetailView({
             </span>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               QC Terakhir
             </span>
-            <span className="text-xs font-black text-slate-800 mt-1 block truncate">
+            <span className="text-xs font-bold text-slate-800 mt-1 block truncate">
               {asset.last_inspection_at
                 ? new Date(asset.last_inspection_at).toLocaleDateString('id-ID', {
                     day: 'numeric',
@@ -280,11 +282,11 @@ export function AssetDetailView({
             </span>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Jadwal QC Berikutnya
             </span>
-            <span className="text-xs font-black text-slate-700 mt-1 block truncate">
+            <span className="text-xs font-bold text-slate-700 mt-1 block truncate">
               {asset.next_inspection_at
                 ? new Date(asset.next_inspection_at).toLocaleDateString('id-ID', {
                     day: 'numeric',
@@ -297,17 +299,17 @@ export function AssetDetailView({
         </div>
       </div>
 
-      {/* Grid 2 Columns: Identity & Specs vs Case & Inspection History */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* ── 3. Dual-Column Details & History ─────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
         {/* Left Column: Photo & Specifications */}
         <div className="lg:col-span-1 space-y-4">
           {/* Photo Card */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 space-y-3">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-3">
             <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
               Dokumentasi Fisik Aset
             </h3>
             {asset.photo_signed_url ? (
-              <div className="aspect-4/3 rounded-2xl overflow-hidden border border-slate-200">
+              <div className="aspect-4/3 rounded-xl overflow-hidden border border-slate-200">
                 <img
                   src={asset.photo_signed_url}
                   alt={asset.name}
@@ -315,9 +317,9 @@ export function AssetDetailView({
                 />
               </div>
             ) : (
-              <div className="aspect-4/3 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+              <div className="aspect-4/3 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200/80 flex flex-col items-center justify-center text-slate-400 p-4 text-center">
                 <Package className="w-8 h-8 mb-1 text-slate-300" />
-                <span className="text-xs font-bold text-slate-500">Belum Ada Foto</span>
+                <span className="text-xs font-bold text-slate-600">Belum Ada Foto Fisik</span>
                 <span className="text-[10px] text-slate-400 mt-0.5">
                   Foto fisik dapat diunggah melalui menu Ubah Data
                 </span>
@@ -326,7 +328,7 @@ export function AssetDetailView({
           </div>
 
           {/* Specifications Card */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 space-y-3">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-3">
             <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
               Spesifikasi & Identitas
             </h3>
@@ -377,42 +379,42 @@ export function AssetDetailView({
 
         {/* Right Column: Case & Inspection History */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Tabs */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 sm:p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+          {/* Tabs Container */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-4">
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl">
               <button
                 type="button"
                 onClick={() => setActiveTab('cases')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-colors ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
                   activeTab === 'cases'
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <AlertTriangle className="w-4 h-4" />
-                <span>Riwayat Kendala / Kasus ({cases.length})</span>
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                <span>Riwayat Kendala ({cases.length})</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('inspections')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-colors ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
                   activeTab === 'inspections'
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <ClipboardCheck className="w-4 h-4" />
-                <span>Riwayat QC & Inspeksi ({inspections.length})</span>
+                <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Riwayat QC ({inspections.length})</span>
               </button>
             </div>
 
             {/* Tab 1: Cases List */}
             {activeTab === 'cases' && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {cases.length === 0 ? (
-                  <div className="py-10 text-center space-y-2">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
+                  <div className="py-8 text-center space-y-2">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
                     <h4 className="text-xs font-extrabold text-slate-800">
                       Tidak Ada Riwayat Kendala
                     </h4>
@@ -428,19 +430,19 @@ export function AssetDetailView({
                         href={`/cases/${c.id}`}
                         className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2 rounded-xl transition-colors group block"
                       >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="font-mono text-xs font-black text-blue-700">
                               {c.case_number}
                             </span>
-                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
                               {c.status.replace('_', ' ')}
                             </span>
-                            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
                               {c.priority}
                             </span>
                           </div>
-                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                             {c.title}
                           </p>
                           <p className="text-[11px] text-slate-400">
@@ -463,10 +465,10 @@ export function AssetDetailView({
 
             {/* Tab 2: Inspections List */}
             {activeTab === 'inspections' && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {inspections.length === 0 ? (
-                  <div className="py-10 text-center space-y-2">
-                    <ClipboardCheck className="w-10 h-10 text-slate-300 mx-auto" />
+                  <div className="py-8 text-center space-y-2">
+                    <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto" />
                     <h4 className="text-xs font-extrabold text-slate-800">
                       Belum Ada Catatan QC
                     </h4>
@@ -482,13 +484,13 @@ export function AssetDetailView({
                         href={`/inspections/${insp.id}`}
                         className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2 rounded-xl transition-colors group block"
                       >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="font-mono text-xs font-black text-blue-700">
                               {insp.inspection_number || 'INSP-QC'}
                             </span>
                             <span
-                              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                              className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
                                 insp.status === 'completed'
                                   ? insp.overall_result === 'ng'
                                     ? 'bg-rose-50 text-rose-700 border border-rose-200'
