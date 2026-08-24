@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import {
   Image as ImageIcon,
+  ImageOff,
   Maximize2,
   X,
   ChevronLeft,
@@ -112,14 +113,16 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
                 </div>
               )}
 
-              {/* Error Fallback */}
+              {/* Unavailable / Missing Storage Fallback */}
               {isError && (
-                <div className="absolute inset-0 bg-slate-50 flex flex-col items-center justify-center p-2.5 text-center">
-                  <AlertCircle className="w-6 h-6 text-slate-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-600 line-clamp-1">
+                <div className="absolute inset-0 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col items-center justify-center p-2.5 text-center">
+                  <ImageOff className="w-5 h-5 text-slate-400 mb-1" />
+                  <span className="text-[10px] font-bold text-slate-700 line-clamp-1 max-w-full px-1">
                     {item.file_name || 'Foto Bukti'}
                   </span>
-                  <span className="text-[9px] text-slate-400 mt-0.5">Gagal memuat gambar</span>
+                  <span className="text-[9px] text-slate-400 mt-0.5 font-medium">
+                    Bukti tidak tersedia
+                  </span>
                 </div>
               )}
 

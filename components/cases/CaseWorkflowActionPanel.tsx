@@ -461,8 +461,7 @@ export function CaseWorkflowActionPanel({
         router.refresh();
       }, 600);
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Gagal menutup paksa kasus');
-      setLoading(false);
+setLoading(false);
     }
   };
 
@@ -493,148 +492,64 @@ export function CaseWorkflowActionPanel({
 
   return (
     <div className="space-y-4">
-      {/* Action Bar Card */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-        <div className="flex items-center justify-between">
+      {/* ── Main Action Bar ─────────────────────────────────────────────── */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-600" />
             <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-              Aksi & Alur Kerja Kasus
+              Aksi Operasional
             </h2>
           </div>
-          <span className="text-[11px] font-bold text-slate-500 capitalize">
-            Status: <span className="text-slate-900">{status.replace(/_/g, ' ')}</span>
+          <span className="text-[10.5px] font-bold text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded-md">
+            {status.replace(/_/g, ' ')}
           </span>
         </div>
 
-        {/* Dynamic Action Buttons based on Status & Capabilities */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          {/* Action 1: Assign PIC (only for Admin / Coordinator) */}
-          {status !== 'closed' && canAssign && (
+        {/* 1. Primary Operational Actions based on Status */}
+        <div className="space-y-2">
+          {/* Action 1: Assign PIC (only for Admin / Coordinator when open / reopened) */}
+          {(status === 'open' || status === 'reopened') && canAssign && (
             <button
               type="button"
               onClick={() => setActiveModal('assign')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200/80 active:scale-95 transition-all"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] transition-all"
             >
-              <UserPlus className="w-4 h-4" />
-              <span>{currentAssigneeName ? 'Ganti PIC' : 'Tugaskan PIC'}</span>
+              <UserPlus className="w-4 h-4 stroke-[2.5]" />
+              <span>{currentAssigneeName ? 'Ganti Penugasan PIC' : 'Tugaskan PIC Sekarang'}</span>
             </button>
           )}
 
-          {/* Action: Change Priority */}
-          {status !== 'closed' && canChangePriority && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedPriority(priority);
-                setActiveModal('priority');
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200/80 active:scale-95 transition-all"
-            >
-              <Tag className="w-4 h-4" />
-              <span>Ubah Prioritas</span>
-            </button>
-          )}
-
-          {/* Action: Override Due Date */}
-          {status !== 'closed' && canOverrideDueDate && (
-            <button
-              type="button"
-              onClick={() => {
-                setNewDueDate(dueDate ? new Date(dueDate).toISOString().slice(0, 16) : '');
-                setActiveModal('due_date');
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs border border-purple-200/80 active:scale-95 transition-all"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>Ubah Batas Waktu</span>
-            </button>
-          )}
-
-          {/* Action: Force Close (Admin / Super Admin only) */}
-          {status !== 'closed' && canForceClose && (
-            <button
-              type="button"
-              onClick={() => setActiveModal('force_close')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-95 transition-all"
-            >
-              <ShieldAlert className="w-4 h-4" />
-              <span>Tutup Paksa (Admin)</span>
-            </button>
-          )}
-
-          {/* Action 2: Update Progress (if on_progress / waiting_repair) */}
-          {(status === 'on_progress' || status === 'waiting_repair') && (
-            <>
-              {canUpdateProgress && (
-                <button
-                  type="button"
-                  onClick={() => setActiveModal('progress')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 active:scale-95 transition-all"
-                >
-                  <FileText className="w-4 h-4 text-slate-600" />
-                  <span>Update Progres & Koreksi</span>
-                </button>
-              )}
-
-              {canUploadEvidence && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEvidencePhase('after');
-                    setActiveModal('evidence');
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200/80 active:scale-95 transition-all"
-                >
-                  <Camera className="w-4 h-4" />
-                  <span>Unggah Bukti Selesai (After)</span>
-                </button>
-              )}
-
-              {canRequestVerification && (
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={handleRequestVerification}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 disabled:opacity-50 transition-all"
-                >
-                  <Clock className="w-4 h-4" />
-                  <span>Ajukan Verifikasi QC</span>
-                </button>
-              )}
-            </>
-          )}
-
-          {/* Action 3: QC Verification (if waiting_verification) */}
+          {/* Action: QC Verification (if waiting_verification) */}
           {status === 'waiting_verification' && (
             <>
               {canVerify ? (
-                <>
+                <div className="space-y-2">
                   <button
                     type="button"
                     onClick={() => setActiveModal('verify')}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] transition-all"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                     <span>Setujui & Selesaikan (Close)</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setActiveModal('reject')}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-95 transition-all"
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-[0.98] transition-all"
                   >
                     <XCircle className="w-4 h-4" />
-                    <span>Tolak / Minta Perbaikan</span>
+                    <span>Tolak / Minta Perbaikan Ulang</span>
                   </button>
-                </>
+                </div>
               ) : isAssignee ? (
-                <div className="w-full p-3 rounded-2xl bg-indigo-50/80 border border-indigo-100 text-xs font-semibold text-indigo-900 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-100 text-[11.5px] font-semibold text-indigo-900 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-indigo-600 shrink-0" />
                   <span>Menunggu verifikasi dari tim QC / Koordinator. PIC tidak dapat memverifikasi pekerjaan sendiri.</span>
                 </div>
               ) : (
-                <div className="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11.5px] font-semibold text-slate-600 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>Menunggu verifikasi dari tim QC / Koordinator.</span>
                 </div>
@@ -642,18 +557,111 @@ export function CaseWorkflowActionPanel({
             </>
           )}
 
+          {/* Action 2: Update Progress (if on_progress / waiting_repair) */}
+          {(status === 'on_progress' || status === 'waiting_repair') && (
+            <div className="space-y-2">
+              {canRequestVerification && (
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleRequestVerification}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] disabled:opacity-50 transition-all"
+                >
+                  <Clock className="w-4 h-4 stroke-[2.5]" />
+                  <span>Ajukan Verifikasi QC</span>
+                </button>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                {canUploadEvidence && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEvidencePhase('after');
+                      setActiveModal('evidence');
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200/80 active:scale-95 transition-all text-center"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Foto Selesai</span>
+                  </button>
+                )}
+
+                {canUpdateProgress && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveModal('progress')}
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 active:scale-95 transition-all text-center"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-slate-600" />
+                    <span>Update Progres</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Action 4: Reopen Case (if closed, only for Admin / Coordinator) */}
           {status === 'closed' && canReopen && (
             <button
               type="button"
               onClick={() => setActiveModal('reopen')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 active:scale-95 transition-all"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 active:scale-[0.98] transition-all"
             >
               <RotateCw className="w-4 h-4 text-amber-700" />
               <span>Buka Kembali Kasus (Reopen)</span>
             </button>
           )}
         </div>
+
+        {/* 2. Administrative Controls */}
+        {(canChangePriority || canOverrideDueDate || canForceClose) && status !== 'closed' && (
+          <div className="pt-2 border-t border-slate-100">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+              Kontrol Administratif
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {canChangePriority && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPriority(priority);
+                    setActiveModal('priority');
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200/70 active:scale-95 transition-all"
+                >
+                  <Tag className="w-3 h-3 text-slate-500" />
+                  <span>Prioritas</span>
+                </button>
+              )}
+
+              {canOverrideDueDate && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewDueDate(dueDate ? new Date(dueDate).toISOString().slice(0, 16) : '');
+                    setActiveModal('due_date');
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200/70 active:scale-95 transition-all"
+                >
+                  <Calendar className="w-3 h-3 text-slate-500" />
+                  <span>Batas SLA</span>
+                </button>
+              )}
+
+              {canForceClose && (
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('force_close')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-[11px] border border-rose-200 active:scale-95 transition-all"
+                >
+                  <ShieldAlert className="w-3 h-3 text-rose-600" />
+                  <span>Tutup Paksa</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Add Comment Form ─────────────────────────────────────────────── */}

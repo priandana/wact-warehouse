@@ -1,6 +1,6 @@
 // app/(app)/cases/[id]/page.tsx
 // Case Detail View — Server Component with Live Supabase Data
-// Decoupled, resilient queries with signed evidence photo URLs, full workflow actions, and timeline
+// High-Clarity Operations Workspace (70% Enterprise Operations + 30% Fintech/Super-App Polish)
 
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
@@ -29,8 +29,15 @@ import {
   MessageSquare,
   AlertTriangle,
   Sparkles,
+  CheckCircle2,
+  ExternalLink,
+  ShieldAlert,
+  FileCheck2,
+  HelpCircle,
+  ArrowRight,
+  Info,
 } from 'lucide-react';
-import { format, formatDistanceToNow, isPast } from 'date-fns';
+import { differenceInHours, format, formatDistanceToNow, isPast } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { cn } from '@/lib/utils/cn';
 
@@ -77,13 +84,19 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       created_at,
       has_operational_impact,
       requires_maintenance,
+      source,
+      inspection_id,
+      corrective_action,
+      preventive_action,
+      closed_at,
       reporter_id,
       areas:area_id ( name ),
       locations:location_id ( name ),
       assets:asset_id ( asset_code, name ),
       category:category_id ( name ),
       subcategory:subcategory_id ( name ),
-      reporter:reporter_id ( full_name )
+      reporter:reporter_id ( full_name ),
+      root_cause:root_cause_id ( id, name )
     `)
     .eq('id', id)
     .maybeSingle();
@@ -108,6 +121,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     { data: rawRootCauses },
     { data: rawUserWarehouse },
     { data: rawUserProfile },
+    { data: directoryUsers },
+    sourceInspectionResult,
   ] = await Promise.all([
     supabase
       .from('case_assignments')
@@ -129,6 +144,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         to_status,
         metadata,
         created_at,
+        actor_id,
         actor:actor_id ( full_name )
       `)
       .eq('case_id', id)
@@ -145,6 +161,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         mime_type,
         caption,
         uploaded_at,
+        uploader_id,
         uploader:uploader_id ( full_name )
       `)
       .eq('case_id', id)
@@ -157,6 +174,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         content,
         is_internal,
         created_at,
+        author_id,
         author:author_id ( full_name )
       `)
       .eq('case_id', id)
@@ -170,6 +188,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         new_due_date,
         reason,
         changed_at,
+        changed_by,
         changer:changed_by ( full_name )
       `)
       .eq('case_id', id)
@@ -203,22 +222,40 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .select('is_super_admin')
       .eq('id', user.id)
       .single(),
+
+    supabase
+      .from('profile_directory')
+      .select('id, full_name, avatar_url'),
+
+    item.inspection_id
+      ? supabase
+          .from('inspections')
+          .select('id, inspection_number, overall_result')
+          .eq('id', item.inspection_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
+  const profileMap = new Map<string, string>((directoryUsers ?? []).map((u: any) => [u.id, u.full_name]));
+
+  const sourceInspection = sourceInspectionResult?.data ?? null;
   const currentUserRole = (rawUserWarehouse as any)?.roles?.name;
   const isSuperAdmin = (rawUserProfile as any)?.is_super_admin ?? false;
 
   // Filter assignable users to eligible candidates only (PIC Maintenance, Coordinator, Admin)
   const eligibleRoles = ['pic_maintenance', 'coordinator', 'admin', 'qc_leader'];
   const assignableUsers: AssignableUser[] = (rawProfiles ?? [])
-    .filter((uw: any) => uw?.profiles && uw?.roles && eligibleRoles.includes(uw.roles.name))
-    .map((uw: any) => ({
-      id: uw.profiles.id,
-      full_name: uw.profiles.full_name,
-      avatar_url: uw.profiles.avatar_url,
-      role_name: uw.roles?.name,
-      role_display_name: uw.roles?.display_name || uw.roles?.name || 'Staff',
-    }))
+    .filter((uw: any) => uw?.roles && eligibleRoles.includes(uw.roles.name))
+    .map((uw: any) => {
+      const resolvedName = profileMap.get(uw.user_id) || uw.profiles?.full_name || 'Staff';
+      return {
+        id: uw.user_id,
+        full_name: resolvedName,
+        avatar_url: uw.profiles?.avatar_url,
+        role_name: uw.roles?.name,
+        role_display_name: uw.roles?.display_name || uw.roles?.name || 'Staff',
+      };
+    })
     .sort((a: AssignableUser, b: AssignableUser) => {
       const score = (role?: string) => {
         if (role === 'pic_maintenance') return 0;
@@ -256,7 +293,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         caption: ev.caption,
         uploaded_at: ev.uploaded_at,
         signedUrl,
-        uploader: (ev.uploader as any) ?? null,
+        uploader: (ev.uploader as any) ?? (ev.uploader_id ? { full_name: profileMap.get(ev.uploader_id) } : null),
       };
     })
   );
@@ -265,8 +302,19 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     ? assignments.find((a: any) => a.is_current)
     : null;
 
-  const currentAssigneeName = currentAssignment?.assignee?.full_name || null;
-  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && item.status !== 'closed';
+  const currentAssigneeName =
+    currentAssignment?.assignee?.full_name ||
+    (currentAssignment?.assignee_id ? profileMap.get(currentAssignment.assignee_id) : null) ||
+    null;
+  const isClosed = item.status === 'closed';
+  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
+  const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
+
+  // SLA Time Display calculation
+  const remainingHours = item.due_date
+    ? differenceInHours(new Date(item.due_date), new Date())
+    : null;
+  const isApproachingSla = !isClosed && !isOverdue && remainingHours !== null && remainingHours <= 4 && remainingHours >= 0;
 
   const formatActivityAction = (act: any) => {
     switch (act.action) {
@@ -299,9 +347,37 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     }
   };
 
+  // 4. Stepper Stage Definition
+  const steps = [
+    {
+      id: 'reported',
+      label: 'Dilaporkan',
+      isCompleted: true,
+      isActive: item.status === 'open' && !currentAssigneeName,
+    },
+    {
+      id: 'in_progress',
+      label: 'Penanganan PIC',
+      isCompleted: ['waiting_verification', 'closed'].includes(item.status),
+      isActive: ['on_progress', 'waiting_repair', 'reopened'].includes(item.status) || (item.status === 'open' && Boolean(currentAssigneeName)),
+    },
+    {
+      id: 'qc_verification',
+      label: 'Verifikasi QC',
+      isCompleted: item.status === 'closed',
+      isActive: item.status === 'waiting_verification',
+    },
+    {
+      id: 'closed',
+      label: 'Selesai',
+      isCompleted: item.status === 'closed',
+      isActive: item.status === 'closed',
+    },
+  ];
+
   return (
-    <div className="page-padding py-4 max-w-4xl mx-auto space-y-5 pb-24">
-      {/* Top Nav Back Link */}
+    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4 sm:space-y-5 pb-24">
+      {/* ── Top Navigation Bar ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <Link
           href="/cases"
@@ -312,255 +388,483 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </Link>
       </div>
 
-      {/* ── 1. Main Case Header Card ─────────────────────────────────────── */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
-            <span className="font-mono font-extrabold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100 text-xs">
+      {/* ── 1. Case Command Header Card ──────────────────────────────────── */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 border-b border-slate-100">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-mono font-black text-blue-700 bg-blue-50/90 px-2.5 py-0.5 rounded-lg border border-blue-200/70 text-xs shadow-2xs">
               {item.case_number}
             </span>
             <PriorityBadge priority={item.priority} size="sm" />
+            <StatusBadge status={item.status} size="sm" />
           </div>
-          <StatusBadge status={item.status} size="md" />
+
+          <span className="text-[11px] font-medium text-slate-400">
+            Dibuat {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })} ({format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })})
+          </span>
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+        <h1 className="text-lg sm:text-xl font-black text-slate-900 leading-snug tracking-tight">
           {item.title}
         </h1>
 
-        {/* Operational & Maintenance Badges */}
-        {(item.has_operational_impact || item.requires_maintenance || currentAssigneeName) && (
-          <div className="flex flex-wrap items-center gap-2">
-            {item.has_operational_impact && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Dampak Operasional Aktif
-              </span>
-            )}
-            {item.requires_maintenance && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
-                <Wrench className="w-3.5 h-3.5" />
-                Membutuhkan Maintenance
-              </span>
-            )}
-            {currentAssigneeName && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                <User className="w-3.5 h-3.5" />
-                PIC: {currentAssigneeName}
-              </span>
-            )}
-          </div>
-        )}
-
-        {item.description && (
-          <div className="space-y-1">
-            <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Deskripsi Masalah</p>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 whitespace-pre-wrap">
-              {item.description}
-            </p>
-          </div>
-        )}
-
-        {/* Metadata Grid (Responsive, unclipped Location) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
-          <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Kategori</p>
-            <p className="font-bold text-slate-800 mt-0.5">
-              {(item.category as any)?.name || '-'}
-            </p>
-            {(item.subcategory as any)?.name && (
-              <p className="text-[10.5px] text-slate-500 font-medium">{(item.subcategory as any).name}</p>
-            )}
-          </div>
-
-          {/* Location with responsive wrapping (no premature ellipsis) */}
-          <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Lokasi & Area</p>
-            <div className="flex items-start gap-1 mt-0.5 text-slate-800 font-bold">
-              <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-              <div className="leading-snug">
-                <span>{(item.areas as any)?.name || '-'}</span>
-                {(item.locations as any)?.name && (
-                  <span className="text-slate-500 font-normal"> &bull; {(item.locations as any).name}</span>
-                )}
-              </div>
-            </div>
-            {(item.assets as any)?.asset_code && (
-              <p className="text-[10.5px] text-slate-500 font-mono mt-0.5">
-                {(item.assets as any).asset_code} — {(item.assets as any).name}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Pelapor</p>
-            <p className="font-bold text-slate-800 mt-0.5 flex items-center gap-1">
-              <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span>{(item.reporter as any)?.full_name || 'Administrator'}</span>
-            </p>
-            <p className="text-[10.5px] text-slate-400">
-              {format(new Date(item.created_at), 'dd MMM, HH:mm', { locale: localeId })}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Target SLA</p>
-            <p className="font-bold text-slate-800 mt-0.5 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className={cn(isOverdue && 'text-rose-600 font-extrabold')}>
-                {item.due_date
-                  ? format(new Date(item.due_date), 'dd MMM, HH:mm', { locale: localeId })
-                  : '-'}
-              </span>
-            </p>
-            {isOverdue && (
-              <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 px-1.5 py-0.2 rounded-md">
-                Overdue
-              </span>
-            )}
-          </div>
+        {/* Badges / Context Callouts */}
+        <div className="flex flex-wrap items-center gap-2">
+          {item.has_operational_impact && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-800 bg-orange-50/90 px-2.5 py-0.5 rounded-md border border-orange-200/70 shadow-2xs">
+              <AlertTriangle className="w-3.5 h-3.5 text-orange-600" />
+              Dampak Operasional Aktif
+            </span>
+          )}
+          {item.requires_maintenance && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-md border border-amber-200/70 shadow-2xs">
+              <Wrench className="w-3.5 h-3.5 text-amber-600" />
+              Membutuhkan Maintenance
+            </span>
+          )}
+          {item.status === 'reopened' && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-50/90 px-2.5 py-0.5 rounded-md border border-rose-200/70 shadow-2xs">
+              <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+              Kasus Dibuka Kembali (Reopened)
+            </span>
+          )}
         </div>
 
-        {/* Due Date Overrides History (if any) */}
-        {dueDateChanges && dueDateChanges.length > 0 && (
-          <div className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-100 text-xs space-y-2 animate-in fade-in">
-            <div className="flex items-center gap-1.5 text-purple-900 font-extrabold">
-              <Clock className="w-3.5 h-3.5 text-purple-600" />
-              <span>Histori Penyesuaian Batas Waktu ({dueDateChanges.length})</span>
+        {/* Inspection Source Banner (if originated from QC inspection) */}
+        {sourceInspection && (
+          <div className="p-3 rounded-xl bg-blue-50/80 border border-blue-200/70 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <FileCheck2 className="w-4 h-4 text-blue-600 shrink-0" />
+              <div className="min-w-0">
+                <span className="font-bold text-blue-950">Dibuat dari Temuan Inspeksi QC: </span>
+                <span className="font-mono font-bold text-blue-700">{sourceInspection.inspection_number}</span>
+              </div>
             </div>
-            <div className="space-y-2">
-              {dueDateChanges.map((ddc: any) => (
-                <div key={ddc.id} className="text-[11.5px] bg-white/90 p-2.5 rounded-xl border border-purple-100 text-slate-700 space-y-1">
-                  <div className="flex items-center justify-between font-bold text-slate-900 text-xs">
-                    <span>Oleh: {ddc.changer?.full_name || 'Koordinator / Admin'}</span>
-                    <span className="text-[10px] text-slate-400 font-normal">
-                      {format(new Date(ddc.changed_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
-                    </span>
-                  </div>
-                  <p className="text-slate-600">
-                    Batas waktu baru: <strong className="text-purple-700 font-bold">{format(new Date(ddc.new_due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}</strong>
-                  </p>
-                  <p className="text-amber-900 italic bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/60">
-                    Alasan: &quot;{ddc.reason}&quot;
-                  </p>
-                </div>
-              ))}
-            </div>
+            <Link
+              href={`/inspections/${sourceInspection.id}`}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-blue-700 font-bold text-[11px] hover:bg-blue-50 transition-colors shrink-0 shadow-2xs"
+            >
+              <span>Lihat QC</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
           </div>
         )}
       </div>
 
-      {/* ── 2. Workflow Action Panel (Assign, Priority, DueDate, ForceClose, Verify, Reopen) */}
-      <CaseWorkflowActionPanel
-        caseId={item.id}
-        caseNumber={item.case_number}
-        warehouseId={item.warehouse_id}
-        status={item.status}
-        priority={item.priority}
-        dueDate={item.due_date}
-        hasOperationalImpact={item.has_operational_impact}
-        requiresMaintenance={item.requires_maintenance}
-        currentUserId={user.id}
-        currentAssigneeId={currentAssignment?.assignee_id || null}
-        currentAssigneeName={currentAssigneeName}
-        reporterId={item.reporter_id}
-        userRole={currentUserRole}
-        isSuperAdmin={isSuperAdmin}
-        assignableUsers={assignableUsers}
-        rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
-      />
+      {/* ── 2. Operational Lifecycle Stepper ─────────────────────────────── */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+            Alur Penyelesaian Operasional
+          </span>
+          <span className="text-[11px] font-bold text-slate-500">
+            Fase Aktif: <strong className="text-slate-900 font-extrabold">{item.status.replace(/_/g, ' ')}</strong>
+          </span>
+        </div>
 
-      {/* ── 3. Evidence Photos Section with Lightbox ─────────────────────── */}
-      <EvidenceGallery evidences={evidenceList} />
+        <div className="grid grid-cols-4 gap-2 sm:gap-4 relative">
+          {steps.map((s, idx) => (
+            <div key={s.id} className="flex flex-col items-center text-center space-y-1.5 relative">
+              {/* Connector line */}
+              {idx < steps.length - 1 && (
+                <div
+                  className={cn(
+                    'absolute top-3.5 left-[50%] w-full h-0.5 -z-0 transition-colors',
+                    s.isCompleted && steps[idx + 1].isCompleted
+                      ? 'bg-blue-600'
+                      : s.isCompleted
+                      ? 'bg-blue-200'
+                      : 'bg-slate-100'
+                  )}
+                />
+              )}
 
-      {/* ── 4. Comments List ─────────────────────────────────────────────── */}
-      {comments && comments.length > 0 && (
-        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-          <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-            <MessageSquare className="w-4 h-4 text-blue-600" />
-            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-              Diskusi & Catatan ({comments.length})
-            </h2>
-          </div>
-
-          <div className="space-y-2.5 pt-1">
-            {comments.map((com: any) => (
+              {/* Step Circle */}
               <div
-                key={com.id}
                 className={cn(
-                  'p-3.5 rounded-2xl border text-xs space-y-1',
-                  com.is_internal
-                    ? 'bg-amber-50/70 border-amber-200/80'
-                    : 'bg-slate-50 border-slate-100'
+                  'w-7 h-7 rounded-full flex items-center justify-center text-xs font-black z-10 transition-all shadow-2xs',
+                  s.isCompleted
+                    ? 'bg-blue-600 text-white'
+                    : s.isActive
+                    ? 'bg-blue-50 text-blue-700 ring-2 ring-blue-600 border border-blue-300'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
                 )}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-slate-900">
-                      {com.author?.full_name || 'Staf'}
-                    </span>
-                    {com.is_internal && (
-                      <span className="text-[9.5px] font-extrabold text-amber-800 bg-amber-200/80 px-1.5 py-0.2 rounded-md">
-                        Internal
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-slate-400">
-                    {format(new Date(com.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
-                  </span>
-                </div>
-                <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
+                {s.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
               </div>
-            ))}
+
+              {/* Step Label */}
+              <span
+                className={cn(
+                  'text-[10px] sm:text-[11.5px] font-bold leading-tight line-clamp-1',
+                  s.isActive
+                    ? 'text-blue-700 font-black'
+                    : s.isCompleted
+                    ? 'text-slate-800'
+                    : 'text-slate-400'
+                )}
+              >
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 3. Operational Workspace: 2-Column Grid ──────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+        {/* ── Main Content Column (8 cols on desktop, 2nd on mobile) ─────── */}
+        <div className="lg:col-span-8 order-2 lg:order-1 space-y-4 sm:space-y-5">
+          {/* Card: Incident Description & Context */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                Deskripsi & Konteks Kejadian
+              </span>
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                <span>Kategori:</span>
+                <strong className="text-slate-800 font-bold">
+                  {(item.category as any)?.name || 'Umum'}
+                  {(item.subcategory as any)?.name ? ` • ${(item.subcategory as any).name}` : ''}
+                </strong>
+              </div>
+            </div>
+
+            <div className="bg-slate-50/90 p-4 rounded-xl border border-slate-100 text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
+              {item.description || 'Tidak ada deskripsi rinci.'}
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+              <span className="flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-slate-400" />
+                <span>Pelapor: <strong>{(item.reporter as any)?.full_name || (item.reporter_id ? profileMap.get(item.reporter_id) : null) || 'Staff Gudang'}</strong></span>
+              </span>
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <span>{format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}</span>
+              </span>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* ── 5. Activity Timeline Card ────────────────────────────────────── */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-        <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-          <Activity className="w-4 h-4 text-blue-600" />
-          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-            Riwayat Aktivitas & Alur Kerja ({activities?.length || 0})
-          </h2>
+          {/* Card: Root Cause & Action (if populated) */}
+          {(item.root_cause || item.corrective_action || item.preventive_action) && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3 animate-in fade-in">
+              <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                <Wrench className="w-4 h-4 text-purple-600" />
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                  Analisis & Tindakan Perbaikan
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {item.root_cause && (
+                  <div className="sm:col-span-2 p-3 rounded-xl bg-purple-50/70 border border-purple-100 text-purple-950 space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-purple-700">
+                      Akar Masalah (Root Cause)
+                    </span>
+                    <p className="font-bold text-xs">{(item.root_cause as any).name}</p>
+                  </div>
+                )}
+
+                {item.corrective_action && (
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500">
+                      Tindakan Korektif
+                    </span>
+                    <p className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
+                      {item.corrective_action}
+                    </p>
+                  </div>
+                )}
+
+                {item.preventive_action && (
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500">
+                      Tindakan Preventif
+                    </span>
+                    <p className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
+                      {item.preventive_action}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Card: Evidence Photos with Fullscreen Lightbox */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+            <EvidenceGallery evidences={evidenceList} />
+          </div>
+
+          {/* Card: Discussion & Internal Notes */}
+          {comments && comments.length > 0 && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                <MessageSquare className="w-4 h-4 text-blue-600" />
+                <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                  Diskusi & Catatan ({comments.length})
+                </h2>
+              </div>
+
+              <div className="space-y-2.5 pt-1">
+                {comments.map((com: any) => {
+                  const authorName = com.author?.full_name || (com.author_id ? profileMap.get(com.author_id) : null) || 'Staf';
+                  return (
+                    <div
+                      key={com.id}
+                      className={cn(
+                        'p-3 rounded-xl border text-xs space-y-1',
+                        com.is_internal
+                          ? 'bg-amber-50/70 border-amber-200/80'
+                          : 'bg-slate-50 border-slate-100'
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-slate-900">
+                            {authorName}
+                          </span>
+                          {com.is_internal && (
+                            <span className="text-[9.5px] font-extrabold text-amber-800 bg-amber-200/80 px-1.5 py-0.2 rounded-md">
+                              Internal
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-400">
+                          {format(new Date(com.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
+                        </span>
+                      </div>
+                      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Card: Activity & Workflow Timeline */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+              <Activity className="w-4 h-4 text-blue-600" />
+              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                Riwayat Aktivitas & Alur Kerja ({activities?.length || 0})
+              </h2>
+            </div>
+
+            {activities && activities.length > 0 ? (
+              <div className="space-y-2.5 pt-1">
+                {activities.map((act: any) => {
+                  const actorName = act.actor?.full_name || (act.actor_id ? profileMap.get(act.actor_id) : null) || 'Sistem / Administrator';
+                  return (
+                    <div key={act.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-100 text-xs">
+                      <div className="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        {actorName ? actorName[0].toUpperCase() : 'S'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="font-bold text-slate-800 truncate">
+                            {actorName}
+                          </span>
+                          <span className="text-[10.5px] text-slate-400">
+                            {format(new Date(act.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
+                          </span>
+                        </div>
+                        <p className="text-[11.5px] text-slate-700 font-semibold">
+                          {formatActivityAction(act)}
+                        </p>
+                        {act.metadata?.reason && (
+                          <p className="text-[11px] text-amber-900 italic mt-1.5 bg-amber-50 p-2 rounded-lg border border-amber-200/80">
+                            <strong>Alasan:</strong> &quot;{act.metadata.reason}&quot;
+                          </p>
+                        )}
+                        {act.metadata?.note && (
+                          <p className="text-[11px] text-slate-700 italic mt-1.5 bg-white p-2 rounded-lg border border-slate-200/80">
+                            <strong>Catatan:</strong> &quot;{act.metadata.note}&quot;
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic py-2">Belum ada riwayat aktivitas.</p>
+            )}
+          </div>
+
+          {/* Card: Due Date Overrides History (if any) */}
+          {dueDateChanges && dueDateChanges.length > 0 && (
+            <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 text-xs space-y-2.5 animate-in fade-in">
+              <div className="flex items-center gap-1.5 text-purple-900 font-extrabold">
+                <Clock className="w-3.5 h-3.5 text-purple-600" />
+                <span>Histori Penyesuaian Batas Waktu SLA ({dueDateChanges.length})</span>
+              </div>
+              <div className="space-y-2">
+                {dueDateChanges.map((ddc: any) => {
+                  const changerName = ddc.changer?.full_name || (ddc.changed_by ? profileMap.get(ddc.changed_by) : null) || 'Koordinator / Admin';
+                  return (
+                    <div key={ddc.id} className="text-[11.5px] bg-white/90 p-2.5 rounded-xl border border-purple-100 text-slate-700 space-y-1">
+                      <div className="flex items-center justify-between font-bold text-slate-900 text-xs">
+                        <span>Oleh: {changerName}</span>
+                        <span className="text-[10px] text-slate-400 font-normal">
+                          {format(new Date(ddc.changed_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
+                        </span>
+                      </div>
+                      <p className="text-slate-600">
+                        Batas waktu baru: <strong className="text-purple-700 font-bold">{format(new Date(ddc.new_due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}</strong>
+                      </p>
+                      <p className="text-amber-900 italic bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
+                        Alasan: &quot;{ddc.reason}&quot;
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        {activities && activities.length > 0 ? (
-          <div className="space-y-3 pt-2">
-            {activities.map((act: any) => (
-              <div key={act.id} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 border border-slate-100 text-xs">
-                <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                  {act.actor?.full_name ? act.actor.full_name[0].toUpperCase() : 'S'}
+        {/* ── Right / Operational Rail Column (4 cols on desktop, 1st on mobile) */}
+        <div className="lg:col-span-4 order-1 lg:order-2 space-y-4 lg:sticky lg:top-4 lg:self-start">
+          {/* 1. Target SLA Card */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                <Clock className="w-3.5 h-3.5 text-blue-600" />
+                <span>Target SLA</span>
+              </div>
+              {isClosed ? (
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-200/70 shadow-2xs">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  Selesai
+                </span>
+              ) : isOverdue ? (
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2 py-0.5 rounded-full border border-rose-200/90 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                  Lewat SLA {item.due_date ? `${Math.abs(differenceInHours(new Date(), new Date(item.due_date)))}j` : ''}
+                </span>
+              ) : isApproachingSla ? (
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 bg-amber-50/90 px-2 py-0.5 rounded-full border border-amber-200/80 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                  Sisa {item.due_date ? formatDistanceToNow(new Date(item.due_date), { locale: localeId }) : ''}
+                </span>
+              ) : item.due_date ? (
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2 py-0.5 rounded-full border border-slate-200/70 shadow-2xs">
+                  Sisa {formatDistanceToNow(new Date(item.due_date), { locale: localeId })}
+                </span>
+              ) : (
+                <span className="text-xs text-slate-400">-</span>
+              )}
+            </div>
+
+            <p className={cn('text-sm font-black tracking-tight', isOverdue ? 'text-rose-600' : 'text-slate-900')}>
+              {item.due_date
+                ? format(new Date(item.due_date), 'dd MMMM yyyy • HH:mm', { locale: localeId })
+                : 'Batas waktu belum diatur'}
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium">
+              {isClosed
+                ? `Kasus telah ditutup pada ${item.closed_at ? format(new Date(item.closed_at), 'dd MMM yyyy, HH:mm', { locale: localeId }) : 'selesai'}`
+                : isOverdue
+                ? 'Penyelesaian melewati batas waktu target operasional'
+                : 'Target penyelesaian sesuai standar SLA'}
+            </p>
+          </div>
+
+          {/* 2. Penugasan PIC Card */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                Penanggung Jawab (PIC)
+              </span>
+            </div>
+
+            {currentAssignment ? (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center shadow-2xs shrink-0">
+                  {currentAssigneeName ? currentAssigneeName[0].toUpperCase() : 'P'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2 mb-0.5">
-                    <span className="font-bold text-slate-800 truncate">
-                      {act.actor?.full_name || 'Sistem / Administrator'}
-                    </span>
-                    <span className="text-[10.5px] text-slate-400">
-                      {format(new Date(act.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
-                    </span>
-                  </div>
-                  <p className="text-[11.5px] text-slate-700 font-semibold">
-                    {formatActivityAction(act)}
+                  <p className="font-extrabold text-xs text-slate-900 truncate">
+                    {currentAssigneeName}
                   </p>
-                  {act.metadata?.reason && (
-                    <p className="text-[11px] text-amber-900 italic mt-1.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200/80">
-                      <strong>Alasan:</strong> &quot;{act.metadata.reason}&quot;
-                    </p>
-                  )}
-                  {act.metadata?.note && (
-                    <p className="text-[11px] text-slate-700 italic mt-1.5 bg-white p-2.5 rounded-xl border border-slate-200/80">
-                      <strong>Catatan:</strong> &quot;{act.metadata.note}&quot;
-                    </p>
+                  <p className="text-[10.5px] text-slate-500 font-semibold mt-0.5">
+                    Ditugaskan {currentAssignment.assigned_at ? formatDistanceToNow(new Date(currentAssignment.assigned_at), { addSuffix: true, locale: localeId }) : ''}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 text-xs">
+                <User className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="font-medium italic text-[11.5px]">Belum ada PIC ditugaskan</span>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Panel Aksi Operasional (CaseWorkflowActionPanel) — Placed immediately above Location for immediate fold discovery */}
+          <CaseWorkflowActionPanel
+            caseId={item.id}
+            caseNumber={item.case_number}
+            warehouseId={item.warehouse_id}
+            status={item.status}
+            priority={item.priority}
+            dueDate={item.due_date}
+            hasOperationalImpact={item.has_operational_impact}
+            requiresMaintenance={item.requires_maintenance}
+            currentUserId={user.id}
+            currentAssigneeId={currentAssignment?.assignee_id || null}
+            currentAssigneeName={currentAssigneeName}
+            reporterId={item.reporter_id}
+            userRole={currentUserRole}
+            isSuperAdmin={isSuperAdmin}
+            assignableUsers={assignableUsers}
+            rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
+          />
+
+          {/* 4. Lokasi & Aset Terkait Card */}
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                Lokasi & Aset
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                    Area & Lokasi
+                  </span>
+                  {locationText ? (
+                    <span className="font-bold text-slate-800 leading-snug">{locationText}</span>
+                  ) : (
+                    <span className="text-slate-400 italic text-[11px]">Lokasi belum ditentukan</span>
                   )}
                 </div>
               </div>
-            ))}
+
+              <div className="flex items-start gap-2 pt-2 border-t border-slate-100">
+                <Package className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                    Aset Terkait
+                  </span>
+                  {item.assets ? (
+                    <div>
+                      <span className="font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[10.5px]">
+                        {item.assets.asset_code}
+                      </span>
+                      <p className="font-semibold text-slate-800 text-[11px] mt-0.5">{item.assets.name}</p>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 italic text-[11px]">Tidak terkait aset</span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <p className="text-xs text-slate-400 italic py-2">Belum ada riwayat aktivitas.</p>
-        )}
+        </div>
       </div>
     </div>
   );
