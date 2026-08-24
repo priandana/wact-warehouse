@@ -17,6 +17,7 @@ import { PriorityBadge, type Priority } from '@/components/shared/PriorityBadge'
 import { Select } from '@/components/shared/Select';
 import Link from 'next/link';
 import { type ServerInspectionContext } from '@/app/(app)/cases/new/page';
+import { CameraCaptureModal } from '@/components/shared/CameraCaptureModal';
 import {
   ChevronLeft,
   ChevronRight,
@@ -32,8 +33,10 @@ import {
   AlertTriangle,
   Sparkles,
   ShieldAlert,
+  ShieldCheck,
   RotateCw,
   ExternalLink,
+  Maximize2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -178,6 +181,8 @@ export function CreateCaseWizard({
   );
 
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState<boolean>(false);
+  const [viewingSourceEvidenceIdx, setViewingSourceEvidenceIdx] = useState<number | null>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -239,26 +244,27 @@ export function CreateCaseWizard({
     assets,
   ]);
 
-  // Persist draft on changes
+  // Save draft on change (only for direct reporting flow)
   useEffect(() => {
-    if (!clientRequestId) return;
-    const draftData = {
-      clientRequestId,
-      title,
-      categoryId,
-      subcategoryId,
-      priority,
-      areaId,
-      locationId,
-      assetId,
-      description,
-      hasOperationalImpact,
-      requiresMaintenance,
-    };
+    if (initialAssetId || initialInspectionId) return; // Do not overwrite drafts from prefilled flows
+
     try {
-      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData));
+      const draft = {
+        clientRequestId,
+        title,
+        categoryId,
+        subcategoryId,
+        priority,
+        areaId,
+        locationId,
+        assetId,
+        description,
+        hasOperationalImpact,
+        requiresMaintenance,
+      };
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
     } catch {
-      // ignore
+      // Ignore quota errors
     }
   }, [
     clientRequestId,
@@ -272,6 +278,8 @@ export function CreateCaseWizard({
     description,
     hasOperationalImpact,
     requiresMaintenance,
+    initialAssetId,
+    initialInspectionId,
   ]);
 
   const clearDraft = () => {
@@ -294,12 +302,8 @@ export function CreateCaseWizard({
   ];
 
   // Photo handlers with Async Compression
-  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const filesArray = Array.from(files);
-    if (e.target) e.target.value = '';
+  const processFiles = async (filesArray: File[]) => {
+    if (!filesArray || filesArray.length === 0) return;
 
     // Create initial processing items
     const newItems: PhotoItem[] = filesArray.map((file) => ({
@@ -341,6 +345,29 @@ export function CreateCaseWizard({
           )
         );
       }
+    }
+  };
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const filesArray = Array.from(files);
+    if (e.target) e.target.value = '';
+    await processFiles(filesArray);
+  };
+
+  const handleCameraCapture = async (file: File) => {
+    await processFiles([file]);
+  };
+
+  const handleCameraBtnClick = () => {
+    if (
+      typeof window !== 'undefined' &&
+      Boolean(navigator?.mediaDevices?.getUserMedia)
+    ) {
+      setIsCameraModalOpen(true);
+    } else {
+      cameraInputRef.current?.click();
     }
   };
 
@@ -1005,14 +1032,133 @@ export function CreateCaseWizard({
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {step === 4 && (
         <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
-          {/* Photo Capture Card */}
+          {/* ── BUKTI DARI INSPEKSI QC (READ-ONLY SOURCE EVIDENCE) ── */}
+          {inspectionContext && (
+            <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                    <h3 className="text-sm font-extrabold text-slate-900">
+                      Bukti dari Inspeksi QC ({inspectionContext.inspectionNumber})
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Dokumentasi hasil audit inspeksi (Otomatis terhubung &bull; Read-Only)
+                  </p>
+                </div>
+                <span className="text-[10.5px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                  {(inspectionContext.evidences || []).length} Foto
+                </span>
+              </div>
+
+              {/* 1. Bukti Temuan NG */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700">
+                    Bukti Temuan NG
+                  </span>
+                </div>
+                {(() => {
+                  const ngEvidences = (inspectionContext.evidences || []).filter((e) => e.is_ng);
+                  if (ngEvidences.length > 0) {
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {ngEvidences.map((ev, idx) => (
+                          <button
+                            key={ev.id}
+                            type="button"
+                            onClick={() => {
+                              const globalIdx = (inspectionContext.evidences || []).findIndex(
+                                (item) => item.id === ev.id
+                              );
+                              setViewingSourceEvidenceIdx(globalIdx >= 0 ? globalIdx : idx);
+                            }}
+                            className="relative aspect-square rounded-2xl overflow-hidden border border-rose-200 bg-slate-100 group cursor-pointer hover:ring-2 hover:ring-rose-500/50 transition-all shadow-2xs text-left"
+                          >
+                            <img
+                              src={ev.signed_url || ''}
+                              alt={ev.item_label || ev.file_name || 'Bukti Temuan NG'}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent flex flex-col justify-end p-2.5 pointer-events-none">
+                              <span className="text-[10px] font-black text-white truncate drop-shadow-xs">
+                                {ev.item_label || ev.file_name || `Foto NG ${idx + 1}`}
+                              </span>
+                            </div>
+                            <div className="absolute top-2 right-2 p-1 rounded-full bg-slate-900/60 text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                              <Maximize2 className="w-3 h-3" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs text-slate-500 font-medium flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span>Belum ada foto yang dilampirkan khusus pada poin NG.</span>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* 2. Dokumentasi Inspeksi Lainnya */}
+              {(() => {
+                const otherEvidences = (inspectionContext.evidences || []).filter((e) => !e.is_ng);
+                if (otherEvidences.length === 0) return null;
+                return (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                        Dokumentasi Inspeksi Lainnya ({otherEvidences.length})
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {otherEvidences.map((ev, idx) => (
+                        <button
+                          key={ev.id}
+                          type="button"
+                          onClick={() => {
+                            const globalIdx = (inspectionContext.evidences || []).findIndex(
+                              (item) => item.id === ev.id
+                            );
+                            setViewingSourceEvidenceIdx(globalIdx >= 0 ? globalIdx : idx);
+                          }}
+                          className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 group cursor-pointer hover:ring-2 hover:ring-amber-500/50 transition-all shadow-2xs text-left"
+                        >
+                          <img
+                            src={ev.signed_url || ''}
+                            alt={ev.item_label || ev.file_name || 'Dokumentasi Inspeksi'}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 pointer-events-none"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent flex flex-col justify-end p-2.5 pointer-events-none">
+                            <span className="text-[10px] font-black text-white truncate drop-shadow-xs">
+                              {ev.item_label || ev.file_name || `Foto ${idx + 1}`}
+                            </span>
+                          </div>
+                          <div className="absolute top-2 right-2 p-1 rounded-full bg-slate-900/60 text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <Maximize2 className="w-3 h-3" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Photo Capture Card (User-Added Case Evidence) */}
           <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
             <div>
               <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-                Lampirkan Bukti Foto
+                {inspectionContext ? 'Tambahkan Bukti Kasus (Opsional)' : 'Lampirkan Bukti Foto'}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Ambil foto langsung dengan kamera atau pilih dari galeri
+                {inspectionContext
+                  ? 'Lampirkan foto tambahan khusus untuk penanganan kasus ini jika diperlukan'
+                  : 'Ambil foto langsung dengan kamera atau pilih dari galeri'}
               </p>
             </div>
 
@@ -1039,7 +1185,7 @@ export function CreateCaseWizard({
               <button
                 type="button"
                 disabled={submitting || isAnyPhotoProcessing}
-                onClick={() => cameraInputRef.current?.click()}
+                onClick={handleCameraBtnClick}
                 className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200/80 active:scale-95 disabled:opacity-50 transition-all touch-target"
               >
                 <Camera className="w-4 h-4" />
@@ -1167,7 +1313,10 @@ export function CreateCaseWizard({
       )}
 
       {/* ── Sticky Bottom Action Bar ─────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-[0_-4px_20px_rgba(15,23,42,0.06)]">
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-[0_-4px_20px_rgba(15,23,42,0.06)]"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+      >
         <div className="max-w-xl mx-auto flex items-center gap-2.5">
           {step < 4 ? (
             <button
@@ -1206,6 +1355,91 @@ export function CreateCaseWizard({
           )}
         </div>
       </div>
+
+      {/* ── Camera Modal (Real in-app camera with live stream, capture & retake) ── */}
+      <CameraCaptureModal
+        isOpen={isCameraModalOpen}
+        onClose={() => setIsCameraModalOpen(false)}
+        onCapture={handleCameraCapture}
+        onFallbackToFilePicker={() => cameraInputRef.current?.click()}
+      />
+
+      {/* ── Lightbox Modal for Source Inspection Photos ──────────────────── */}
+      {viewingSourceEvidenceIdx !== null &&
+        inspectionContext?.evidences &&
+        inspectionContext.evidences[viewingSourceEvidenceIdx] && (
+          <div className="fixed inset-0 z-[70] bg-slate-950/90 backdrop-blur-sm flex flex-col justify-between p-4 sm:p-6 animate-in fade-in">
+            {/* Top Bar */}
+            <div className="flex items-center justify-between text-white shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold bg-white/10 px-2.5 py-1 rounded-lg">
+                  {viewingSourceEvidenceIdx + 1} / {inspectionContext.evidences.length}
+                </span>
+                <span className="text-xs font-bold text-slate-200 truncate max-w-[200px] sm:max-w-md">
+                  {inspectionContext.evidences[viewingSourceEvidenceIdx].item_label ||
+                    inspectionContext.evidences[viewingSourceEvidenceIdx].file_name ||
+                    'Bukti Inspeksi'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingSourceEvidenceIdx(null)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Main Image */}
+            <div className="relative flex-1 flex items-center justify-center my-auto overflow-hidden py-4">
+              <img
+                src={inspectionContext.evidences[viewingSourceEvidenceIdx].signed_url || ''}
+                alt="Foto Bukti Inspeksi"
+                className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+              />
+
+              {/* Prev button */}
+              {viewingSourceEvidenceIdx > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewingSourceEvidenceIdx(viewingSourceEvidenceIdx - 1);
+                  }}
+                  className="absolute left-2 sm:left-4 p-2.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-800 transition-all shadow-lg"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+
+              {/* Next button */}
+              {viewingSourceEvidenceIdx < inspectionContext.evidences.length - 1 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewingSourceEvidenceIdx(viewingSourceEvidenceIdx + 1);
+                  }}
+                  className="absolute right-2 sm:right-4 p-2.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-800 transition-all shadow-lg"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            {/* Caption / Item Info Footer */}
+            <div className="text-center text-white/80 text-xs shrink-0 pt-2">
+              <p className="font-semibold text-slate-100">
+                {inspectionContext.evidences[viewingSourceEvidenceIdx].item_label
+                  ? `Checklist: ${inspectionContext.evidences[viewingSourceEvidenceIdx].item_label}`
+                  : 'Bukti Temuan Inspeksi'}
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Otomatis terhubung ke kasus dari {inspectionContext.inspectionNumber}
+              </p>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

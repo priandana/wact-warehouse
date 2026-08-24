@@ -15,6 +15,16 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+export interface SourceInspectionEvidence {
+  id: string;
+  file_url: string;
+  signed_url?: string;
+  file_name?: string | null;
+  caption?: string | null;
+  item_label?: string | null;
+  is_ng?: boolean;
+}
+
 export interface ServerInspectionContext {
   inspectionId: string;
   inspectionNumber: string;
@@ -28,7 +38,7 @@ export interface ServerInspectionContext {
   ngFindings: Array<{ label: string; notes?: string | null }>;
   defaultTitle: string;
   defaultDescription: string;
-  evidences?: Array<{ id: string; file_url?: string | null; file_name?: string | null; caption?: string | null }>;
+  evidences?: SourceInspectionEvidence[];
   existingCase?: { id: string; case_number: string; title: string; status: string } | null;
 }
 
@@ -146,7 +156,7 @@ export default async function NewCasePage({
 
       supabase
         .from('inspection_evidences')
-        .select('id, file_url, file_name, caption')
+        .select('id, inspection_result_id, file_url, file_name, caption')
         .eq('inspection_id', params.inspection_id),
 
       supabase
@@ -182,6 +192,54 @@ export default async function NewCasePage({
           }
         });
 
+        // Generate finite-expiry signed URLs for source inspection evidence photos
+        let signedEvidences: SourceInspectionEvidence[] = [];
+        if (evidencesData && evidencesData.length > 0) {
+          const paths = evidencesData
+            .map((e) => e.file_url)
+            .filter((p): p is string => Boolean(p));
+
+          const signedMap = new Map<string, string>();
+          if (paths.length > 0) {
+            const { data: signedResults } = await supabase.storage
+              .from('inspection-evidences')
+              .createSignedUrls(paths, 3600);
+
+            if (signedResults) {
+              for (const s of signedResults) {
+                if (s.path && s.signedUrl) {
+                  signedMap.set(s.path, s.signedUrl);
+                }
+              }
+            }
+          }
+
+          const resultMap = new Map<string, { label: string; is_ng: boolean }>(
+            ((resultsData as any[]) || []).map((r) => [
+              r.id,
+              {
+                label: r.item?.label || '',
+                is_ng: r.value === 'ng',
+              },
+            ])
+          );
+
+          signedEvidences = evidencesData.map((e) => {
+            const res = e.inspection_result_id
+              ? resultMap.get(e.inspection_result_id)
+              : undefined;
+            return {
+              id: e.id,
+              file_url: e.file_url,
+              signed_url: signedMap.get(e.file_url) || undefined,
+              file_name: e.file_name,
+              caption: e.caption,
+              item_label: res?.label || undefined,
+              is_ng: res?.is_ng ?? false,
+            };
+          });
+        }
+
         inspectionContext = {
           inspectionId: rawInsp.id,
           inspectionNumber: rawInsp.inspection_number,
@@ -195,7 +253,7 @@ export default async function NewCasePage({
           ngFindings: ngList,
           defaultTitle: `Temuan Inspeksi ${rawAsset?.name || 'Aset'}${rawAsset?.asset_code ? ` - ${rawAsset.asset_code}` : ''}`,
           defaultDescription: descLines.join('\n'),
-          evidences: evidencesData || [],
+          evidences: signedEvidences,
           existingCase: existingCases && existingCases.length > 0 ? existingCases[0] : null,
         };
       }
