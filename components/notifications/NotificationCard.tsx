@@ -16,6 +16,7 @@ import {
   Check,
   Loader2,
   Bell,
+  AlertTriangle,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
@@ -87,6 +88,22 @@ const TYPE_CONFIGS: Record<NotificationType, TypeConfig> = {
     badgeBorder: 'border-rose-200/80',
     iconColor: 'text-rose-600',
     label: 'Ditutup Paksa Admin',
+  },
+  sla_approaching: {
+    icon: Clock,
+    badgeBg: 'bg-amber-50',
+    badgeText: 'text-amber-700',
+    badgeBorder: 'border-amber-200/80',
+    iconColor: 'text-amber-600',
+    label: 'SLA Mendekati Batas',
+  },
+  sla_overdue: {
+    icon: AlertTriangle,
+    badgeBg: 'bg-rose-50',
+    badgeText: 'text-rose-700',
+    badgeBorder: 'border-rose-200/80',
+    iconColor: 'text-rose-600',
+    label: 'SLA Terlewati',
   },
 };
 

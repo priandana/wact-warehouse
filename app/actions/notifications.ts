@@ -12,7 +12,9 @@ export type NotificationType =
   | 'case_closed'
   | 'verification_failed'
   | 'reopened'
-  | 'force_closed';
+  | 'force_closed'
+  | 'sla_approaching'
+  | 'sla_overdue';
 
 export type NotificationFilterTab = 'all' | 'unread' | 'assignments' | 'case_updates';
 
@@ -135,7 +137,14 @@ export async function getNotificationsAction(options: {
     } else if (filter === 'assignments') {
       query = query.in('type', ['case_assigned', 'waiting_verification']);
     } else if (filter === 'case_updates') {
-      query = query.in('type', ['case_closed', 'verification_failed', 'reopened', 'force_closed']);
+      query = query.in('type', [
+        'case_closed',
+        'verification_failed',
+        'reopened',
+        'force_closed',
+        'sla_approaching',
+        'sla_overdue',
+      ]);
     }
 
     // Apply pagination range
