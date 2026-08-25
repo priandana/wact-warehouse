@@ -3,11 +3,12 @@
 // a user holds in a given warehouse.
 // Used for UX (show/hide buttons). NOT the primary security layer.
 
+import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase/server';
 import { type Capability } from './capabilities';
 import { roleCapabilities } from './roleCapabilities';
 
-export async function resolveCapabilities(
+export const resolveCapabilities = cache(async function resolveCapabilities(
   userId: string,
   warehouseId: string,
 ): Promise<Set<Capability>> {
@@ -46,7 +47,7 @@ export async function resolveCapabilities(
   }
 
   return caps;
-}
+});
 
 /**
  * Lightweight check — resolves capabilities then checks for one.

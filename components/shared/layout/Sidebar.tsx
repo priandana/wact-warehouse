@@ -20,6 +20,8 @@ import {
 import { cn } from '@/lib/utils/cn';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useActiveWarehouse } from './AppShellProvider';
+import { Capability } from '@/lib/permissions/capabilities';
 
 interface NavItem {
   href: string;
@@ -76,6 +78,7 @@ interface SidebarProps {
 export function Sidebar({ userName, userRole }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { can } = useActiveWarehouse();
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -123,10 +126,15 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
         {/* Navigation Items */}
         <nav className="px-2.5 py-2 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto no-scrollbar">
           {navGroups.map((group, gi) => {
-            const isAdminOrCoord = userRole === 'admin' || userRole === 'coordinator';
             const visibleItems = group.items.filter((item) => {
+              if (item.href === '/analytics') {
+                return can(Capability.ANALYTICS_VIEW) && can(Capability.CASE_VIEW_ALL);
+              }
+              if (item.href === '/reports') {
+                return can(Capability.REPORT_EXPORT) && can(Capability.CASE_VIEW_ALL);
+              }
               if (item.href === '/users' || item.href === '/master-data') {
-                return isAdminOrCoord;
+                return can(Capability.USER_MANAGE) || can(Capability.MASTER_DATA_MANAGE);
               }
               return true;
             });
