@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { BaseModal, DeactivationConfirmModal } from './MasterDataModals';
+import { MasterDataActionButton } from './MasterDataActionButton';
 import {
   createCaseCategoryAction,
   updateCaseCategoryAction,
@@ -213,27 +214,26 @@ export function CaseCategoriesTab({
                 </div>
 
                 <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
-                  <span className="text-xs font-semibold text-slate-500 px-2 py-1 bg-white rounded-lg border border-slate-200/60 shadow-2xs mr-1">
+                  <span className="text-xs font-semibold text-slate-500 px-2.5 py-1 bg-white rounded-lg border border-slate-200/60 shadow-2xs mr-1">
                     {subs.length} Subkategori
                   </span>
 
                   {isSuperAdmin && (
-                    <>
-                      <button
+                    <div className="flex items-center gap-1.5">
+                      <MasterDataActionButton
+                        variant="add"
                         onClick={() => setCreateSubTargetCat(cat)}
-                        className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 border border-blue-200/60 transition-all touch-target"
                         title="Tambah Subkategori"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                      <button
+                        aria-label={`Tambah Subkategori di ${cat.name}`}
+                      />
+                      <MasterDataActionButton
+                        variant="edit"
                         onClick={() => setEditCatTarget(cat)}
-                        className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all touch-target"
                         title="Edit Kategori"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
+                        aria-label={`Edit ${cat.name}`}
+                      />
+                      <MasterDataActionButton
+                        variant={cat.is_active ? 'deactivate' : 'activate'}
                         onClick={() =>
                           setDeactivateTarget({
                             type: 'category',
@@ -242,17 +242,10 @@ export function CaseCategoriesTab({
                             currentActive: cat.is_active,
                           })
                         }
-                        className={cn(
-                          'p-1.5 rounded-lg border transition-all touch-target',
-                          cat.is_active
-                            ? 'text-amber-600 hover:bg-amber-50 border-amber-200/60'
-                            : 'text-emerald-600 hover:bg-emerald-50 border-emerald-200/60'
-                        )}
                         title={cat.is_active ? 'Nonaktifkan Kategori' : 'Aktifkan Kategori'}
-                      >
-                        <Power className="w-3.5 h-3.5" />
-                      </button>
-                    </>
+                        aria-label={`${cat.is_active ? 'Nonaktifkan' : 'Aktifkan'} ${cat.name}`}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -282,21 +275,23 @@ export function CaseCategoriesTab({
                             <span
                               className={cn(
                                 'w-1.5 h-1.5 rounded-full shrink-0',
-                                sub.is_active ? 'bg-emerald-500' : 'bg-slate-300'
+                                sub.is_active ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-slate-300'
                               )}
                             />
                           </div>
 
                           {isSuperAdmin && (
                             <div className="flex items-center gap-1 shrink-0">
-                              <button
+                              <MasterDataActionButton
+                                variant="edit"
+                                size="sm"
                                 onClick={() => setEditSubTarget(sub)}
-                                className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all touch-target"
                                 title="Edit Subkategori"
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </button>
-                              <button
+                                aria-label={`Edit ${sub.name}`}
+                              />
+                              <MasterDataActionButton
+                                variant={sub.is_active ? 'deactivate' : 'activate'}
+                                size="sm"
                                 onClick={() =>
                                   setDeactivateTarget({
                                     type: 'subcategory',
@@ -305,16 +300,9 @@ export function CaseCategoriesTab({
                                     currentActive: sub.is_active,
                                   })
                                 }
-                                className={cn(
-                                  'p-1 rounded transition-all touch-target',
-                                  sub.is_active
-                                    ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
-                                    : 'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50'
-                                )}
-                                title={sub.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                              >
-                                <Power className="w-3 h-3" />
-                              </button>
+                                title={sub.is_active ? 'Nonaktifkan Subkategori' : 'Aktifkan Subkategori'}
+                                aria-label={`${sub.is_active ? 'Nonaktifkan' : 'Aktifkan'} ${sub.name}`}
+                              />
                             </div>
                           )}
                         </div>

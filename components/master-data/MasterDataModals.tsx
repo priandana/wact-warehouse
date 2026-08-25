@@ -2,7 +2,7 @@
 
 // components/master-data/MasterDataModals.tsx
 // Responsive, accessible modal system for Master Data Create / Edit / Deactivate actions.
-// Uses React Portal directly to document.body with z-[80] layering and backdrop scroll locking.
+// Uses React Portal directly to document.body with z-[60] layering and backdrop scroll locking.
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -45,7 +45,7 @@ export function BaseModal({ open, onClose, title, subtitle, icon: Icon, children
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"

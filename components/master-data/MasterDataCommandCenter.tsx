@@ -146,7 +146,7 @@ export function MasterDataCommandCenter({
       </div>
 
       {/* ── RESPONSIVE TAB BAR ── */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60 overflow-x-auto no-scrollbar shadow-2xs">
+      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60 overflow-x-auto no-scrollbar shadow-2xs w-full scroll-smooth">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -156,15 +156,16 @@ export function MasterDataCommandCenter({
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all touch-target shrink-0',
+                'flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all touch-target shrink-0',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 active:scale-95',
                 isActive
-                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
               )}
             >
               <Icon
                 className={cn(
-                  'w-4 h-4',
+                  'w-4 h-4 shrink-0',
                   isActive
                     ? tab.scope === 'global'
                       ? 'text-purple-600'
@@ -175,7 +176,7 @@ export function MasterDataCommandCenter({
               <span>{tab.label}</span>
               <span
                 className={cn(
-                  'text-[9.5px] font-extrabold px-1.5 py-0.5 rounded-md',
+                  'text-[9.5px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 transition-colors',
                   isActive
                     ? tab.scope === 'global'
                       ? 'bg-purple-50 text-purple-700 border border-purple-200/60'

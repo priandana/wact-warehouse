@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { BaseModal, DeactivationConfirmModal } from './MasterDataModals';
+import { MasterDataActionButton } from './MasterDataActionButton';
 import {
   updateGlobalSlaAction,
   upsertWarehouseSlaOverrideAction,
@@ -106,7 +107,7 @@ export function SlaConfigTab({
             <span>Hirarki Penentuan Deadline Kasus:</span>
           </div>
           <p className="leading-relaxed">
-            <strong className="text-slate-800">1. Override Gudang Aktif</strong> (jika diatur) $\to$ <strong className="text-slate-800">2. Default Global</strong> $\to$ <strong className="text-slate-800">3. System Fallback</strong> (1j / 4j / 24j / 72j).
+            <strong className="text-slate-800">1. Override Gudang Aktif</strong> (jika diatur) → <strong className="text-slate-800">2. Default Global</strong> → <strong className="text-slate-800">3. System Fallback</strong> (1j / 4j / 24j / 72j).
           </p>
           <p className="text-[11px] text-slate-400">
             Perubahan SLA hanya berlaku untuk pelaporan kasus baru dan tidak mengubah due_date kasus yang sedang berjalan.
@@ -130,11 +131,11 @@ export function SlaConfigTab({
               key={priority}
               className={cn(
                 'p-4 bg-white rounded-2xl border transition-all shadow-2xs flex flex-col justify-between gap-3',
-                isOverridden ? 'border-blue-200 bg-blue-50/10' : 'border-slate-200/80'
+                isOverridden ? 'border-blue-200 bg-blue-50/10' : 'border-slate-200/80 hover:border-slate-300'
               )}
             >
               {/* Card Header */}
-              <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+              <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <span className={cn('w-2.5 h-2.5 rounded-full', meta.badge)} />
                   <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{meta.label}</span>
@@ -150,26 +151,27 @@ export function SlaConfigTab({
               {/* Rows: Global Default vs Warehouse Override */}
               <div className="space-y-2.5 text-xs">
                 {/* Global Row */}
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Globe className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                    <div>
-                      <p className="font-bold text-slate-800">Default Global</p>
-                      <p className="text-[10px] text-slate-400">Berlaku untuk semua gudang</p>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 min-h-[56px] gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Globe className="w-4 h-4 text-purple-600 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-800 leading-tight">Default Global</p>
+                      <p className="text-[10px] text-slate-400 leading-tight truncate">Berlaku untuk semua gudang</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-slate-900 text-xs">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-extrabold text-slate-900 text-xs sm:text-sm">
                       {global ? `${global.duration_hours} Jam` : '—'}
                     </span>
-                    {isSuperAdmin && global && (
-                      <button
+                    {isSuperAdmin && global ? (
+                      <MasterDataActionButton
+                        variant="edit"
                         onClick={() => setEditGlobalTarget(global)}
-                        className="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition-all touch-target"
-                        title="Edit Default Global"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </button>
+                        title={`Edit Default Global SLA (${meta.label})`}
+                        aria-label={`Edit Default Global SLA (${meta.label})`}
+                      />
+                    ) : (
+                      <div className="w-11 sm:w-10 shrink-0" />
                     )}
                   </div>
                 </div>
@@ -177,30 +179,36 @@ export function SlaConfigTab({
                 {/* Warehouse Override Row */}
                 <div
                   className={cn(
-                    'flex items-center justify-between p-2.5 rounded-xl border transition-all',
+                    'flex items-center justify-between p-3 rounded-xl border transition-all min-h-[56px] gap-2',
                     isOverridden
                       ? 'bg-blue-50/60 border-blue-200/80 text-blue-950'
                       : 'bg-slate-50/60 border-slate-200/60 text-slate-700'
                   )}
                 >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <div>
-                      <p className="font-bold text-slate-800">Override {warehouseCode}</p>
-                      <p className="text-[10px] text-slate-400">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-800 leading-tight">Override {warehouseCode}</p>
+                      <p className="text-[10px] text-slate-400 leading-tight truncate">
                         {isOverridden ? 'Aktif khusus gudang ini' : 'Belum diatur (mengikuti global)'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-slate-900 text-xs">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span
+                      className={cn(
+                        'font-extrabold text-xs sm:text-sm',
+                        isOverridden ? 'text-blue-900 font-black' : 'text-slate-500 font-medium'
+                      )}
+                    >
                       {isOverridden ? `${override.duration_hours} Jam` : 'Mengikuti Global'}
                     </span>
 
                     {canManageWarehouse && (
-                      <div className="flex items-center gap-1">
-                        <button
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <MasterDataActionButton
+                          variant={override ? 'edit' : 'add'}
                           onClick={() =>
                             setOverrideTargetPriority({
                               priority,
@@ -208,25 +216,17 @@ export function SlaConfigTab({
                               globalHours: global?.duration_hours ?? 24,
                             })
                           }
-                          className="p-1 rounded-lg text-blue-600 hover:bg-blue-100/60 border border-blue-200/60 transition-all touch-target"
-                          title={override ? 'Edit Override Gudang' : 'Buat Override Khusus Gudang Ini'}
-                        >
-                          {override ? <Edit2 className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                        </button>
+                          title={override ? `Edit Override Gudang (${meta.label})` : `Buat Override Khusus Gudang Ini (${meta.label})`}
+                          aria-label={override ? `Edit Override Gudang (${meta.label})` : `Buat Override Khusus Gudang Ini (${meta.label})`}
+                        />
 
                         {override && (
-                          <button
+                          <MasterDataActionButton
+                            variant={override.is_active ? 'deactivate' : 'activate'}
                             onClick={() => setDeactivateTarget(override)}
-                            className={cn(
-                              'p-1 rounded-lg border transition-all touch-target',
-                              override.is_active
-                                ? 'text-amber-600 hover:bg-amber-50 border-amber-200/60'
-                                : 'text-emerald-600 hover:bg-emerald-50 border-emerald-200/60'
-                            )}
                             title={override.is_active ? 'Nonaktifkan Override (Revert ke Global)' : 'Aktifkan Override'}
-                          >
-                            <Power className="w-3 h-3" />
-                          </button>
+                            aria-label={override.is_active ? 'Nonaktifkan Override' : 'Aktifkan Override'}
+                          />
                         )}
                       </div>
                     )}

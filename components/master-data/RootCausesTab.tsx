@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { BaseModal, DeactivationConfirmModal } from './MasterDataModals';
+import { MasterDataActionButton } from './MasterDataActionButton';
 import {
   createRootCauseAction,
   updateRootCauseAction,
@@ -130,12 +131,12 @@ export function RootCausesTab({
             key={rc.id}
             className={cn(
               'p-4 bg-white rounded-2xl border transition-all shadow-2xs flex flex-col justify-between gap-3',
-              rc.is_active ? 'border-slate-200/80' : 'border-slate-200 bg-slate-50/50 opacity-75'
+              rc.is_active ? 'border-slate-200/80 hover:border-slate-300' : 'border-slate-200 bg-slate-50/50 opacity-75'
             )}
           >
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-extrabold text-slate-400">#{rc.sort_order}</span>
+                <span className="font-mono text-xs font-bold text-slate-400">#{rc.sort_order}</span>
                 <span
                   className={cn(
                     'text-[10px] font-bold px-2 py-0.5 rounded-full',
@@ -148,33 +149,28 @@ export function RootCausesTab({
                 </span>
               </div>
 
-              <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">{rc.name}</h3>
+              <h3 className="text-sm font-extrabold text-slate-900 tracking-tight leading-snug break-words">
+                {rc.name}
+              </h3>
               {rc.description && (
                 <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{rc.description}</p>
               )}
             </div>
 
             {isSuperAdmin && (
-              <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-100">
-                <button
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 mt-0.5">
+                <MasterDataActionButton
+                  variant="edit"
                   onClick={() => setEditTarget(rc)}
-                  className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all touch-target"
                   title="Edit Root Cause"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                </button>
-                <button
+                  aria-label={`Edit ${rc.name}`}
+                />
+                <MasterDataActionButton
+                  variant={rc.is_active ? 'deactivate' : 'activate'}
                   onClick={() => setDeactivateTarget(rc)}
-                  className={cn(
-                    'p-1.5 rounded-lg border transition-all touch-target',
-                    rc.is_active
-                      ? 'text-amber-600 hover:bg-amber-50 border-amber-200/60'
-                      : 'text-emerald-600 hover:bg-emerald-50 border-emerald-200/60'
-                  )}
-                  title={rc.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                >
-                  <Power className="w-3.5 h-3.5" />
-                </button>
+                  title={rc.is_active ? 'Nonaktifkan Root Cause' : 'Aktifkan Root Cause'}
+                  aria-label={`${rc.is_active ? 'Nonaktifkan' : 'Aktifkan'} ${rc.name}`}
+                />
               </div>
             )}
           </div>

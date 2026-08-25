@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { BaseModal, DeactivationConfirmModal } from './MasterDataModals';
+import { MasterDataActionButton } from './MasterDataActionButton';
 import {
   createAreaAction,
   updateAreaAction,
@@ -244,27 +245,26 @@ export function AreasLocationsTab({
 
                   {/* Area Actions */}
                   <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
-                    <span className="text-xs font-semibold text-slate-500 px-2 py-1 bg-white rounded-lg border border-slate-200/60 shadow-2xs mr-1">
+                    <span className="text-xs font-semibold text-slate-500 px-2.5 py-1 bg-white rounded-lg border border-slate-200/60 shadow-2xs mr-1">
                       {areaLocs.length} Lokasi
                     </span>
 
                     {canManage && (
-                      <>
-                        <button
+                      <div className="flex items-center gap-1.5">
+                        <MasterDataActionButton
+                          variant="add"
                           onClick={() => setCreateLocationTargetArea(area)}
-                          className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 border border-blue-200/60 transition-all touch-target"
                           title="Tambah Lokasi di Area ini"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                        <button
+                          aria-label={`Tambah Lokasi di ${area.name}`}
+                        />
+                        <MasterDataActionButton
+                          variant="edit"
                           onClick={() => setEditAreaTarget(area)}
-                          className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all touch-target"
                           title="Edit Area"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
+                          aria-label={`Edit ${area.name}`}
+                        />
+                        <MasterDataActionButton
+                          variant={area.is_active ? 'deactivate' : 'activate'}
                           onClick={() =>
                             setDeactivateTarget({
                               type: 'area',
@@ -273,17 +273,10 @@ export function AreasLocationsTab({
                               currentActive: area.is_active,
                             })
                           }
-                          className={cn(
-                            'p-1.5 rounded-lg border transition-all touch-target',
-                            area.is_active
-                              ? 'text-amber-600 hover:bg-amber-50 border-amber-200/60'
-                              : 'text-emerald-600 hover:bg-emerald-50 border-emerald-200/60'
-                          )}
                           title={area.is_active ? 'Nonaktifkan Area' : 'Aktifkan Area'}
-                        >
-                          <Power className="w-3.5 h-3.5" />
-                        </button>
-                      </>
+                          aria-label={`${area.is_active ? 'Nonaktifkan' : 'Aktifkan'} ${area.name}`}
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -329,14 +322,16 @@ export function AreasLocationsTab({
 
                             {canManage && (
                               <div className="flex items-center gap-1 shrink-0">
-                                <button
+                                <MasterDataActionButton
+                                  variant="edit"
+                                  size="sm"
                                   onClick={() => setEditLocationTarget(loc)}
-                                  className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all touch-target"
                                   title="Edit Lokasi"
-                                >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </button>
-                                <button
+                                  aria-label={`Edit ${loc.name}`}
+                                />
+                                <MasterDataActionButton
+                                  variant={loc.is_active ? 'deactivate' : 'activate'}
+                                  size="sm"
                                   onClick={() =>
                                     setDeactivateTarget({
                                       type: 'location',
@@ -345,16 +340,9 @@ export function AreasLocationsTab({
                                       currentActive: loc.is_active,
                                     })
                                   }
-                                  className={cn(
-                                    'p-1 rounded transition-all touch-target',
-                                    loc.is_active
-                                      ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
-                                      : 'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50'
-                                  )}
                                   title={loc.is_active ? 'Nonaktifkan Lokasi' : 'Aktifkan Lokasi'}
-                                >
-                                  <Power className="w-3.5 h-3.5" />
-                                </button>
+                                  aria-label={`${loc.is_active ? 'Nonaktifkan' : 'Aktifkan'} ${loc.name}`}
+                                />
                               </div>
                             )}
                           </div>
