@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Select } from '@/components/shared/Select';
+import { MobileCaseActionBar } from './MobileCaseActionBar';
 
 export interface AssignableUser {
   id: string;
@@ -1417,6 +1418,35 @@ setLoading(false);
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Mobile Sticky Action Bar ─────────────────────────────────────── */}
+      {/* Rendered here — inside CaseWorkflowActionPanel — so it shares the   */}
+      {/* same resolved booleans and handlers without any duplication.         */}
+      {/* Desktop: sm:hidden. All capability flags & handlers come from above. */}
+      <MobileCaseActionBar
+        status={status}
+        canAssign={canAssign}
+        canRequestVerification={canRequestVerification}
+        canVerify={canVerify}
+        canReopen={canReopen}
+        loading={loading}
+        onAssign={() => setActiveModal('assign')}
+        onRequestVerification={handleRequestVerification}
+        onVerify={() => setActiveModal('verify')}
+        onReopen={() => setActiveModal('reopen')}
+      />
+
+      {/* ── Mobile Spacer ────────────────────────────────────────────────── */}
+      {/* When the sticky bar is visible, push the last content card clear of */}
+      {/* the bar so it remains fully reachable. Invisible on desktop.         */}
+      {(
+        ((status === 'open' || status === 'reopened') && canAssign) ||
+        ((status === 'on_progress' || status === 'waiting_repair') && canRequestVerification) ||
+        (status === 'waiting_verification' && canVerify) ||
+        (status === 'closed' && canReopen)
+      ) && (
+        <div className="sm:hidden h-16" aria-hidden="true" />
       )}
     </div>
   );
