@@ -1,6 +1,4 @@
-// lib/permissions/getWarehouseAccess.ts
-// Returns all warehouses accessible to a user, optionally with their role(s).
-
+import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase/server';
 
 export interface UserWarehouseAccess {
@@ -19,7 +17,7 @@ type UserWarehouseRow = {
   roles: { name: string } | null;
 };
 
-export async function getUserWarehouseAccess(
+export const getUserWarehouseAccess = cache(async function getUserWarehouseAccess(
   userId: string,
 ): Promise<UserWarehouseAccess[]> {
   const supabase = await createServerClient();
@@ -97,4 +95,4 @@ export async function getUserWarehouseAccess(
   }
 
   return Array.from(map.values());
-}
+});

@@ -1,14 +1,12 @@
-import { SkeletonPageHeader, SkeletonCard } from '@/components/shared/SkeletonCard';
+// app/(app)/my-tasks/loading.tsx
+import { SkeletonPageHeader, SkeletonSummaryGrid, SkeletonTable } from '@/components/shared/SkeletonCard';
 
 export default function MyTasksLoading() {
   return (
-    <div className="page-padding py-5 max-w-5xl mx-auto space-y-4 animate-in fade-in duration-200">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-5 animate-in fade-in duration-200">
       <SkeletonPageHeader hasAction={false} hasTabs={true} />
-      <div className="space-y-3">
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
-      </div>
+      <SkeletonSummaryGrid count={4} />
+      <SkeletonTable rows={5} cols={5} />
     </div>
   );
 }

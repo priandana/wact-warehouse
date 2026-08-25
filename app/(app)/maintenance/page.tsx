@@ -45,8 +45,16 @@ export default async function MaintenancePage({ searchParams }: MaintenancePageP
     redirect('/login');
   }
 
-  // 1. Resolve User Accessible Warehouses using canonical authorization
-  const accessibleWarehouses = await getUserWarehouseAccess(user.id);
+  // 1. Parallel Phase 1: Resolve accessible warehouses (deduplicated by React cache), cookieStore, and searchParams
+  const [
+    accessibleWarehouses,
+    cookieStore,
+    params,
+  ] = await Promise.all([
+    getUserWarehouseAccess(user.id),
+    cookies(),
+    searchParams,
+  ]);
 
   if (accessibleWarehouses.length === 0) {
     return (
@@ -58,7 +66,6 @@ export default async function MaintenancePage({ searchParams }: MaintenancePageP
   }
 
   // 2. Resolve Active Warehouse from Cookie (fallback to PDL or first warehouse)
-  const cookieStore = await cookies();
   const activeWarehouseCookie = cookieStore.get('wact_active_warehouse_id')?.value;
 
   let activeWarehouse = accessibleWarehouses.find((w) => w.warehouseId === activeWarehouseCookie);
@@ -72,7 +79,6 @@ export default async function MaintenancePage({ searchParams }: MaintenancePageP
 
   const activeWarehouseId = activeWarehouse.warehouseId;
 
-  const params = await searchParams;
   const q = params.q?.trim() ?? '';
   const status = params.status ?? 'all';
   const priority = params.priority ?? 'all';
