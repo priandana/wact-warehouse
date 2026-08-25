@@ -6,7 +6,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { HomeDashboard } from '@/components/dashboard/HomeDashboard';
 import type { CaseCardData } from '@/components/shared/CaseCard';
-import { isPast, startOfDay } from 'date-fns';
+import { getJakartaDayBoundaries } from '@/lib/utils/sla';
 
 export const metadata: Metadata = {
   title: 'Beranda',
@@ -44,6 +44,7 @@ export default async function DashboardPage() {
       priority,
       status,
       due_date,
+      closed_at,
       created_at,
       has_operational_impact,
       requires_maintenance,
@@ -75,6 +76,7 @@ export default async function DashboardPage() {
       priority: c.priority,
       status: c.status,
       due_date: c.due_date,
+      closed_at: c.closed_at,
       created_at: c.created_at,
       has_operational_impact: c.has_operational_impact,
       requires_maintenance: c.requires_maintenance,
@@ -87,12 +89,17 @@ export default async function DashboardPage() {
   });
 
   // Calculate Metrics
-  const todayStart = startOfDay(new Date());
+  const now = new Date();
+  const { start: jakartaStart, nextDay: jakartaNextDay } = getJakartaDayBoundaries(now);
 
   const openCount = normalizedCases.filter(c => c.status === 'open' || c.status === 'reopened').length;
   const onProgressCount = normalizedCases.filter(c => c.status === 'on_progress' || c.status === 'waiting_repair' || c.status === 'waiting_verification').length;
-  const overdueCount = normalizedCases.filter(c => c.status !== 'closed' && c.due_date && isPast(new Date(c.due_date))).length;
-  const closedTodayCount = normalizedCases.filter(c => c.status === 'closed' && new Date(c.created_at) >= todayStart).length;
+  const overdueCount = normalizedCases.filter(c => c.status !== 'closed' && c.due_date && new Date(c.due_date) <= now).length;
+  const closedTodayCount = normalizedCases.filter(c => {
+    if (c.status !== 'closed' || !c.closed_at) return false;
+    const closedTime = new Date(c.closed_at);
+    return closedTime >= jakartaStart && closedTime < jakartaNextDay;
+  }).length;
 
   const stats = {
     openCount,
@@ -104,7 +111,7 @@ export default async function DashboardPage() {
   // Needs Attention: Critical, High, or Overdue non-closed cases
   const needsAttentionCases = normalizedCases.filter(c => {
     if (c.status === 'closed') return false;
-    const isOverdue = c.due_date && isPast(new Date(c.due_date));
+    const isOverdue = c.due_date && new Date(c.due_date) <= now;
     return c.priority === 'critical' || c.priority === 'high' || isOverdue;
   }).slice(0, 5);
 

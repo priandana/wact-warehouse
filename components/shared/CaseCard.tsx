@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils/cn';
 import { formatDistanceToNow, isPast, differenceInHours } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 
+import { getSlaStatus } from '@/lib/utils/sla';
+
 export interface CaseCardData {
   id: string;
   case_number: string;
@@ -18,6 +20,7 @@ export interface CaseCardData {
   priority: 'low' | 'medium' | 'high' | 'critical' | string;
   status: 'open' | 'on_progress' | 'waiting_repair' | 'waiting_verification' | 'closed' | 'reopened' | string;
   due_date?: string | null;
+  closed_at?: string | null;
   created_at: string;
   has_operational_impact?: boolean | null;
   requires_maintenance?: boolean | null;
@@ -35,46 +38,71 @@ interface CaseCardProps {
 }
 
 export function CaseCard({ item, className, showAssignee = true }: CaseCardProps) {
-  const isClosed = item.status === 'closed';
-  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
+  const slaInfo = getSlaStatus(item.due_date, item.status, item.closed_at);
+  const isOverdue = slaInfo.isOverdue && !slaInfo.isClosed;
 
   const getSlaDisplay = () => {
-    if (!item.due_date) return null;
-    const dueDate = new Date(item.due_date);
+    if (slaInfo.type === 'no_sla') return null;
 
-    if (isClosed) {
+    if (slaInfo.isClosed) {
       return (
-        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2.5 py-0.5 rounded-full border border-emerald-200/70 select-none shadow-2xs">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border select-none shadow-2xs',
+            slaInfo.badgeBg,
+            slaInfo.badgeText,
+            slaInfo.badgeBorder
+          )}
+        >
           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-          <span>Selesai</span>
+          <span>{slaInfo.badgeLabel}</span>
         </span>
       );
     }
 
-    if (isOverdue) {
-      const hoursLate = Math.abs(differenceInHours(new Date(), dueDate));
+    if (slaInfo.isOverdue) {
       return (
-        <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2.5 py-0.5 rounded-full border border-rose-200/90 shadow-2xs select-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-          <span>Lewat SLA {hoursLate > 0 ? `${hoursLate}j` : '<1j'}</span>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2.5 py-0.5 rounded-full border shadow-2xs select-none',
+            slaInfo.badgeBg,
+            slaInfo.badgeText,
+            slaInfo.badgeBorder
+          )}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+          <span>{slaInfo.badgeLabel}</span>
         </span>
       );
     }
 
-    const hoursLeft = differenceInHours(dueDate, new Date());
-    if (hoursLeft <= 4 && hoursLeft >= 0) {
+    if (slaInfo.isApproaching) {
       return (
-        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-full border border-amber-200/80 shadow-2xs select-none">
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs select-none',
+            slaInfo.badgeBg,
+            slaInfo.badgeText,
+            slaInfo.badgeBorder
+          )}
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-          <span>Sisa {formatDistanceToNow(dueDate, { locale: localeId })}</span>
+          <span>{slaInfo.badgeLabel}</span>
         </span>
       );
     }
 
     return (
-      <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2.5 py-0.5 rounded-full border border-slate-200/70 select-none shadow-2xs">
+      <span
+        className={cn(
+          'inline-flex items-center gap-1 text-[10.5px] font-semibold px-2.5 py-0.5 rounded-full border select-none shadow-2xs',
+          slaInfo.badgeBg,
+          slaInfo.badgeText,
+          slaInfo.badgeBorder
+        )}
+      >
         <Clock className="w-3 h-3 text-slate-400" />
-        <span>Sisa {formatDistanceToNow(dueDate, { locale: localeId })}</span>
+        <span>{slaInfo.badgeLabel}</span>
       </span>
     );
   };

@@ -18,8 +18,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { formatDistanceToNow, isPast, differenceInHours } from 'date-fns';
-import { id as localeId } from 'date-fns/locale';
+import { getSlaStatus } from '@/lib/utils/sla';
 
 export interface TaskItemData {
   id: string;
@@ -29,6 +28,7 @@ export interface TaskItemData {
   priority: string;
   status: string;
   due_date?: string | null;
+  closed_at?: string | null;
   created_at: string;
   has_operational_impact?: boolean | null;
   requires_maintenance?: boolean | null;
@@ -44,11 +44,8 @@ interface TaskCardProps {
 
 export function TaskCard({ item }: TaskCardProps) {
   const isClosed = item.status === 'closed';
-  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
-  const remainingHours = item.due_date
-    ? differenceInHours(new Date(item.due_date), new Date())
-    : null;
-  const isApproachingSla = !isClosed && !isOverdue && remainingHours !== null && remainingHours <= 4 && remainingHours >= 0;
+  const slaInfo = getSlaStatus(item.due_date, item.status, (item as any).closed_at);
+  const isOverdue = slaInfo.isOverdue && !isClosed;
 
   const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
 
@@ -137,28 +134,56 @@ export function TaskCard({ item }: TaskCardProps) {
       <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         {/* SLA Urgency Pill */}
         <div className="flex items-center gap-2">
-          {isClosed ? (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+          {slaInfo.type === 'no_sla' ? (
+            <span className="text-[11px] text-slate-400 italic">Tanpa SLA</span>
+          ) : slaInfo.isClosed ? (
+            <span
+              className={cn(
+                'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border',
+                slaInfo.badgeBg,
+                slaInfo.badgeText,
+                slaInfo.badgeBorder
+              )}
+            >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              Tugas Selesai
+              <span>{slaInfo.label}</span>
             </span>
-          ) : isOverdue ? (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200 shadow-2xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-              Lewat Batas SLA {item.due_date ? `(${Math.abs(differenceInHours(new Date(), new Date(item.due_date)))} jam)` : ''}
+          ) : slaInfo.isOverdue ? (
+            <span
+              className={cn(
+                'inline-flex items-center gap-1.5 text-[11px] font-extrabold px-2.5 py-1 rounded-full border shadow-2xs',
+                slaInfo.badgeBg,
+                slaInfo.badgeText,
+                slaInfo.badgeBorder
+              )}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+              <span>{slaInfo.label}</span>
             </span>
-          ) : isApproachingSla ? (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+          ) : slaInfo.isApproaching ? (
+            <span
+              className={cn(
+                'inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border',
+                slaInfo.badgeBg,
+                slaInfo.badgeText,
+                slaInfo.badgeBorder
+              )}
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-              Mendekati Deadline ({item.due_date ? formatDistanceToNow(new Date(item.due_date), { locale: localeId }) : ''})
-            </span>
-          ) : item.due_date ? (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-              Target: {formatDistanceToNow(new Date(item.due_date), { locale: localeId })} lagi
+              <span>{slaInfo.label}</span>
             </span>
           ) : (
-            <span className="text-[11px] text-slate-400 italic">Tanpa batas waktu khusus</span>
+            <span
+              className={cn(
+                'inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full border',
+                slaInfo.badgeBg,
+                slaInfo.badgeText,
+                slaInfo.badgeBorder
+              )}
+            >
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <span>{slaInfo.label}</span>
+            </span>
           )}
         </div>
 

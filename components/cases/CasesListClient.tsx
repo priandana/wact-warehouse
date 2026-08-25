@@ -10,6 +10,7 @@ import { PriorityBadge } from '@/components/shared/PriorityBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { SkeletonList } from '@/components/shared/SkeletonCard';
 import { Select } from '@/components/shared/Select';
+import { getSlaStatus } from '@/lib/utils/sla';
 import Link from 'next/link';
 import {
   Search,
@@ -436,8 +437,7 @@ export function CasesListClient({
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
                 {initialCases.map((item) => {
-                  const isClosed = item.status === 'closed';
-                  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
+                  const slaInfo = getSlaStatus(item.due_date, item.status, (item as any).closed_at);
                   const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
 
                   return (
@@ -446,7 +446,7 @@ export function CasesListClient({
                       onClick={() => router.push(`/cases/${item.id}`)}
                       className={cn(
                         'hover:bg-slate-50/90 cursor-pointer transition-colors group',
-                        isOverdue && 'bg-rose-50/15'
+                        slaInfo.isOverdue && !slaInfo.isClosed && 'bg-rose-50/15'
                       )}
                     >
                       {/* Kasus */}
@@ -456,84 +456,121 @@ export function CasesListClient({
                             {item.case_number}
                           </span>
                           {item.requires_maintenance && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50/90 text-amber-800 text-[9.5px] font-bold border border-amber-200/70" title="Maintenance Diperlukan">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50/90 text-amber-800 text-[10px] font-bold border border-amber-200/70 shadow-2xs" title="Maintenance Diperlukan">
                               <Wrench className="w-2.5 h-2.5 text-amber-600" />
-                              <span>Maint</span>
+                              <span>Maintenance</span>
                             </span>
                           )}
-                          <span className="text-[10px] text-slate-400 font-medium">
-                            {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })}
-                          </span>
+                          {item.has_operational_impact && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-rose-50/90 text-rose-700 text-[10px] font-extrabold border border-rose-200/70 shadow-2xs" title="Berdampak Operasional">
+                              <AlertCircle className="w-2.5 h-2.5 text-rose-600" />
+                              <span>Operasional</span>
+                            </span>
+                          )}
                         </div>
-                        <p className="font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                        <p className="font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                           {item.title}
                         </p>
                       </td>
 
                       {/* Lokasi & Aset */}
-                      <td className="py-3.5 px-4 text-slate-600 font-medium">
-                        {locationText ? (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate max-w-[160px]">{locationText}</span>
+                      <td className="py-3.5 px-4 text-slate-600 max-w-[180px]">
+                        {item.assets ? (
+                          <div className="mb-0.5">
+                            <span className="font-mono font-bold text-indigo-700 text-[10.5px] bg-indigo-50/90 px-1.5 py-0.5 rounded border border-indigo-100/80">
+                              {item.assets.asset_code}
+                            </span>
+                            <p className="font-bold text-slate-800 text-[11px] truncate mt-0.5">{item.assets.name}</p>
                           </div>
                         ) : (
-                          <span className="text-slate-400 italic text-[11px]">Lokasi belum ditentukan</span>
+                          <span className="text-slate-400 italic text-[11px]">Non-aset / Fasilitas</span>
                         )}
-                        {item.assets ? (
-                          <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 truncate max-w-[160px]">
-                            {item.assets.asset_code}
-                          </p>
-                        ) : (
-                          <p className="text-[10.5px] text-slate-400 italic mt-0.5">
-                            Tidak terkait aset
+                        {locationText && (
+                          <p className="text-[11px] text-slate-500 font-medium truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                            <span>{locationText}</span>
                           </p>
                         )}
                       </td>
 
                       {/* Prioritas */}
                       <td className="py-3.5 px-4">
-                        <PriorityBadge priority={item.priority} size="sm" />
+                        <PriorityBadge priority={item.priority} />
                       </td>
 
                       {/* Status */}
                       <td className="py-3.5 px-4">
-                        <StatusBadge status={item.status} size="sm" />
+                        <StatusBadge status={item.status} />
                       </td>
 
-                      {/* PIC */}
-                      <td className="py-3.5 px-4 text-slate-600">
-                        {item.assignee?.full_name ? (
-                          <div className="flex items-center gap-1.5 font-semibold">
-                            <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] font-bold text-slate-700">
-                              {item.assignee.full_name[0].toUpperCase()}
+                      {/* PIC Ditugaskan */}
+                      <td className="py-3.5 px-4">
+                        {item.assignee ? (
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] shrink-0">
+                              {item.assignee.full_name.charAt(0).toUpperCase()}
                             </div>
-                            <span className="truncate max-w-[110px]">{item.assignee.full_name}</span>
+                            <span className="font-bold text-slate-800 text-[11.5px] truncate max-w-[120px]">
+                              {item.assignee.full_name}
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-slate-400 italic text-[11px]">Belum ditugaskan</span>
+                          <span className="text-slate-400 italic text-[11px]">Belum Ditugaskan</span>
                         )}
                       </td>
 
                       {/* SLA */}
                       <td className="py-3.5 px-4">
-                        {isClosed ? (
-                          <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-200/70 shadow-2xs">
+                        {slaInfo.type === 'no_sla' ? (
+                          <span className="text-slate-400 text-xs">—</span>
+                        ) : slaInfo.isClosed ? (
+                          <span
+                            className={cn(
+                              'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border shadow-2xs',
+                              slaInfo.badgeBg,
+                              slaInfo.badgeText,
+                              slaInfo.badgeBorder
+                            )}
+                          >
                             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            Selesai
+                            <span>{slaInfo.badgeLabel}</span>
                           </span>
-                        ) : isOverdue ? (
-                          <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2 py-0.5 rounded-full border border-rose-200/90 shadow-2xs">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-                            Lewat SLA {item.due_date ? `${Math.abs(differenceInHours(new Date(), new Date(item.due_date)))}j` : ''}
+                        ) : slaInfo.isOverdue ? (
+                          <span
+                            className={cn(
+                              'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full border shadow-2xs',
+                              slaInfo.badgeBg,
+                              slaInfo.badgeText,
+                              slaInfo.badgeBorder
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                            <span>{slaInfo.badgeLabel}</span>
                           </span>
-                        ) : item.due_date ? (
-                          <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2 py-0.5 rounded-full border border-slate-200/70 shadow-2xs">
-                            <Clock className="w-3 h-3 text-slate-400" />
-                            Sisa {formatDistanceToNow(new Date(item.due_date), { locale: localeId })}
+                        ) : slaInfo.isApproaching ? (
+                          <span
+                            className={cn(
+                              'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border shadow-2xs',
+                              slaInfo.badgeBg,
+                              slaInfo.badgeText,
+                              slaInfo.badgeBorder
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                            <span>{slaInfo.badgeLabel}</span>
                           </span>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span
+                            className={cn(
+                              'inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-full border shadow-2xs',
+                              slaInfo.badgeBg,
+                              slaInfo.badgeText,
+                              slaInfo.badgeBorder
+                            )}
+                          >
+                            <Clock className="w-3 h-3 text-slate-400" />
+                            <span>{slaInfo.badgeLabel}</span>
+                          </span>
                         )}
                       </td>
                     </tr>

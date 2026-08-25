@@ -14,6 +14,7 @@ import {
   type RootCauseItem,
 } from '@/components/cases/CaseWorkflowActionPanel';
 import { BUCKETS } from '@/lib/supabase/storage';
+import { getSlaStatus } from '@/lib/utils/sla';
 import Link from 'next/link';
 import {
   ChevronLeft,
@@ -307,14 +308,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     (currentAssignment?.assignee_id ? profileMap.get(currentAssignment.assignee_id) : null) ||
     null;
   const isClosed = item.status === 'closed';
-  const isOverdue = item.due_date && isPast(new Date(item.due_date)) && !isClosed;
+  const slaInfo = getSlaStatus(item.due_date, item.status, item.closed_at);
+  const isOverdue = slaInfo.isOverdue && !isClosed;
   const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
-
-  // SLA Time Display calculation
-  const remainingHours = item.due_date
-    ? differenceInHours(new Date(item.due_date), new Date())
-    : null;
-  const isApproachingSla = !isClosed && !isOverdue && remainingHours !== null && remainingHours <= 4 && remainingHours >= 0;
 
   const formatActivityAction = (act: any) => {
     switch (act.action) {
@@ -733,27 +729,55 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                 <Clock className="w-3.5 h-3.5 text-blue-600" />
                 <span>Target SLA</span>
               </div>
-              {isClosed ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-200/70 shadow-2xs">
+              {slaInfo.type === 'no_sla' ? (
+                <span className="text-xs text-slate-400">—</span>
+              ) : slaInfo.isClosed ? (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border shadow-2xs',
+                    slaInfo.badgeBg,
+                    slaInfo.badgeText,
+                    slaInfo.badgeBorder
+                  )}
+                >
                   <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  Selesai
+                  <span>{slaInfo.badgeLabel}</span>
                 </span>
-              ) : isOverdue ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-extrabold text-rose-700 bg-rose-50/90 px-2 py-0.5 rounded-full border border-rose-200/90 shadow-2xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-                  Lewat SLA {item.due_date ? `${Math.abs(differenceInHours(new Date(), new Date(item.due_date)))}j` : ''}
+              ) : slaInfo.isOverdue ? (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full border shadow-2xs',
+                    slaInfo.badgeBg,
+                    slaInfo.badgeText,
+                    slaInfo.badgeBorder
+                  )}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span>{slaInfo.badgeLabel}</span>
                 </span>
-              ) : isApproachingSla ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 bg-amber-50/90 px-2 py-0.5 rounded-full border border-amber-200/80 shadow-2xs">
+              ) : slaInfo.isApproaching ? (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border shadow-2xs',
+                    slaInfo.badgeBg,
+                    slaInfo.badgeText,
+                    slaInfo.badgeBorder
+                  )}
+                >
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                  Sisa {item.due_date ? formatDistanceToNow(new Date(item.due_date), { locale: localeId }) : ''}
-                </span>
-              ) : item.due_date ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-600 bg-slate-100/90 px-2 py-0.5 rounded-full border border-slate-200/70 shadow-2xs">
-                  Sisa {formatDistanceToNow(new Date(item.due_date), { locale: localeId })}
+                  <span>{slaInfo.badgeLabel}</span>
                 </span>
               ) : (
-                <span className="text-xs text-slate-400">-</span>
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-full border shadow-2xs',
+                    slaInfo.badgeBg,
+                    slaInfo.badgeText,
+                    slaInfo.badgeBorder
+                  )}
+                >
+                  <span>{slaInfo.badgeLabel}</span>
+                </span>
               )}
             </div>
 
