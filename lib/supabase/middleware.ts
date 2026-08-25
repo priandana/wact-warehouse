@@ -52,7 +52,8 @@ export async function updateSession(request: NextRequest) {
 
   // Protected routes: redirect to login if not authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/forgot-password');
-  const isProtectedRoute = !isAuthRoute;
+  const isChangePasswordRoute = pathname === '/change-password';
+  const isProtectedRoute = !isAuthRoute && !isChangePasswordRoute;
 
   if (isProtectedRoute && !user) {
     const loginUrl = request.nextUrl.clone();
@@ -61,11 +62,32 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If logged in and hitting auth routes → redirect to dashboard
-  if (isAuthRoute && user) {
-    const dashboardUrl = request.nextUrl.clone();
-    dashboardUrl.pathname = '/dashboard';
-    return NextResponse.redirect(dashboardUrl);
+  // Handle must_change_password lifecycle for authenticated users
+  if (user) {
+    const mustChangePassword = user.app_metadata?.must_change_password === true;
+
+    if (mustChangePassword) {
+      // If forced to change password and navigating anywhere else, redirect to /change-password
+      if (!isChangePasswordRoute) {
+        const changePasswordUrl = request.nextUrl.clone();
+        changePasswordUrl.pathname = '/change-password';
+        return NextResponse.redirect(changePasswordUrl);
+      }
+    } else {
+      // If not required to change password and hitting /change-password, redirect to /dashboard
+      if (isChangePasswordRoute) {
+        const dashboardUrl = request.nextUrl.clone();
+        dashboardUrl.pathname = '/dashboard';
+        return NextResponse.redirect(dashboardUrl);
+      }
+
+      // If hitting auth routes → redirect to dashboard
+      if (isAuthRoute) {
+        const dashboardUrl = request.nextUrl.clone();
+        dashboardUrl.pathname = '/dashboard';
+        return NextResponse.redirect(dashboardUrl);
+      }
+    }
   }
 
   return supabaseResponse;

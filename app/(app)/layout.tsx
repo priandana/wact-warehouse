@@ -15,6 +15,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect('/login');
   }
 
+  // 1b. Mandatory first-login password change guard
+  if (user.app_metadata?.must_change_password === true) {
+    redirect('/change-password');
+  }
+
   // 2. Fetch profile with explicit error checking
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
