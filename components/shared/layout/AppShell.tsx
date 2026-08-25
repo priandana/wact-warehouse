@@ -9,10 +9,11 @@ import { Sidebar } from './Sidebar';
 import { WarehouseSelector } from '@/components/shared/WarehouseSelector';
 import { NavigationProgressBar } from './NavigationProgressBar';
 import { NotificationDropdownFlyout } from '@/components/notifications/NotificationDropdownFlyout';
+import { MobileNavDrawer } from './MobileNavDrawer';
 import { getUnreadNotificationCountAction } from '@/app/actions/notifications';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 
@@ -29,6 +30,7 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [isFlyoutOpen, setIsFlyoutOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const refreshUnreadCount = useCallback(async () => {
     try {
@@ -176,7 +178,19 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
       <NavigationProgressBar />
       {/* Mobile Integrated Top Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between shadow-2xs">
-        <WarehouseSelector />
+        <div className="flex items-center gap-2">
+          {/* Hamburger Menu Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className="p-2 rounded-xl text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 active:scale-95 transition-all touch-target flex items-center justify-center"
+            aria-label="Buka Menu Navigasi"
+            title="Menu Navigasi"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+          <WarehouseSelector />
+        </div>
 
         <div className="flex items-center gap-2">
           <Link
@@ -200,6 +214,17 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
           </Link>
         </div>
       </header>
+
+      {/* Mobile Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        userName={userName}
+        userRole={userRole}
+        warehouseName={warehouseName}
+        warehouseCode={warehouseCode}
+        unreadCount={unreadCount}
+      />
 
       {/* Mobile Content Area */}
       <main className="flex-1 pb-safe-nav">
