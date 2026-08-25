@@ -1,26 +1,45 @@
 // app/(app)/notifications/page.tsx
+// Operational Notification Center — Server Component with Authoritative Data Prefetching
+
 import type { Metadata } from 'next';
-import { Bell } from 'lucide-react';
-import { EmptyState } from '@/components/shared/EmptyState';
+import { createServerClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { getNotificationsAction } from '@/app/actions/notifications';
 
-export const metadata: Metadata = { title: 'Notifikasi' };
+export const metadata: Metadata = {
+  title: 'Pusat Notifikasi',
+  description: 'Pemberitahuan penugasan kasus, pembaruan verifikasi, dan status operasional gudang',
+};
 
-export default function NotificationsPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function NotificationsPage() {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Prefetch initial notifications (Page 1, 20 items, All filter)
+  const initialData = await getNotificationsAction({
+    page: 1,
+    pageSize: 20,
+    filter: 'all',
+  });
+
   return (
-    <div className="page-padding py-5 max-w-2xl mx-auto space-y-4">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-          Notifikasi
-        </h1>
-        <p className="text-xs text-slate-500 font-medium mt-0.5">
-          Pembaruan status kasus, penugasan, dan pengingat SLA
-        </p>
-      </div>
-
-      <EmptyState
-        icon={Bell}
-        title="Tidak ada notifikasi baru"
-        description="Semua pembaruan kasus penting akan muncul di sini."
+    <div className="w-full max-w-4xl mx-auto space-y-4">
+      <NotificationCenter
+        initialNotifications={initialData.notifications}
+        initialTotalCount={initialData.totalCount}
+        initialUnreadCount={initialData.unreadCount}
+        initialPage={initialData.page}
+        initialPageSize={initialData.pageSize}
+        userId={user.id}
       />
     </div>
   );
