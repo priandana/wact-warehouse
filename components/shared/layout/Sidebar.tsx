@@ -130,11 +130,11 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
               if (item.href === '/analytics') {
                 return can(Capability.ANALYTICS_VIEW) && can(Capability.CASE_VIEW_ALL);
               }
-              if (item.href === '/reports') {
-                return can(Capability.REPORT_EXPORT) && can(Capability.CASE_VIEW_ALL);
+              if (item.href === '/users') {
+                return can(Capability.USER_MANAGE);
               }
-              if (item.href === '/users' || item.href === '/master-data') {
-                return can(Capability.USER_MANAGE) || can(Capability.MASTER_DATA_MANAGE);
+              if (item.href === '/master-data') {
+                return can(Capability.MASTER_DATA_MANAGE);
               }
               return true;
             });

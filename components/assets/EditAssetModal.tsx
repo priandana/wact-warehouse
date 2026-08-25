@@ -1,6 +1,4 @@
-'use client';
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Edit3,
@@ -91,7 +89,32 @@ export function EditAssetModal({
 
   if (!isOpen) return null;
 
-  const filteredLocations = locations.filter((l) => l.area_id === areaId);
+  // Preserve existing referenced master values even if inactive
+  const effectiveCategories = useMemo(() => {
+    if (asset.category_id && !categories.some((c) => c.id === asset.category_id)) {
+      const currentName = (asset as any)?.category?.name || 'Kategori Terpilih';
+      return [{ id: asset.category_id, name: `${currentName} (Nonaktif)` }, ...categories];
+    }
+    return categories;
+  }, [categories, asset]);
+
+  const effectiveAreas = useMemo(() => {
+    if (asset.area_id && !areas.some((a) => a.id === asset.area_id)) {
+      const currentName = (asset as any)?.area?.name || 'Area Terpilih';
+      return [{ id: asset.area_id, name: `${currentName} (Nonaktif)`, warehouse_id: asset.warehouse_id }, ...areas];
+    }
+    return areas;
+  }, [areas, asset]);
+
+  const effectiveLocations = useMemo(() => {
+    if (asset.location_id && !locations.some((l) => l.id === asset.location_id)) {
+      const currentName = (asset as any)?.location?.name || 'Lokasi Terpilih';
+      return [{ id: asset.location_id, name: `${currentName} (Nonaktif)`, area_id: asset.area_id }, ...locations];
+    }
+    return locations;
+  }, [locations, asset]);
+
+  const filteredLocations = effectiveLocations.filter((l) => l.area_id === areaId);
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,8 +164,8 @@ export function EditAssetModal({
 
       onClose();
       router.refresh();
-    } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Terjadi kesalahan sistem.');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Gagal memperbarui aset.');
       setLoading(false);
     }
   };
@@ -150,7 +173,6 @@ export function EditAssetModal({
   return (
     <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95 relative">
-        {/* Header (Sticky / Shrink-0) */}
         <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-white">
           <div className="flex items-center gap-2">
             <Edit3 className="w-5 h-5 text-blue-600" />
@@ -168,7 +190,6 @@ export function EditAssetModal({
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
-          {/* Scrollable Form Body */}
           <div className="px-5 sm:px-6 py-4 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
             {errorMessage && (
               <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
@@ -191,14 +212,13 @@ export function EditAssetModal({
             />
           </div>
 
-          {/* Row 2: Category & Area */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Select
               label="Kategori Aset"
               value={categoryId}
               onChange={setCategoryId}
               placeholder="-- Pilih Kategori --"
-              options={categories.map((c) => ({ value: c.id, label: c.name }))}
+              options={effectiveCategories.map((c) => ({ value: c.id, label: c.name }))}
             />
 
             <Select
@@ -209,7 +229,7 @@ export function EditAssetModal({
                 setLocationId('');
               }}
               placeholder="-- Pilih Area --"
-              options={areas.map((a) => ({ value: a.id, label: a.name }))}
+              options={effectiveAreas.map((a) => ({ value: a.id, label: a.name }))}
             />
 
             <Select
