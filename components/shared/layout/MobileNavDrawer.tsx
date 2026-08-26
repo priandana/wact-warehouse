@@ -242,8 +242,8 @@ export function MobileNavDrawer({
           <div className="p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20">
-                <Package className="w-3.5 h-3.5" />
+              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20 shrink-0">
+                <Package className="w-3.5 h-3.5 stroke-[2.2]" />
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-sm tracking-tight text-slate-900">WACT</span>

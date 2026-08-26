@@ -98,8 +98,8 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
         {/* Brand Header */}
         <div className="px-5 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20">
-              <Package className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20 shrink-0">
+              <Package className="w-4 h-4 stroke-[2.2]" />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-base tracking-tight text-slate-900">WACT</span>

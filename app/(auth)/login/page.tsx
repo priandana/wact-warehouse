@@ -63,10 +63,8 @@ export default async function LoginPage({ searchParams }: Props) {
 
         {/* Top Branding Header */}
         <div className="relative z-10 flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 xl:w-11 xl:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-500 p-[1px] shadow-lg shadow-blue-500/20 shrink-0">
-            <div className="w-full h-full bg-slate-950/80 backdrop-blur-xs rounded-[15px] flex items-center justify-center">
-              <Package className="w-5 h-5 xl:w-6 xl:h-6 text-blue-400" />
-            </div>
+          <div className="w-10 h-10 xl:w-11 xl:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 shrink-0">
+            <Package className="w-5 h-5 xl:w-6 xl:h-6 stroke-[2.2]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -154,8 +152,8 @@ export default async function LoginPage({ searchParams }: Props) {
         {/* Mobile Header Branding (< 1024px) */}
         <div className="lg:hidden w-full max-w-md pt-2 pb-1 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
-              <Package className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
+              <Package className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
