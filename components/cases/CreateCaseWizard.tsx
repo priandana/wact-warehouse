@@ -553,7 +553,7 @@ export function CreateCaseWizard({
   const selectedAssetName = assets.find(a => a.id === assetId)?.name;
 
   return (
-    <div className="max-w-xl mx-auto space-y-4 pb-28">
+    <div className="max-w-xl mx-auto space-y-4 pb-[calc(180px+env(safe-area-inset-bottom,0px))] sm:pb-24">
       {/* ── Top Step Header & Progress Bar ──────────────────────────────── */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -1314,45 +1314,55 @@ export function CreateCaseWizard({
 
       {/* ── Sticky Bottom Action Bar ─────────────────────────────────────── */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-3 shadow-[0_-4px_20px_rgba(15,23,42,0.06)]"
-        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+        className={cn(
+          'fixed left-0 right-0 z-50',
+          'bottom-[calc(100px+env(safe-area-inset-bottom,0px))] sm:bottom-0',
+          'px-4 sm:px-0',
+          'pointer-events-none'
+        )}
       >
-        <div className="max-w-xl mx-auto flex items-center gap-2.5">
-          {step < 4 ? (
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={handleNext}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all touch-target"
-            >
-              <span>Lanjut ke Langkah {step + 1}</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={submitting || isAnyPhotoProcessing}
-              onClick={handleSubmit}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white font-extrabold text-xs shadow-lg shadow-blue-500/30 active:scale-[0.98] disabled:opacity-60 transition-all touch-target"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{submitStatusText}</span>
-                </>
-              ) : isAnyPhotoProcessing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Menyiapkan Foto...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Kirim Laporan Kasus Sekarang</span>
-                </>
-              )}
-            </button>
-          )}
+        <div className="w-full sm:bg-white/95 sm:backdrop-blur-md sm:border-t sm:border-slate-200/80 sm:shadow-[0_-4px_20px_rgba(15,23,42,0.06)] sm:p-3">
+          <div className="max-w-xl mx-auto pointer-events-auto">
+            <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2 sm:p-0 sm:bg-transparent sm:backdrop-blur-none sm:border-0 sm:rounded-none shadow-lg sm:shadow-none shadow-slate-900/8">
+              <div className="flex items-center gap-2.5">
+                {step < 4 ? (
+                  <button
+                    type="button"
+                    disabled={submitting}
+                    onClick={handleNext}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all touch-target"
+                  >
+                    <span>Lanjut ke Langkah {step + 1}</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={submitting || isAnyPhotoProcessing}
+                    onClick={handleSubmit}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-500/30 active:scale-[0.98] disabled:opacity-60 transition-all touch-target"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{submitStatusText}</span>
+                      </>
+                    ) : isAnyPhotoProcessing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Menyiapkan Foto...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Kirim Laporan Kasus Sekarang</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
