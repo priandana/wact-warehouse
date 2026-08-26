@@ -2,8 +2,9 @@
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { User, LogOut, Shield, Building2, Mail } from 'lucide-react';
+import { User, Shield, Building2, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { ProfileSignOutButton } from '@/components/profile/ProfileSignOutButton';
 
 export const metadata: Metadata = { title: 'Profil Pengguna' };
 export const dynamic = 'force-dynamic';
@@ -92,15 +93,9 @@ export default async function ProfilePage() {
       </div>
 
       {/* Sign Out Button */}
-      <form action="/login" className="pt-2">
-        <button
-          type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/70 text-rose-700 font-bold text-xs transition-colors shadow-2xs"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Keluar dari Akun</span>
-        </button>
-      </form>
+      <div className="pt-2">
+        <ProfileSignOutButton />
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 // components/shared/layout/Sidebar.tsx
 // Minimalist, Clean SaaS Desktop Sidebar Navigation
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -18,10 +19,10 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useActiveWarehouse } from './AppShellProvider';
 import { Capability } from '@/lib/permissions/capabilities';
+import { LogoutConfirmationModal } from '@/components/shared/LogoutConfirmationModal';
 
 interface NavItem {
   href: string;
@@ -79,12 +80,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { can } = useActiveWarehouse();
-
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
@@ -212,15 +208,22 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
             </div>
           </div>
           <button
-            onClick={handleSignOut}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-            title="Keluar"
-            aria-label="Keluar"
+            type="button"
+            onClick={() => setIsLogoutModalOpen(true)}
+            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors touch-target flex items-center justify-center"
+            title="Keluar Akun"
+            aria-label="Keluar Akun"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+      />
     </aside>
   );
 }

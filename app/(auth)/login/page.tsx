@@ -11,11 +11,13 @@ import {
   CheckCircle2,
   Building2,
   Sparkles,
+  ShieldCheck,
+  Zap,
   AlertCircle,
 } from 'lucide-react';
 
 interface Props {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; logged_out?: string }>;
 }
 
 export default async function LoginPage({ searchParams }: Props) {
@@ -44,6 +46,7 @@ export default async function LoginPage({ searchParams }: Props) {
   };
 
   const errorMessage = getErrorMessage();
+  const isLoggedOut = params.logged_out === 'true';
 
   return (
     <div className="h-dvh min-h-[100dvh] w-full flex bg-[#F8FAFC] overflow-hidden">
@@ -177,6 +180,19 @@ export default async function LoginPage({ searchParams }: Props) {
                 Masuk untuk melanjutkan aktivitas warehouse Anda.
               </p>
             </div>
+
+            {/* Successful Logout Feedback */}
+            {isLoggedOut && !errorMessage && (
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs font-semibold text-emerald-800 flex items-start gap-2.5 animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-extrabold text-emerald-900">Berhasil keluar</p>
+                  <p className="text-[11px] text-emerald-700 font-medium mt-0.5">
+                    Anda telah keluar dari WACT dengan aman.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Error message from server */}
             {errorMessage && (

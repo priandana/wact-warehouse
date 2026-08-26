@@ -22,9 +22,9 @@ import {
   Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { createClient } from '@/lib/supabase/client';
 import { useActiveWarehouse } from './AppShellProvider';
 import { Capability } from '@/lib/permissions/capabilities';
+import { LogoutConfirmationModal } from '@/components/shared/LogoutConfirmationModal';
 
 interface MobileNavDrawerProps {
   isOpen: boolean;
@@ -140,6 +140,7 @@ export function MobileNavDrawer({
   const router = useRouter();
   const { can } = useActiveWarehouse();
   const [mounted, setMounted] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -168,11 +169,9 @@ export function MobileNavDrawer({
 
   if (!mounted) return null;
 
-  const handleSignOut = async () => {
+  const handleTriggerSignOut = () => {
     onClose();
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
+    setIsLogoutModalOpen(true);
   };
 
   const getInitials = (name?: string) => {
@@ -378,7 +377,7 @@ export function MobileNavDrawer({
 
             <button
               type="button"
-              onClick={handleSignOut}
+              onClick={handleTriggerSignOut}
               className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors touch-target flex items-center justify-center"
               title="Keluar Akun"
               aria-label="Keluar Akun"
@@ -392,6 +391,12 @@ export function MobileNavDrawer({
           </p>
         </div>
       </aside>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+      />
     </div>
   );
 
