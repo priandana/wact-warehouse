@@ -125,14 +125,18 @@ export function CreateCaseWizard({
   initialPriority,
 }: CreateCaseWizardProps) {
   const router = useRouter();
-  const { activeWarehouse } = useActiveWarehouse();
+  const { activeWarehouse, activeWarehouseId: contextWarehouseId } = useActiveWarehouse();
   const activeWarehouseId =
-    inspectionContext?.warehouseId || initialWarehouseId || activeWarehouse?.warehouseId;
+    inspectionContext?.warehouseId || initialWarehouseId || contextWarehouseId;
 
   const [step, setStep] = useState<number>(1);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitStatusText, setSubmitStatusText] = useState<string>('Mengirim laporan...');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [warehouseSwitchNotice, setWarehouseSwitchNotice] = useState<string | null>(null);
+
+  // Track warehouse ID changes to reset dependent state immediately
+  const prevWarehouseIdRef = useRef<string | null>(activeWarehouseId ?? null);
 
   // Partial success state (Case created, evidence upload failed)
   const [createdCaseId, setCreatedCaseId] = useState<string | null>(null);
@@ -155,20 +159,33 @@ export function CreateCaseWizard({
 
   const [areaId, setAreaId] = useState<string>(() => {
     if (inspectionContext?.areaId) return inspectionContext.areaId;
-    if (initialAreaId) return initialAreaId;
+    if (initialAreaId) {
+      const match = areas.find((a) => a.id === initialAreaId && (!activeWarehouseId || a.warehouse_id === activeWarehouseId));
+      if (match) return match.id;
+    }
     const targetAssetId = inspectionContext?.assetId || initialAssetId;
     if (targetAssetId) {
-      const match = assets.find((a) => a.id === targetAssetId);
+      const match = assets.find((a) => a.id === targetAssetId && (!activeWarehouseId || a.warehouse_id === activeWarehouseId));
       return match?.area_id || '';
     }
     return '';
   });
-  const [locationId, setLocationId] = useState<string>(
-    inspectionContext?.locationId || initialLocationId || ''
-  );
-  const [assetId, setAssetId] = useState<string>(
-    inspectionContext?.assetId || initialAssetId || ''
-  );
+  const [locationId, setLocationId] = useState<string>(() => {
+    if (inspectionContext?.locationId) return inspectionContext.locationId;
+    if (initialLocationId) {
+      const match = locations.find((l) => l.id === initialLocationId && (!activeWarehouseId || l.warehouse_id === activeWarehouseId));
+      if (match) return match.id;
+    }
+    return '';
+  });
+  const [assetId, setAssetId] = useState<string>(() => {
+    if (inspectionContext?.assetId) return inspectionContext.assetId;
+    if (initialAssetId) {
+      const match = assets.find((a) => a.id === initialAssetId && (!activeWarehouseId || a.warehouse_id === activeWarehouseId));
+      if (match) return match.id;
+    }
+    return '';
+  });
 
   const [description, setDescription] = useState<string>(
     inspectionContext?.defaultDescription || initialDescription || ''
@@ -186,11 +203,68 @@ export function CreateCaseWizard({
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
+  // Monitor warehouse change at runtime -> Invalidate warehouse-dependent selections
+  useEffect(() => {
+    if (inspectionContext) return; // Locked inspection reference
+
+    if (
+      activeWarehouseId &&
+      prevWarehouseIdRef.current &&
+      prevWarehouseIdRef.current !== activeWarehouseId
+    ) {
+      // Active warehouse switched! Invalidate all warehouse-dependent selections
+      setAreaId('');
+      setLocationId('');
+      setAssetId('');
+      setErrorMessage(null);
+      setWarehouseSwitchNotice('Pilihan lokasi dan aset telah direset karena gudang aktif berubah.');
+
+      // Clear warehouse-scoped keys from localStorage draft
+      try {
+        const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          parsed.warehouseId = activeWarehouseId;
+          parsed.areaId = '';
+          parsed.locationId = '';
+          parsed.assetId = '';
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(parsed));
+        }
+      } catch {
+        // Ignore storage errors
+      }
+
+      // Return user to Step 1 if they had navigated forward with stale warehouse selections
+      setStep((curr) => (curr > 1 ? 1 : curr));
+    }
+
+    prevWarehouseIdRef.current = activeWarehouseId ?? null;
+  }, [activeWarehouseId, inspectionContext]);
+
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+
   // Initialize draft and clientRequestId
   useEffect(() => {
     try {
       if (initialAssetId || initialInspectionId) {
-        if (initialAssetId) setAssetId(initialAssetId);
+        const matchingAsset = initialAssetId
+          ? assets.find(
+              (a) =>
+                a.id === initialAssetId &&
+                (!activeWarehouseId || a.warehouse_id === activeWarehouseId)
+            )
+          : null;
+
+        if (matchingAsset) {
+          setAssetId(matchingAsset.id);
+          if (matchingAsset.area_id) setAreaId(matchingAsset.area_id);
+        } else if (inspectionContext?.assetId) {
+          setAssetId(inspectionContext.assetId);
+          if (inspectionContext.areaId) setAreaId(inspectionContext.areaId);
+        } else {
+          setAssetId('');
+        }
+
         if (initialTitle) setTitle(initialTitle);
         if (initialDescription) setDescription(initialDescription);
         if (
@@ -200,15 +274,25 @@ export function CreateCaseWizard({
           setPriority(initialPriority as Priority);
         }
         if (initialAreaId) {
-          setAreaId(initialAreaId);
-        } else if (initialAssetId) {
-          const match = assets.find((a) => a.id === initialAssetId);
-          if (match?.area_id) setAreaId(match.area_id);
+          const matchingArea = areas.find(
+            (a) =>
+              a.id === initialAreaId &&
+              (!activeWarehouseId || a.warehouse_id === activeWarehouseId)
+          );
+          if (matchingArea) setAreaId(matchingArea.id);
         }
-        if (initialLocationId) setLocationId(initialLocationId);
+        if (initialLocationId) {
+          const matchingLoc = locations.find(
+            (l) =>
+              l.id === initialLocationId &&
+              (!activeWarehouseId || l.warehouse_id === activeWarehouseId)
+          );
+          if (matchingLoc) setLocationId(matchingLoc.id);
+        }
         setRequiresMaintenance(true);
         setHasOperationalImpact(true);
         setClientRequestId(crypto.randomUUID());
+        setIsHydrated(true);
         return;
       }
 
@@ -220,18 +304,46 @@ export function CreateCaseWizard({
         setCategoryId(parsed.categoryId || '');
         setSubcategoryId(parsed.subcategoryId || '');
         setPriority(parsed.priority || 'medium');
-        setAreaId(parsed.areaId || '');
-        setLocationId(parsed.locationId || '');
-        setAssetId(parsed.assetId || '');
         setDescription(parsed.description || '');
         setHasOperationalImpact(parsed.hasOperationalImpact ?? false);
         setRequiresMaintenance(parsed.requiresMaintenance ?? false);
+
+        // Only restore warehouse-scoped entities if draft warehouseId matches current active warehouse
+        const isSameWarehouse = Boolean(
+          parsed.warehouseId &&
+          activeWarehouseId &&
+          parsed.warehouseId === activeWarehouseId
+        );
+        if (isSameWarehouse && activeWarehouseId) {
+          const validArea = areas.find(
+            (a) => a.id === parsed.areaId && a.warehouse_id === activeWarehouseId
+          );
+          const validLocation = locations.find(
+            (l) =>
+              l.id === parsed.locationId &&
+              l.warehouse_id === activeWarehouseId &&
+              (validArea ? l.area_id === validArea.id : false)
+          );
+          const validAsset = assets.find(
+            (a) => a.id === parsed.assetId && a.warehouse_id === activeWarehouseId
+          );
+
+          setAreaId(validArea ? validArea.id : '');
+          setLocationId(validLocation ? validLocation.id : '');
+          setAssetId(validAsset ? validAsset.id : '');
+        } else {
+          setAreaId('');
+          setLocationId('');
+          setAssetId('');
+        }
       } else {
         const newId = crypto.randomUUID();
         setClientRequestId(newId);
       }
     } catch {
       setClientRequestId(crypto.randomUUID());
+    } finally {
+      setIsHydrated(true);
     }
   }, [
     initialAssetId,
@@ -241,15 +353,21 @@ export function CreateCaseWizard({
     initialTitle,
     initialDescription,
     initialPriority,
+    inspectionContext,
+    activeWarehouseId,
     assets,
+    areas,
+    locations,
   ]);
 
   // Save draft on change (only for direct reporting flow)
   useEffect(() => {
+    if (!isHydrated) return; // Do not persist before draft hydration has completed
     if (initialAssetId || initialInspectionId) return; // Do not overwrite drafts from prefilled flows
 
     try {
       const draft = {
+        warehouseId: activeWarehouseId,
         clientRequestId,
         title,
         categoryId,
@@ -267,6 +385,7 @@ export function CreateCaseWizard({
       // Ignore quota errors
     }
   }, [
+    activeWarehouseId,
     clientRequestId,
     title,
     categoryId,
@@ -286,11 +405,34 @@ export function CreateCaseWizard({
     localStorage.removeItem(DRAFT_STORAGE_KEY);
   };
 
-  // Filtered lists based on selection & warehouse
-  const filteredSubcategories = subcategories.filter(s => s.category_id === categoryId);
-  const filteredAreas = areas.filter(a => !activeWarehouseId || a.warehouse_id === activeWarehouseId);
-  const filteredLocations = locations.filter(l => l.area_id === areaId);
-  const filteredAssets = assets.filter(a => !activeWarehouseId || a.warehouse_id === activeWarehouseId);
+  // Filtered lists strictly scoped to active warehouse
+  const filteredSubcategories = subcategories.filter((s) => s.category_id === categoryId);
+  const filteredAreas = areas.filter(
+    (a) => Boolean(activeWarehouseId) && a.warehouse_id === activeWarehouseId
+  );
+  const filteredLocations = locations.filter(
+    (l) => Boolean(activeWarehouseId) && l.area_id === areaId && l.warehouse_id === activeWarehouseId
+  );
+  const filteredAssets = assets.filter(
+    (a) => Boolean(activeWarehouseId) && a.warehouse_id === activeWarehouseId
+  );
+
+  const handleAreaSelect = (newAreaId: string) => {
+    setAreaId(newAreaId);
+    setLocationId('');
+  };
+
+  const handleAssetSelect = (newAssetId: string) => {
+    setAssetId(newAssetId);
+    if (newAssetId) {
+      const selected = assets.find(
+        (a) => a.id === newAssetId && a.warehouse_id === activeWarehouseId
+      );
+      if (selected?.area_id) {
+        setAreaId(selected.area_id);
+      }
+    }
+  };
 
   // Quick title suggestions
   const quickSuggestions = [
@@ -400,6 +542,29 @@ export function CreateCaseWizard({
       }
       return;
     }
+
+    if (step === 2) {
+      // Ensure warehouse-scoped selections remain strictly valid for active warehouse
+      if (assetId && !assets.some((a) => a.id === assetId && a.warehouse_id === activeWarehouseId)) {
+        setAssetId('');
+      }
+      if (areaId && !areas.some((a) => a.id === areaId && a.warehouse_id === activeWarehouseId)) {
+        setAreaId('');
+        setLocationId('');
+      }
+      if (
+        locationId &&
+        !locations.some(
+          (l) =>
+            l.id === locationId &&
+            l.warehouse_id === activeWarehouseId &&
+            (!areaId || l.area_id === areaId)
+        )
+      ) {
+        setLocationId('');
+      }
+    }
+
     setStep((prev) => Math.min(4, prev + 1));
   };
 
@@ -472,6 +637,50 @@ export function CreateCaseWizard({
       return;
     }
 
+    // Client-side guard against cross-warehouse asset submission
+    if (assetId) {
+      const matchingAsset = assets.find(
+        (a) => a.id === assetId && a.warehouse_id === activeWarehouseId
+      );
+      if (!matchingAsset) {
+        const whName = activeWarehouse?.warehouseName || 'gudang aktif';
+        setErrorMessage(`Aset tidak sesuai dengan gudang aktif. Silakan pilih ulang aset untuk ${whName}.`);
+        setAssetId('');
+        setStep(2);
+        return;
+      }
+    }
+
+    // Client-side guard against cross-warehouse area submission
+    if (areaId) {
+      const matchingArea = areas.find(
+        (a) => a.id === areaId && a.warehouse_id === activeWarehouseId
+      );
+      if (!matchingArea) {
+        setAreaId('');
+        setLocationId('');
+        setErrorMessage('Area yang dipilih tidak sesuai dengan gudang aktif.');
+        setStep(2);
+        return;
+      }
+    }
+
+    // Client-side guard against cross-warehouse or mismatched location submission
+    if (locationId) {
+      const matchingLoc = locations.find(
+        (l) =>
+          l.id === locationId &&
+          l.warehouse_id === activeWarehouseId &&
+          (!areaId || l.area_id === areaId)
+      );
+      if (!matchingLoc) {
+        setLocationId('');
+        setErrorMessage('Lokasi yang dipilih tidak sesuai dengan area atau gudang aktif.');
+        setStep(2);
+        return;
+      }
+    }
+
     setSubmitting(true);
     setErrorMessage(null);
     setPartialEvidenceError(null);
@@ -525,8 +734,21 @@ export function CreateCaseWizard({
         router.push(`/cases/${caseId}`);
       }, 500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
-      setErrorMessage(msg);
+      console.error('Create case submission error:', err);
+      const rawMsg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
+
+      // Friendly operator-facing message for cross-warehouse asset / area mismatch
+      if (
+        rawMsg.toLowerCase().includes('does not belong to warehouse') ||
+        rawMsg.toLowerCase().includes('not belong to warehouse')
+      ) {
+        const whName = activeWarehouse?.warehouseName || 'gudang aktif';
+        setErrorMessage(`Aset tidak sesuai dengan gudang aktif. Silakan pilih ulang aset untuk ${whName}.`);
+        setAssetId('');
+        setStep(2);
+      } else {
+        setErrorMessage(rawMsg);
+      }
       setSubmitting(false);
     }
   };
@@ -584,6 +806,24 @@ export function CreateCaseWizard({
           ))}
         </div>
       </div>
+
+      {/* Warehouse Switch Notice Banner */}
+      {warehouseSwitchNotice && (
+        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900 flex items-start justify-between gap-2 animate-in fade-in">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <span>{warehouseSwitchNotice}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setWarehouseSwitchNotice(null)}
+            className="text-amber-600 hover:text-amber-800 p-0.5 transition-colors"
+            title="Tutup pemberitahuan"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Error Alert */}
       {errorMessage && (
@@ -879,30 +1119,33 @@ export function CreateCaseWizard({
             <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
               Pilih Area Gudang
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {filteredAreas.map((area) => {
-                const isSelected = areaId === area.id;
-                return (
-                  <button
-                    key={area.id}
-                    type="button"
-                    onClick={() => {
-                      setAreaId(isSelected ? '' : area.id);
-                      setLocationId('');
-                    }}
-                    className={cn(
-                      'p-2.5 rounded-2xl border text-left transition-all active:scale-95',
-                      isSelected
-                        ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
-                        : 'bg-slate-50 border-slate-200/80 text-slate-800 hover:bg-slate-100'
-                    )}
-                  >
-                    <p className="text-xs font-bold truncate">{area.name}</p>
-                    <p className={cn('text-[10px] font-medium', isSelected ? 'text-blue-100' : 'text-slate-400')}>{area.code}</p>
-                  </button>
-                );
-              })}
-            </div>
+            {filteredAreas.length === 0 ? (
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 font-medium text-center">
+                Belum ada area terdaftar untuk gudang ini.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {filteredAreas.map((area) => {
+                  const isSelected = areaId === area.id;
+                  return (
+                    <button
+                      key={area.id}
+                      type="button"
+                      onClick={() => handleAreaSelect(isSelected ? '' : area.id)}
+                      className={cn(
+                        'p-2.5 rounded-2xl border text-left transition-all active:scale-95',
+                        isSelected
+                          ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
+                          : 'bg-slate-50 border-slate-200/80 text-slate-800 hover:bg-slate-100'
+                      )}
+                    >
+                      <p className="text-xs font-bold truncate">{area.name}</p>
+                      <p className={cn('text-[10px] font-medium', isSelected ? 'text-blue-100' : 'text-slate-400')}>{area.code}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Location Specific Chips (Filtered by Area) */}
@@ -938,7 +1181,7 @@ export function CreateCaseWizard({
           <Select
             label="Aset / Mesin Terkait (Opsional)"
             value={assetId}
-            onChange={setAssetId}
+            onChange={handleAssetSelect}
             placeholder="-- Tidak Terkait Aset Tertentu --"
             searchable={true}
             clearable={true}
