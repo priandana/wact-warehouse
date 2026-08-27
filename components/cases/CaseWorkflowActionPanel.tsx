@@ -69,6 +69,7 @@ interface CaseWorkflowActionPanelProps {
   isSuperAdmin?: boolean;
   assignableUsers: AssignableUser[];
   rootCauses: RootCauseItem[];
+  hasAfterEvidence?: boolean;
 }
 
 export function CaseWorkflowActionPanel({
@@ -90,6 +91,7 @@ export function CaseWorkflowActionPanel({
   isSuperAdmin = false,
   assignableUsers,
   rootCauses,
+  hasAfterEvidence = true,
 }: CaseWorkflowActionPanelProps) {
   const router = useRouter();
 
@@ -522,6 +524,20 @@ setLoading(false);
           </span>
         </div>
 
+        {/* Error / Success Alerts on Main Panel */}
+        {errorMessage && !activeModal && (
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <span className="leading-snug">{errorMessage}</span>
+          </div>
+        )}
+        {successMessage && !activeModal && (
+          <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <span className="leading-snug">{successMessage}</span>
+          </div>
+        )}
+
         {/* 1. Primary Operational Actions based on Status */}
         <div className="space-y-2">
           {/* Action 1: Assign PIC (only for Admin / Coordinator when open / reopened) */}
@@ -576,12 +592,25 @@ setLoading(false);
           {/* Action 2: Update Progress (if on_progress / waiting_repair) */}
           {(status === 'on_progress' || status === 'waiting_repair') && (
             <div className="space-y-2">
+              {canRequestVerification && !hasAfterEvidence && (
+                <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-[11.5px] text-amber-900 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold">Foto Selesai Diperlukan</p>
+                    <p className="text-amber-800 font-normal mt-0.5">
+                      Lengkapi foto bukti penyelesaian (Foto Selesai) sebelum mengajukan verifikasi QC.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {canRequestVerification && (
                 <button
                   type="button"
-                  disabled={loading}
+                  disabled={loading || !hasAfterEvidence}
                   onClick={handleRequestVerification}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] disabled:opacity-50 transition-all"
+                  title={!hasAfterEvidence ? 'Lengkapi foto selesai sebelum mengajukan verifikasi' : undefined}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <Clock className="w-4 h-4 stroke-[2.5]" />
                   <span>Ajukan Verifikasi QC</span>
@@ -1457,6 +1486,7 @@ setLoading(false);
         canRequestVerification={canRequestVerification}
         canVerify={canVerify}
         canReopen={canReopen}
+        hasAfterEvidence={hasAfterEvidence}
         loading={loading}
         onAssign={() => setActiveModal('assign')}
         onRequestVerification={handleRequestVerification}

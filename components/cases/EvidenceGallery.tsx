@@ -15,8 +15,7 @@ import {
   User,
   AlertCircle,
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { id as localeId } from 'date-fns/locale';
+import { formatWib } from '@/lib/utils/dateFormat';
 import { cn } from '@/lib/utils/cn';
 
 export interface EvidenceItem {
@@ -250,7 +249,7 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
               )}
               <span className="flex items-center gap-1 text-slate-400">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>{format(new Date(currentItem.uploaded_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}</span>
+                <span>{formatWib(currentItem.uploaded_at, 'dd MMM yyyy, HH:mm')}</span>
               </span>
             </div>
 

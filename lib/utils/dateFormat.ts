@@ -6,6 +6,20 @@ import { id } from 'date-fns/locale';
 import { formatInTimeZone } from 'date-fns-tz';
 
 /**
+ * Formats date/timestamp in Western Indonesia Time (WIB / Asia/Jakarta, UTC+7).
+ * Default pattern: 'dd MMM yyyy, HH:mm' (e.g. "27 Agt 2026, 10:54")
+ */
+export function formatWib(
+  date: Date | string | null | undefined,
+  pattern = 'dd MMM yyyy, HH:mm'
+): string {
+  if (!date) return '';
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '';
+  return formatInTimeZone(d, 'Asia/Jakarta', pattern, { locale: id });
+}
+
+/**
  * Formats a date for display in mobile case list (smart relative format).
  * - Today: "10:23" (time only)
  * - Yesterday: "Kemarin, 10:23"

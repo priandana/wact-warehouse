@@ -40,8 +40,9 @@ import {
   ArrowRight,
   Info,
 } from 'lucide-react';
-import { differenceInHours, format, formatDistanceToNow, isPast } from 'date-fns';
+import { differenceInHours, formatDistanceToNow, isPast } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { formatWib } from '@/lib/utils/dateFormat';
 import { cn } from '@/lib/utils/cn';
 
 interface CaseDetailPageProps {
@@ -360,7 +361,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       case 'priority_changed':
         return `Prioritas kasus diubah ${act.metadata?.from ? `dari ${act.metadata.from}` : ''} menjadi ${act.metadata?.to || ''}`;
       case 'due_date_overridden':
-        return `Batas waktu SLA diperbarui ${act.metadata?.to ? `menjadi ${format(new Date(act.metadata.to), 'dd MMM yyyy, HH:mm', { locale: localeId })}` : ''}`;
+        return `Batas waktu SLA diperbarui ${act.metadata?.to ? `menjadi ${formatWib(act.metadata.to, 'dd MMM yyyy, HH:mm')}` : ''}`;
       case 'force_closed':
         return 'Kasus ditutup paksa oleh Administrator';
       case 'evidence_added':
@@ -433,7 +434,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           </div>
 
           <span className="text-[11px] font-medium text-slate-400">
-            Dibuat {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })} ({format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })})
+            Dibuat {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })} ({formatWib(item.created_at, 'dd MMM yyyy, HH:mm')})
           </span>
         </div>
 
@@ -574,7 +575,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                <span>{format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}</span>
+                <span>{formatWib(item.created_at, 'dd MMM yyyy, HH:mm')}</span>
               </span>
             </div>
           </div>
@@ -664,7 +665,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                           )}
                         </div>
                         <span className="text-[10px] text-slate-400">
-                          {format(new Date(com.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
+                          {formatWib(com.created_at, 'dd MMM yyyy, HH:mm')} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
                         </span>
                       </div>
                       <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
@@ -699,7 +700,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                             {actorName}
                           </span>
                           <span className="text-[10.5px] text-slate-400">
-                            {format(new Date(act.created_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
+                            {formatWib(act.created_at, 'dd MMM yyyy, HH:mm')}
                           </span>
                         </div>
                         <p className="text-[11.5px] text-slate-700 font-semibold">
@@ -740,11 +741,11 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                       <div className="flex items-center justify-between font-bold text-slate-900 text-xs">
                         <span>Oleh: {changerName}</span>
                         <span className="text-[10px] text-slate-400 font-normal">
-                          {format(new Date(ddc.changed_at), 'dd MMM yyyy, HH:mm', { locale: localeId })}
+                          {formatWib(ddc.changed_at, 'dd MMM yyyy, HH:mm')}
                         </span>
                       </div>
                       <p className="text-slate-600">
-                        Batas waktu baru: <strong className="text-purple-700 font-bold">{format(new Date(ddc.new_due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}</strong>
+                        Batas waktu baru: <strong className="text-purple-700 font-bold">{formatWib(ddc.new_due_date, 'dd MMM yyyy, HH:mm')}</strong>
                       </p>
                       <p className="text-amber-900 italic bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
                         Alasan: &quot;{ddc.reason}&quot;
@@ -820,12 +821,12 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
 
             <p className={cn('text-sm font-black tracking-tight', isOverdue ? 'text-rose-600' : 'text-slate-900')}>
               {item.due_date
-                ? format(new Date(item.due_date), 'dd MMMM yyyy • HH:mm', { locale: localeId })
+                ? formatWib(item.due_date, 'dd MMMM yyyy • HH:mm')
                 : 'Batas waktu belum diatur'}
             </p>
             <p className="text-[11px] text-slate-500 font-medium">
               {isClosed
-                ? `Kasus telah ditutup pada ${item.closed_at ? format(new Date(item.closed_at), 'dd MMM yyyy, HH:mm', { locale: localeId }) : 'selesai'}`
+                ? `Kasus telah ditutup pada ${item.closed_at ? formatWib(item.closed_at, 'dd MMM yyyy, HH:mm') : 'selesai'}`
                 : isOverdue
                 ? 'Penyelesaian melewati batas waktu target operasional'
                 : 'Target penyelesaian sesuai standar SLA'}
@@ -881,6 +882,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             isSuperAdmin={isSuperAdmin}
             assignableUsers={assignableUsers}
             rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
+            hasAfterEvidence={(evidences ?? []).some((ev) => ev.phase === 'after')}
           />
 
           {/* 4. Lokasi & Aset Terkait Card */}
