@@ -101,14 +101,14 @@ export function CaseWorkflowActionPanel({
   // Strict capability-driven authorization (preserves multi-role capability union)
   // An empty capability set grants no operational permissions. Unrelated capabilities are never substituted.
   const canAssign = caps.has('case.assign');
-  const canUpdateProgress = caps.has('case.update_progress') && (isAssignee || caps.has('case.view_all') || isSuperAdmin);
-  const canUploadEvidence = caps.has('evidence.upload') && (isAssignee || isReporter || caps.has('case.view_all') || isSuperAdmin);
-  const canRequestVerification = caps.has('case.request_verification') && (isAssignee || caps.has('case.view_all') || isSuperAdmin);
+  const canUpdateProgress = caps.has('case.update_progress') && (isAssignee || caps.has('case.view_all'));
+  const canUploadEvidence = caps.has('evidence.upload') && (isAssignee || isReporter || caps.has('case.view_all'));
+  const canRequestVerification = caps.has('case.request_verification') && (isAssignee || caps.has('case.view_all'));
   const canVerify = caps.has('case.verify') && !isAssignee;
   const canReopen = caps.has('case.reopen');
   const canChangePriority = caps.has('case.change_priority');
   const canOverrideDueDate = caps.has('case.override_due_date');
-  const canForceClose = caps.has('case.force_close') || isSuperAdmin;
+  const canForceClose = caps.has('case.force_close');
 
   const [activeModal, setActiveModal] = useState<
     'assign' | 'progress' | 'evidence' | 'verify' | 'reject' | 'reopen' | 'comment' | 'priority' | 'due_date' | 'force_close' | null

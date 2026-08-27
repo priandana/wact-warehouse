@@ -14,15 +14,20 @@ export const resolveCapabilities = cache(async function resolveCapabilities(
 ): Promise<Set<Capability>> {
   const supabase = await createServerClient();
 
-  // Check super admin first
+  // Check super admin and active status first
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_super_admin')
+    .select('is_super_admin, is_active')
     .eq('id', userId)
     .single();
 
-  if ((profile as { is_super_admin?: boolean } | null)?.is_super_admin) {
-    return new Set(Object.values(roleCapabilities.admin));
+  const profileData = profile as { is_super_admin?: boolean; is_active?: boolean } | null;
+  if (!profileData || profileData.is_active === false) {
+    return new Set();
+  }
+
+  if (profileData.is_super_admin) {
+    return new Set(roleCapabilities.admin);
   }
 
   // Fetch all active role names for user in this warehouse
