@@ -54,6 +54,7 @@ interface CaseWorkflowActionPanelProps {
   caseId: string;
   caseNumber: string;
   warehouseId: string;
+  warehouseName?: string;
   status: string;
   priority: string;
   dueDate?: string | null;
@@ -64,6 +65,7 @@ interface CaseWorkflowActionPanelProps {
   currentAssigneeName?: string | null;
   reporterId: string;
   userRole?: string;
+  userCapabilities?: string[];
   isSuperAdmin?: boolean;
   assignableUsers: AssignableUser[];
   rootCauses: RootCauseItem[];
@@ -73,6 +75,7 @@ export function CaseWorkflowActionPanel({
   caseId,
   caseNumber,
   warehouseId,
+  warehouseName,
   status,
   priority,
   dueDate,
@@ -83,6 +86,7 @@ export function CaseWorkflowActionPanel({
   currentAssigneeName,
   reporterId,
   userRole,
+  userCapabilities,
   isSuperAdmin = false,
   assignableUsers,
   rootCauses,
@@ -92,19 +96,19 @@ export function CaseWorkflowActionPanel({
   const isAssignee = currentAssigneeId === currentUserId;
   const isReporter = reporterId === currentUserId;
 
-  const isAdmin = isSuperAdmin || userRole === 'admin';
-  const isCoordinator = userRole === 'coordinator';
-  const isQC = userRole === 'qc_leader';
+  const caps = new Set<string>(userCapabilities ?? []);
 
-  const canAssign = isAdmin || isCoordinator;
-  const canUpdateProgress = isAssignee || isAdmin || isCoordinator;
-  const canUploadEvidence = isAssignee || isReporter || isAdmin || isCoordinator;
-  const canRequestVerification = isAssignee || isAdmin || isCoordinator;
-  const canVerify = (isQC || isCoordinator || isAdmin) && !isAssignee;
-  const canReopen = isAdmin || isCoordinator;
-  const canChangePriority = isAdmin || isCoordinator;
-  const canOverrideDueDate = isAdmin || isCoordinator;
-  const canForceClose = isAdmin;
+  // Strict capability-driven authorization (preserves multi-role capability union)
+  // An empty capability set grants no operational permissions. Unrelated capabilities are never substituted.
+  const canAssign = caps.has('case.assign');
+  const canUpdateProgress = caps.has('case.update_progress') && (isAssignee || caps.has('case.view_all') || isSuperAdmin);
+  const canUploadEvidence = caps.has('evidence.upload') && (isAssignee || isReporter || caps.has('case.view_all') || isSuperAdmin);
+  const canRequestVerification = caps.has('case.request_verification') && (isAssignee || caps.has('case.view_all') || isSuperAdmin);
+  const canVerify = caps.has('case.verify') && !isAssignee;
+  const canReopen = caps.has('case.reopen');
+  const canChangePriority = caps.has('case.change_priority');
+  const canOverrideDueDate = caps.has('case.override_due_date');
+  const canForceClose = caps.has('case.force_close') || isSuperAdmin;
 
   const [activeModal, setActiveModal] = useState<
     'assign' | 'progress' | 'evidence' | 'verify' | 'reject' | 'reopen' | 'comment' | 'priority' | 'due_date' | 'force_close' | null
@@ -168,7 +172,18 @@ export function CaseWorkflowActionPanel({
         p_assignee_id: selectedAssigneeId,
       });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (
+          error.message.includes('not an active PIC') ||
+          error.message.includes('not an active member')
+        ) {
+          throw new Error('Pengguna yang dipilih bukan PIC / Maintenance aktif di gudang kasus.');
+        }
+        if (error.message.includes('missing case.assign')) {
+          throw new Error('Anda tidak memiliki hak akses untuk menugaskan PIC pada kasus ini.');
+        }
+        throw new Error(error.message);
+      }
 
       setSuccessMessage('PIC berhasil ditugaskan!');
       setTimeout(() => {
@@ -744,37 +759,49 @@ setLoading(false);
               <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                 Pilih Staf / Teknisi PIC
               </label>
-              <div className="max-h-60 overflow-y-auto space-y-1.5 no-scrollbar py-1">
-                {assignableUsers.map((u) => {
-                  const isSelected = selectedAssigneeId === u.id;
-                  return (
-                    <button
-                      key={u.id}
-                      type="button"
-                      onClick={() => setSelectedAssigneeId(u.id)}
-                      className={cn(
-                        'w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all',
-                        isSelected
-                          ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500 font-bold text-blue-900'
-                          : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
-                      )}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                          {u.full_name[0].toUpperCase()}
+              {assignableUsers.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-center space-y-1.5 my-1">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 mx-auto" />
+                  <p className="text-xs font-bold text-amber-900">
+                    Belum ada PIC / Maintenance aktif di {warehouseName || 'warehouse ini'}.
+                  </p>
+                  <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                    Tambahkan role PIC / Maintenance pada pengguna aktif terlebih dahulu.
+                  </p>
+                </div>
+              ) : (
+                <div className="max-h-60 overflow-y-auto space-y-1.5 no-scrollbar py-1">
+                  {assignableUsers.map((u) => {
+                    const isSelected = selectedAssigneeId === u.id;
+                    return (
+                      <button
+                        key={u.id}
+                        type="button"
+                        onClick={() => setSelectedAssigneeId(u.id)}
+                        className={cn(
+                          'w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all',
+                          isSelected
+                            ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500 font-bold text-blue-900'
+                            : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
+                        )}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            {u.full_name[0].toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs truncate">{u.full_name}</p>
+                            {u.role_display_name && (
+                              <p className="text-[10px] text-slate-500 font-semibold truncate">{u.role_display_name}</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-xs truncate">{u.full_name}</p>
-                          {u.role_display_name && (
-                            <p className="text-[10px] text-slate-500 font-semibold truncate">{u.role_display_name}</p>
-                          )}
-                        </div>
-                      </div>
-                      {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
-                    </button>
-                  );
-                })}
-              </div>
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             </div>
@@ -795,7 +822,7 @@ setLoading(false);
               <button
                 type="button"
                 onClick={handleAssignPIC}
-                disabled={loading || !selectedAssigneeId}
+                disabled={loading || !selectedAssigneeId || assignableUsers.length === 0}
                 className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}

@@ -3,7 +3,7 @@
 // High-Clarity Operations Workspace (70% Enterprise Operations + 30% Fintech/Super-App Polish)
 
 import type { Metadata } from 'next';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient, createAdminClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PriorityBadge } from '@/components/shared/PriorityBadge';
@@ -15,6 +15,8 @@ import {
 } from '@/components/cases/CaseWorkflowActionPanel';
 import { BUCKETS } from '@/lib/supabase/storage';
 import { getSlaStatus } from '@/lib/utils/sla';
+import { resolveCapabilities } from '@/lib/permissions/resolveCapabilities';
+import { Capability } from '@/lib/permissions/capabilities';
 import Link from 'next/link';
 import {
   ChevronLeft,
@@ -91,6 +93,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       preventive_action,
       closed_at,
       reporter_id,
+      warehouses:warehouse_id ( id, code, name ),
       areas:area_id ( name ),
       locations:location_id ( name ),
       assets:asset_id ( asset_code, name ),
@@ -118,9 +121,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     { data: evidences },
     { data: comments },
     { data: dueDateChanges },
-    { data: rawProfiles },
     { data: rawRootCauses },
-    { data: rawUserWarehouse },
     { data: rawUserProfile },
     { data: directoryUsers },
     sourceInspectionResult,
@@ -196,27 +197,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       .order('changed_at', { ascending: false }),
 
     supabase
-      .from('user_warehouses')
-      .select(`
-        user_id,
-        is_active,
-        profiles ( id, full_name, avatar_url ),
-        roles ( name, display_name )
-      `)
-      .eq('warehouse_id', item.warehouse_id)
-      .eq('is_active', true),
-
-    supabase
       .from('root_causes')
       .select('id, name')
       .order('name'),
-
-    supabase
-      .from('user_warehouses')
-      .select('roles(name)')
-      .eq('user_id', user.id)
-      .eq('warehouse_id', item.warehouse_id)
-      .maybeSingle(),
 
     supabase
       .from('profiles')
@@ -240,32 +223,86 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
   const profileMap = new Map<string, string>((directoryUsers ?? []).map((u: any) => [u.id, u.full_name]));
 
   const sourceInspection = sourceInspectionResult?.data ?? null;
-  const currentUserRole = (rawUserWarehouse as any)?.roles?.name;
   const isSuperAdmin = (rawUserProfile as any)?.is_super_admin ?? false;
+  const warehouseName =
+    (item as any)?.warehouses?.name ||
+    ((item as any)?.warehouses?.code ? `Warehouse ${(item as any).warehouses.code}` : 'Warehouse');
 
-  // Filter assignable users to eligible candidates only (PIC Maintenance, Coordinator, Admin)
-  const eligibleRoles = ['pic_maintenance', 'coordinator', 'admin', 'qc_leader'];
-  const assignableUsers: AssignableUser[] = (rawProfiles ?? [])
-    .filter((uw: any) => uw?.roles && eligibleRoles.includes(uw.roles.name))
-    .map((uw: any) => {
-      const resolvedName = profileMap.get(uw.user_id) || uw.profiles?.full_name || 'Staff';
-      return {
-        id: uw.user_id,
-        full_name: resolvedName,
-        avatar_url: uw.profiles?.avatar_url,
-        role_name: uw.roles?.name,
-        role_display_name: uw.roles?.display_name || uw.roles?.name || 'Staff',
-      };
-    })
-    .sort((a: AssignableUser, b: AssignableUser) => {
-      const score = (role?: string) => {
-        if (role === 'pic_maintenance') return 0;
-        if (role === 'coordinator') return 1;
-        if (role === 'admin') return 2;
-        return 3;
-      };
-      return score(a.role_name) - score(b.role_name);
-    });
+  // Resolve caller capabilities across multi-role warehouse memberships
+  const callerCapabilities = await resolveCapabilities(user.id, item.warehouse_id);
+  const canAssignPIC = callerCapabilities.has(Capability.CASE_ASSIGN);
+
+  // Guarded service-role query for PIC candidate roster (executed strictly when caller may assign)
+  let assignableUsers: AssignableUser[] = [];
+  if (canAssignPIC) {
+    const adminClient = createAdminClient();
+    const { data: rawMemberships, error: memErr } = await adminClient
+      .from('user_warehouses')
+      .select(`
+        user_id,
+        is_active,
+        roles ( id, name, display_name ),
+        profiles:user_id ( id, full_name, avatar_url, is_active )
+      `)
+      .eq('warehouse_id', item.warehouse_id)
+      .eq('is_active', true);
+
+    if (memErr) {
+      console.error('Error fetching warehouse PIC candidates:', memErr);
+    } else if (rawMemberships) {
+      // Group by user_id to handle multi-role warehouse memberships correctly
+      const userMap = new Map<
+        string,
+        {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          picRoleDisplayName?: string;
+          hasActivePicRole: boolean;
+        }
+      >();
+
+      for (const row of rawMemberships) {
+        const profile = row.profiles as {
+          id: string;
+          full_name: string;
+          avatar_url: string | null;
+          is_active: boolean;
+        } | null;
+
+        // Guard: active profile required
+        if (!profile || !profile.is_active) continue;
+
+        if (!userMap.has(row.user_id)) {
+          userMap.set(row.user_id, {
+            id: row.user_id,
+            full_name: profile.full_name || 'Staff',
+            avatar_url: profile.avatar_url,
+            hasActivePicRole: false,
+          });
+        }
+
+        const userEntry = userMap.get(row.user_id)!;
+        const role = row.roles as { id: string; name: string; display_name: string } | null;
+        if (role?.name === 'pic_maintenance') {
+          userEntry.hasActivePicRole = true;
+          userEntry.picRoleDisplayName = role.display_name || 'PIC / Maintenance';
+        }
+      }
+
+      // Filter to users with active pic_maintenance role in this warehouse, deduplicated by user_id
+      assignableUsers = Array.from(userMap.values())
+        .filter((u) => u.hasActivePicRole)
+        .map((u) => ({
+          id: u.id,
+          full_name: u.full_name,
+          avatar_url: u.avatar_url,
+          role_name: 'pic_maintenance',
+          role_display_name: u.picRoleDisplayName || 'PIC / Maintenance',
+        }))
+        .sort((a, b) => a.full_name.localeCompare(b.full_name, 'id', { sensitivity: 'base' }));
+    }
+  }
 
   // 3. Generate signed URLs via authenticated server client
   const evidenceList: EvidenceItem[] = await Promise.all(
@@ -830,6 +867,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             caseId={item.id}
             caseNumber={item.case_number}
             warehouseId={item.warehouse_id}
+            warehouseName={warehouseName}
             status={item.status}
             priority={item.priority}
             dueDate={item.due_date}
@@ -839,7 +877,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             currentAssigneeId={currentAssignment?.assignee_id || null}
             currentAssigneeName={currentAssigneeName}
             reporterId={item.reporter_id}
-            userRole={currentUserRole}
+            userCapabilities={Array.from(callerCapabilities)}
             isSuperAdmin={isSuperAdmin}
             assignableUsers={assignableUsers}
             rootCauses={(rawRootCauses as RootCauseItem[]) ?? []}
