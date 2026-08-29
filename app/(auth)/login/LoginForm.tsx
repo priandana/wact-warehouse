@@ -102,7 +102,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="nama@perusahaan.com"
-            className="w-full pl-10 pr-4 h-12 rounded-2xl bg-slate-50/90 border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all duration-150"
+            className="w-full pl-10 pr-4 h-12 rounded-2xl bg-slate-50/90 border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 transition-all duration-200"
           />
         </div>
       </div>
@@ -119,7 +119,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           <button
             type="button"
             onClick={() => setShowForgotModal(true)}
-            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors"
+            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
           >
             Lupa Password?
           </button>
@@ -138,13 +138,13 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Masukkan password Anda"
-            className="w-full pl-10 pr-11 h-12 rounded-2xl bg-slate-50/90 border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all duration-150"
+            className="w-full pl-10 pr-11 h-12 rounded-2xl bg-slate-50/90 border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 transition-all duration-200"
           />
           <button
             type="button"
             disabled={loading}
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition-colors"
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
             tabIndex={-1}
             aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
           >
@@ -159,9 +159,9 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           type="submit"
           disabled={loading}
           className={cn(
-            'w-full h-12 sm:h-[50px] rounded-2xl font-extrabold text-xs sm:text-sm tracking-wide text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] touch-target',
-            'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-blue-600/25 hover:shadow-blue-600/35',
-            loading && 'opacity-70 cursor-not-allowed pointer-events-none'
+            'w-full h-12 sm:h-[50px] rounded-2xl font-extrabold text-xs sm:text-sm tracking-wide text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] touch-target group cursor-pointer',
+            'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-blue-600/25 hover:shadow-blue-600/35 hover:-translate-y-0.5 active:translate-y-0',
+            loading && 'opacity-70 cursor-not-allowed pointer-events-none hover:translate-y-0'
           )}
         >
           {loading ? (
@@ -172,13 +172,13 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           ) : (
             <>
               <span>Masuk ke WACT</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </button>
       </div>
 
-      {/* Security Message */}
+      {/* Security Footnote */}
       <div className="pt-2 flex items-center justify-center">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/80 border border-slate-200/60 text-[10.5px] font-bold text-slate-500">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
