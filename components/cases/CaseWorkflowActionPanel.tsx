@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Select } from '@/components/shared/Select';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import { MobileCaseActionBar } from './MobileCaseActionBar';
 
 export interface AssignableUser {
@@ -562,9 +563,7 @@ export function CaseWorkflowActionPanel({
               Aksi Operasional
             </h2>
           </div>
-          <span className="text-[10.5px] font-bold text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded-md">
-            {status.replace(/_/g, ' ')}
-          </span>
+          <StatusBadge status={status} size="sm" />
         </div>
 
         {/* Error / Success Alerts on Main Panel */}

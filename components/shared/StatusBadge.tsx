@@ -11,7 +11,15 @@ export type CaseStatus =
   | 'closed'
   | 'reopened';
 
-const config: Record<CaseStatus, { label: string; bg: string; text: string; dot: string; border: string }> = {
+export interface StatusVisualConfig {
+  label: string;
+  bg: string;
+  text: string;
+  dot: string;
+  border: string;
+}
+
+export const CASE_STATUS_CONFIG: Record<CaseStatus | 'overdue', StatusVisualConfig> = {
   open: {
     label: 'Open',
     bg: 'bg-blue-50/90',
@@ -19,26 +27,33 @@ const config: Record<CaseStatus, { label: string; bg: string; text: string; dot:
     dot: 'bg-blue-500',
     border: 'border-blue-200/70',
   },
+  reopened: {
+    label: 'Reopened',
+    bg: 'bg-indigo-50/90',
+    text: 'text-indigo-700',
+    dot: 'bg-indigo-500',
+    border: 'border-indigo-200/70',
+  },
   on_progress: {
     label: 'On Progress',
-    bg: 'bg-purple-50/90',
-    text: 'text-purple-700',
-    dot: 'bg-purple-500 animate-pulse',
-    border: 'border-purple-200/70',
-  },
-  waiting_repair: {
-    label: 'Menunggu Perbaikan',
     bg: 'bg-amber-50/90',
     text: 'text-amber-800',
     dot: 'bg-amber-500',
     border: 'border-amber-200/70',
   },
-  waiting_verification: {
-    label: 'Verifikasi QC',
+  waiting_repair: {
+    label: 'Menunggu Perbaikan',
     bg: 'bg-orange-50/90',
     text: 'text-orange-800',
     dot: 'bg-orange-500',
     border: 'border-orange-200/70',
+  },
+  waiting_verification: {
+    label: 'Verifikasi QC',
+    bg: 'bg-purple-50/90',
+    text: 'text-purple-700',
+    dot: 'bg-purple-500',
+    border: 'border-purple-200/70',
   },
   closed: {
     label: 'Selesai (Closed)',
@@ -47,14 +62,24 @@ const config: Record<CaseStatus, { label: string; bg: string; text: string; dot:
     dot: 'bg-emerald-500',
     border: 'border-emerald-200/70',
   },
-  reopened: {
-    label: 'Reopened',
+  overdue: {
+    label: 'Overdue',
     bg: 'bg-rose-50/90',
     text: 'text-rose-700',
-    dot: 'bg-rose-500',
+    dot: 'bg-rose-500 animate-pulse',
     border: 'border-rose-200/70',
   },
 };
+
+export function getCaseStatusConfig(status: string): StatusVisualConfig {
+  return CASE_STATUS_CONFIG[status as CaseStatus | 'overdue'] ?? {
+    label: status,
+    bg: 'bg-slate-100',
+    text: 'text-slate-700',
+    dot: 'bg-slate-400',
+    border: 'border-slate-200',
+  };
+}
 
 interface StatusBadgeProps {
   status: CaseStatus | string;
@@ -63,13 +88,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, size = 'md', showDot = true }: StatusBadgeProps) {
-  const conf = config[status as CaseStatus] ?? {
-    label: status,
-    bg: 'bg-slate-100',
-    text: 'text-slate-700',
-    dot: 'bg-slate-400',
-    border: 'border-slate-200',
-  };
+  const conf = getCaseStatusConfig(status);
 
   return (
     <span

@@ -118,7 +118,7 @@ export function HomeDashboard({
                   {stats.openCount} Open
                 </span>
                 <span className="text-slate-300">•</span>
-                <span className={stats.onProgressCount > 0 ? 'text-purple-600 font-bold' : 'text-slate-600'}>
+                <span className={stats.onProgressCount > 0 ? 'text-amber-700 font-bold' : 'text-slate-600'}>
                   {stats.onProgressCount} Progress
                 </span>
                 <span className="text-slate-300">•</span>
@@ -152,16 +152,16 @@ export function HomeDashboard({
           {/* 2. On Progress */}
           <Link
             href="/cases?status=on_progress"
-            className="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-purple-300 active:scale-[0.98] transition-all group"
+            className="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-amber-300 active:scale-[0.98] transition-all group"
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">On Progress</span>
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-50 text-purple-600 border border-purple-100/60 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-50 text-amber-700 border border-amber-100/80 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <Clock className="w-3.5 h-3.5" />
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">{stats.onProgressCount}</p>
-            <p className="text-[10.5px] font-bold text-purple-600 mt-1">Sedang dikerjakan</p>
+            <p className="text-[10.5px] font-bold text-amber-700 mt-1">Sedang dikerjakan</p>
           </Link>
 
           {/* 3. Overdue (Alert Highlight) */}

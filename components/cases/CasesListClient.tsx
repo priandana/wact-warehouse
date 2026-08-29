@@ -193,15 +193,15 @@ export function CasesListClient({
             className={cn(
               'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
               currentStatus === 'on_progress' || currentStatus === 'waiting_repair'
-                ? 'bg-purple-50/70 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-purple-200 hover:shadow-xs'
+                ? 'bg-amber-50/70 border-amber-300 ring-2 ring-amber-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-amber-200 hover:shadow-xs'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform">
                 <Wrench className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50/80 px-2 py-0.5 rounded-full border border-purple-100/80">
+              <span className="text-[10px] font-extrabold text-amber-800 bg-amber-50/80 px-2 py-0.5 rounded-full border border-amber-100/80">
                 On Progress
               </span>
             </div>
@@ -220,15 +220,15 @@ export function CasesListClient({
             className={cn(
               'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
               currentStatus === 'waiting_verification'
-                ? 'bg-orange-50/70 border-orange-300 ring-2 ring-orange-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-orange-200 hover:shadow-xs'
+                ? 'bg-purple-50/70 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 shadow-2xs hover:border-purple-200 hover:shadow-xs'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-105 transition-transform">
                 <Clock className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-extrabold text-orange-800 bg-orange-50/80 px-2 py-0.5 rounded-full border border-orange-100/80">
+              <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50/80 px-2 py-0.5 rounded-full border border-purple-100/80">
                 QC Verify
               </span>
             </div>

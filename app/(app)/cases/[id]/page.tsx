@@ -457,8 +457,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             </span>
           )}
           {item.status === 'reopened' && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-50/90 px-2.5 py-0.5 rounded-md border border-rose-200/70 shadow-2xs">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-800 bg-indigo-50/90 px-2.5 py-0.5 rounded-md border border-indigo-200/70 shadow-2xs">
+              <AlertCircle className="w-3.5 h-3.5 text-indigo-600" />
               Kasus Dibuka Kembali (Reopened)
             </span>
           )}

@@ -627,8 +627,8 @@ export function AnalyticsCommandCenter({
           <div className="space-y-3">
             {[
               { label: 'Open', count: distributions.statusCounts.open, color: 'bg-blue-500' },
-              { label: 'Reopened', count: distributions.statusCounts.reopened, color: 'bg-amber-500' },
-              { label: 'On Progress', count: distributions.statusCounts.on_progress, color: 'bg-indigo-500' },
+              { label: 'Reopened', count: distributions.statusCounts.reopened, color: 'bg-indigo-500' },
+              { label: 'On Progress', count: distributions.statusCounts.on_progress, color: 'bg-amber-500' },
               { label: 'Menunggu Perbaikan', count: distributions.statusCounts.waiting_repair, color: 'bg-orange-500' },
               { label: 'Verifikasi QC', count: distributions.statusCounts.waiting_verification, color: 'bg-purple-500' },
               { label: 'Selesai (Closed)', count: distributions.statusCounts.closed, color: 'bg-emerald-500' },

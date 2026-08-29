@@ -51,10 +51,10 @@ const TYPE_CONFIGS: Record<NotificationType, TypeConfig> = {
   },
   waiting_verification: {
     icon: Clock,
-    badgeBg: 'bg-amber-50',
-    badgeText: 'text-amber-700',
-    badgeBorder: 'border-amber-200/80',
-    iconColor: 'text-amber-600',
+    badgeBg: 'bg-purple-50',
+    badgeText: 'text-purple-700',
+    badgeBorder: 'border-purple-200/80',
+    iconColor: 'text-purple-600',
     label: 'Menunggu Verifikasi',
   },
   case_closed: {
@@ -75,10 +75,10 @@ const TYPE_CONFIGS: Record<NotificationType, TypeConfig> = {
   },
   reopened: {
     icon: RefreshCw,
-    badgeBg: 'bg-purple-50',
-    badgeText: 'text-purple-700',
-    badgeBorder: 'border-purple-200/80',
-    iconColor: 'text-purple-600',
+    badgeBg: 'bg-indigo-50',
+    badgeText: 'text-indigo-700',
+    badgeBorder: 'border-indigo-200/80',
+    iconColor: 'text-indigo-600',
     label: 'Kasus Dibuka Kembali',
   },
   force_closed: {
