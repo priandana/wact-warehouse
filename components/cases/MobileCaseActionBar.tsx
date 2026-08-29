@@ -21,7 +21,7 @@
 // Mobile stacking: z-50 (above BottomNav z-40, below modals z-[60] and MobileNavDrawer z-[70])
 // Bottom: calc(68px + safe-area-inset-bottom) — above BottomNav actual rendered height.
 
-import { Loader2, UserPlus, Clock, CheckCircle2, RotateCw } from 'lucide-react';
+import { Loader2, UserPlus, Clock, CheckCircle2, RotateCw, Camera } from 'lucide-react';
 
 export interface MobileCaseActionBarProps {
   /** Current case status from DB — passed unchanged from CaseWorkflowActionPanel */
@@ -33,6 +33,7 @@ export interface MobileCaseActionBarProps {
   canRequestVerification: boolean;
   canVerify: boolean;
   canReopen: boolean;
+  canUploadEvidence?: boolean;
   hasAfterEvidence?: boolean;
 
   // ── Shared mutation loading state ────────────────────────────────────────
@@ -45,6 +46,7 @@ export interface MobileCaseActionBarProps {
   onRequestVerification: () => void;
   onVerify: () => void;
   onReopen: () => void;
+  onUploadEvidence?: () => void;
 }
 
 interface CtaConfig {
@@ -60,19 +62,19 @@ export function MobileCaseActionBar({
   canRequestVerification,
   canVerify,
   canReopen,
+  canUploadEvidence = false,
   hasAfterEvidence = true,
   loading,
   onAssign,
   onRequestVerification,
   onVerify,
   onReopen,
+  onUploadEvidence,
 }: MobileCaseActionBarProps) {
-
-  // Approved primary CTA matrix — priority matches CaseWorkflowActionPanel render order.
+  // Approved actionable primary CTA matrix — priority matches CaseWorkflowActionPanel render order.
   let cta: CtaConfig | null = null;
 
   const isVerificationPhase = status === 'on_progress' || status === 'waiting_repair';
-  const isCtaDisabled = loading || (isVerificationPhase && canRequestVerification && !hasAfterEvidence);
 
   if ((status === 'open' || status === 'reopened') && canAssign) {
     cta = {
@@ -81,15 +83,24 @@ export function MobileCaseActionBar({
       onClick: onAssign,
       className: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20',
     };
-  } else if (isVerificationPhase && canRequestVerification) {
-    cta = {
-      label: !hasAfterEvidence ? 'Foto Selesai Diperlukan' : 'Ajukan Verifikasi QC',
-      Icon: Clock,
-      onClick: onRequestVerification,
-      className: !hasAfterEvidence
-        ? 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20',
-    };
+  } else if (isVerificationPhase) {
+    if (!hasAfterEvidence) {
+      if (canUploadEvidence && onUploadEvidence) {
+        cta = {
+          label: 'Unggah Foto Selesai',
+          Icon: Camera,
+          onClick: onUploadEvidence,
+          className: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-500/20',
+        };
+      }
+    } else if (canRequestVerification) {
+      cta = {
+        label: 'Ajukan Verifikasi QC',
+        Icon: Clock,
+        onClick: onRequestVerification,
+        className: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20',
+      };
+    }
   } else if (status === 'waiting_verification' && canVerify) {
     cta = {
       label: 'Verifikasi Kasus',
@@ -106,7 +117,7 @@ export function MobileCaseActionBar({
     };
   }
 
-  // No primary action for this role/state — bar hidden entirely.
+  // No actionable CTA for this role/state — bar hidden entirely.
   if (!cta) return null;
 
   const { label, Icon, onClick, className } = cta;
@@ -123,7 +134,7 @@ export function MobileCaseActionBar({
       <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-lg shadow-slate-900/8 px-2.5 py-2">
         <button
           type="button"
-          disabled={isCtaDisabled}
+          disabled={loading}
           onClick={onClick}
           className={`w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl font-extrabold text-sm active:scale-[0.98] disabled:opacity-60 transition-all duration-150 ${className}`}
           aria-live="polite"

@@ -1536,12 +1536,17 @@ export function CaseWorkflowActionPanel({
         canRequestVerification={canRequestVerification}
         canVerify={canVerify}
         canReopen={canReopen}
+        canUploadEvidence={canUploadEvidence}
         hasAfterEvidence={hasAfterEvidence}
         loading={loading}
         onAssign={() => setActiveModal('assign')}
         onRequestVerification={handleRequestVerification}
         onVerify={() => setActiveModal('verify')}
         onReopen={() => setActiveModal('reopen')}
+        onUploadEvidence={() => {
+          setEvidencePhase('after');
+          setActiveModal('evidence');
+        }}
       />
 
       {/* ── Mobile Spacer ────────────────────────────────────────────────── */}
@@ -1549,7 +1554,7 @@ export function CaseWorkflowActionPanel({
       {/* the bar so it remains fully reachable. Invisible on desktop.         */}
       {(
         ((status === 'open' || status === 'reopened') && canAssign) ||
-        ((status === 'on_progress' || status === 'waiting_repair') && canRequestVerification) ||
+        ((status === 'on_progress' || status === 'waiting_repair') && (hasAfterEvidence ? canRequestVerification : canUploadEvidence)) ||
         (status === 'waiting_verification' && canVerify) ||
         (status === 'closed' && canReopen)
       ) && (

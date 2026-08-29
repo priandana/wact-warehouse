@@ -39,6 +39,7 @@ import {
   HelpCircle,
   ArrowRight,
   Info,
+  UserCheck,
 } from 'lucide-react';
 import { differenceInHours, formatDistanceToNow, isPast } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
@@ -97,7 +98,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       warehouses:warehouse_id ( id, code, name ),
       areas:area_id ( name ),
       locations:location_id ( name ),
-      assets:asset_id ( asset_code, name ),
+      assets:asset_id ( id, asset_code, name ),
       category:category_id ( name ),
       subcategory:subcategory_id ( name ),
       reporter:reporter_id ( full_name ),
@@ -386,24 +387,28 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
     {
       id: 'reported',
       label: 'Dilaporkan',
+      shortLabel: 'Dilaporkan',
       isCompleted: true,
       isActive: item.status === 'open' && !currentAssigneeName,
     },
     {
       id: 'in_progress',
       label: 'Penanganan PIC',
+      shortLabel: 'Penanganan',
       isCompleted: ['waiting_verification', 'closed'].includes(item.status),
       isActive: ['on_progress', 'waiting_repair', 'reopened'].includes(item.status) || (item.status === 'open' && Boolean(currentAssigneeName)),
     },
     {
       id: 'qc_verification',
       label: 'Verifikasi QC',
+      shortLabel: 'Verifikasi',
       isCompleted: item.status === 'closed',
       isActive: item.status === 'waiting_verification',
     },
     {
       id: 'closed',
       label: 'Selesai',
+      shortLabel: 'Selesai',
       isCompleted: item.status === 'closed',
       isActive: item.status === 'closed',
     },
@@ -422,9 +427,10 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         </Link>
       </div>
 
-      {/* ── 1. Case Command Header Card ──────────────────────────────────── */}
+      {/* ── 1. Case Command Header Card (High Scannability Matrix) ──────── */}
       <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1 border-b border-slate-100">
+        {/* Top Metadata Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-mono font-black text-blue-700 bg-blue-50/90 px-2.5 py-0.5 rounded-lg border border-blue-200/70 text-xs shadow-2xs">
               {item.case_number}
@@ -438,31 +444,34 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           </span>
         </div>
 
+        {/* Case Title */}
         <h1 className="text-lg sm:text-xl font-black text-slate-900 leading-snug tracking-tight">
           {item.title}
         </h1>
 
-        {/* Badges / Context Callouts */}
-        <div className="flex flex-wrap items-center gap-2">
-          {item.has_operational_impact && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-800 bg-orange-50/90 px-2.5 py-0.5 rounded-md border border-orange-200/70 shadow-2xs">
-              <AlertTriangle className="w-3.5 h-3.5 text-orange-600" />
-              Dampak Operasional Aktif
-            </span>
-          )}
-          {item.requires_maintenance && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-md border border-amber-200/70 shadow-2xs">
-              <Wrench className="w-3.5 h-3.5 text-amber-600" />
-              Membutuhkan Maintenance
-            </span>
-          )}
-          {item.status === 'reopened' && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-800 bg-indigo-50/90 px-2.5 py-0.5 rounded-md border border-indigo-200/70 shadow-2xs">
-              <AlertCircle className="w-3.5 h-3.5 text-indigo-600" />
-              Kasus Dibuka Kembali (Reopened)
-            </span>
-          )}
-        </div>
+        {/* Badges / Operational Flags */}
+        {(item.has_operational_impact || item.requires_maintenance || item.status === 'reopened') && (
+          <div className="flex flex-wrap items-center gap-2">
+            {item.has_operational_impact && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-800 bg-orange-50/90 px-2.5 py-0.5 rounded-md border border-orange-200/70 shadow-2xs">
+                <AlertTriangle className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+                Dampak Operasional Aktif
+              </span>
+            )}
+            {item.requires_maintenance && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-md border border-amber-200/70 shadow-2xs">
+                <Wrench className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                Membutuhkan Maintenance
+              </span>
+            )}
+            {item.status === 'reopened' && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-800 bg-indigo-50/90 px-2.5 py-0.5 rounded-md border border-indigo-200/70 shadow-2xs">
+                <AlertCircle className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                Kasus Dibuka Kembali (Reopened)
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Inspection Source Banner (if originated from QC inspection) */}
         {sourceInspection && (
@@ -483,27 +492,128 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             </Link>
           </div>
         )}
+
+        {/* Quick Context Matrix: 4-Pillar Discovery Grid (Instant 3-5s scan) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 pt-3 border-t border-slate-100">
+          {/* 1. Lokasi & Area */}
+          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-100/60 flex items-center justify-center shrink-0 mt-0.5">
+              <MapPin className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                Lokasi & Area
+              </span>
+              <p className="text-[11.5px] sm:text-xs font-bold text-slate-800 truncate" title={locationText || 'Lokasi belum ditentukan'}>
+                {locationText || 'Belum ditentukan'}
+              </p>
+              <span className="text-[10px] sm:text-[10.5px] font-medium text-slate-500 truncate block">
+                {warehouseName}
+              </span>
+            </div>
+          </div>
+
+          {/* 2. Aset Terkait */}
+          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100/60 flex items-center justify-center shrink-0 mt-0.5">
+              <Package className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                Aset Terkait
+              </span>
+              {item.assets ? (
+                <div>
+                  <Link
+                    href={`/assets/${(item.assets as any).id || ''}`}
+                    className="inline-flex items-center gap-1 font-mono font-bold text-blue-700 hover:text-blue-800 text-[10.5px] sm:text-[11px] hover:underline truncate max-w-full"
+                  >
+                    <span>{item.assets.asset_code}</span>
+                    <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                  </Link>
+                  <p className="text-[10.5px] sm:text-[11px] font-semibold text-slate-700 truncate" title={item.assets.name}>
+                    {item.assets.name}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 italic">Tidak terkait aset</p>
+              )}
+            </div>
+          </div>
+
+          {/* 3. Penanggung Jawab (PIC) */}
+          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-50 text-amber-700 border border-amber-100/80 flex items-center justify-center shrink-0 mt-0.5">
+              <UserCheck className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                Penanggung Jawab
+              </span>
+              {currentAssigneeName ? (
+                <div>
+                  <p className="text-[11.5px] sm:text-xs font-black text-slate-900 truncate" title={currentAssigneeName}>
+                    {currentAssigneeName}
+                  </p>
+                  <span className="text-[9.5px] sm:text-[10px] font-medium text-slate-500 block truncate">
+                    {currentAssignment?.assigned_at ? `Ditugaskan ${formatDistanceToNow(new Date(currentAssignment.assigned_at), { addSuffix: true, locale: localeId })}` : 'PIC Aktif'}
+                  </span>
+                </div>
+              ) : (
+                <span className="inline-flex items-center text-[10px] sm:text-[10.5px] font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/80 mt-0.5">
+                  Belum Ditugaskan
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 4. Target SLA */}
+          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-100/80 flex items-center justify-center shrink-0 mt-0.5">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                Batas SLA
+              </span>
+              {item.due_date ? (
+                <div>
+                  <p className={cn('text-[11.5px] sm:text-xs font-black truncate', isOverdue ? 'text-rose-600' : 'text-slate-900')}>
+                    {formatWib(item.due_date, 'dd MMM, HH:mm')}
+                  </p>
+                  <span className={cn('text-[9.5px] sm:text-[10px] font-bold inline-flex items-center gap-1 mt-0.5', slaInfo.badgeText)}>
+                    {isOverdue && <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />}
+                    {slaInfo.badgeLabel}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 italic">Belum diatur</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ── 2. Operational Lifecycle Stepper ─────────────────────────────── */}
+      {/* ── 2. Operational Lifecycle Stepper (Adaptive Responsive) ───────── */}
       <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
           <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
             Alur Penyelesaian Operasional
           </span>
-          <span className="text-[11px] font-bold text-slate-500">
-            Fase Aktif: <strong className="text-slate-900 font-extrabold">{item.status.replace(/_/g, ' ')}</strong>
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">Fase Aktif:</span>
+            <StatusBadge status={item.status} size="sm" />
+          </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 relative">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-4 relative">
           {steps.map((s, idx) => (
             <div key={s.id} className="flex flex-col items-center text-center space-y-1.5 relative">
               {/* Connector line */}
               {idx < steps.length - 1 && (
                 <div
                   className={cn(
-                    'absolute top-3.5 left-[50%] w-full h-0.5 -z-0 transition-colors',
+                    'absolute top-3.5 sm:top-4 left-[50%] w-full h-0.5 -z-0 transition-colors',
                     s.isCompleted && steps[idx + 1].isCompleted
                       ? 'bg-blue-600'
                       : s.isCompleted
@@ -516,7 +626,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               {/* Step Circle */}
               <div
                 className={cn(
-                  'w-7 h-7 rounded-full flex items-center justify-center text-xs font-black z-10 transition-all shadow-2xs',
+                  'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black z-10 transition-all shadow-2xs',
                   s.isCompleted
                     ? 'bg-blue-600 text-white'
                     : s.isActive
@@ -524,13 +634,13 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
                 )}
               >
-                {s.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                {s.isCompleted ? <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" /> : idx + 1}
               </div>
 
-              {/* Step Label */}
+              {/* Step Label: Desktop full / Mobile adapted */}
               <span
                 className={cn(
-                  'text-[10px] sm:text-[11.5px] font-bold leading-tight line-clamp-1',
+                  'text-[10px] sm:text-xs font-bold leading-tight line-clamp-1',
                   s.isActive
                     ? 'text-blue-700 font-black'
                     : s.isCompleted
@@ -538,7 +648,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     : 'text-slate-400'
                 )}
               >
-                {s.label}
+                <span className="hidden sm:inline">{s.label}</span>
+                <span className="sm:hidden">{s.shortLabel}</span>
               </span>
             </div>
           ))}
@@ -916,9 +1027,13 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                   </span>
                   {item.assets ? (
                     <div>
-                      <span className="font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[10.5px]">
-                        {item.assets.asset_code}
-                      </span>
+                      <Link
+                        href={`/assets/${(item.assets as any).id || ''}`}
+                        className="inline-flex items-center gap-1 font-mono font-bold text-blue-700 hover:text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded text-[10.5px] hover:underline"
+                      >
+                        <span>{item.assets.asset_code}</span>
+                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                      </Link>
                       <p className="font-semibold text-slate-800 text-[11px] mt-0.5">{item.assets.name}</p>
                     </div>
                   ) : (

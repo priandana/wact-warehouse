@@ -41,7 +41,23 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
   const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
 
-  if (!evidences || evidences.length === 0) return null;
+  if (!evidences || evidences.length === 0) {
+    return (
+      <div className={cn('space-y-3', className)}>
+        <div className="flex items-center gap-2">
+          <ImageIcon className="w-4 h-4 text-blue-600" />
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+            Bukti Foto (0)
+          </h2>
+        </div>
+        <div className="p-5 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-center">
+          <ImageIcon className="w-6 h-6 text-slate-300 mb-1" />
+          <p className="text-xs font-semibold text-slate-500">Belum ada foto bukti diunggah</p>
+          <p className="text-[11px] text-slate-400 mt-0.5">Foto temuan awal atau foto selesai akan muncul di sini.</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentItem = selectedIdx !== null ? evidences[selectedIdx] : null;
 
