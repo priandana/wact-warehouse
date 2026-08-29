@@ -1,12 +1,11 @@
-// app/(app)/dashboard/page.tsx
-// Server Component Dashboard Page — Fetches live Supabase data
-
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { HomeDashboard } from '@/components/dashboard/HomeDashboard';
 import type { CaseCardData } from '@/components/shared/CaseCard';
 import { getJakartaDayBoundaries } from '@/lib/utils/sla';
+import { getUserWarehouseAccess } from '@/lib/permissions/getWarehouseAccess';
 
 export const metadata: Metadata = {
   title: 'Beranda',
@@ -24,17 +23,44 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  // 1. Fetch user profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .single();
+  // 1. Fetch user profile and accessible warehouses in parallel
+  const [profileRes, accessibleWarehouses, cookieStore] = await Promise.all([
+    supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+    getUserWarehouseAccess(user.id),
+    cookies(),
+  ]);
 
-  const userName = profile?.full_name ?? user.email ?? 'Pengguna';
+  const userName = profileRes.data?.full_name ?? user.email ?? 'Pengguna';
 
-  // 2. Fetch all visible cases for stats and feeds (RLS automatically scopes by warehouse & user capability)
-  const { data: casesData } = await supabase
+  if (accessibleWarehouses.length === 0) {
+    return (
+      <div className="page-padding py-5 max-w-6xl mx-auto">
+        <HomeDashboard
+          userName={userName}
+          stats={{ openCount: 0, onProgressCount: 0, overdueCount: 0, closedTodayCount: 0 }}
+          needsAttentionCases={[]}
+          myTasksCases={[]}
+          recentCases={[]}
+        />
+      </div>
+    );
+  }
+
+  // 2. Validate active warehouse from cookie against accessible warehouses
+  const activeWarehouseCookie = cookieStore.get('wact_active_warehouse_id')?.value;
+  let activeWarehouse = accessibleWarehouses.find((w) => w.warehouseId === activeWarehouseCookie);
+
+  if (!activeWarehouse) {
+    const pdlWh = accessibleWarehouses.find(
+      (w) => w.warehouseCode === 'WH-PDL' || w.warehouseCode === 'PDL' || w.warehouseName.toLowerCase().includes('padalarang')
+    );
+    activeWarehouse = pdlWh ?? accessibleWarehouses[0];
+  }
+
+  const activeWarehouseId = activeWarehouse.warehouseId;
+
+  // 3. Fetch all visible cases scoped to the active warehouse
+  const { data: casesData, error: casesError } = await supabase
     .from('cases')
     .select(`
       id,
@@ -48,9 +74,9 @@ export default async function DashboardPage() {
       created_at,
       has_operational_impact,
       requires_maintenance,
-      areas ( name ),
-      locations ( name ),
-      assets ( asset_code, name ),
+      areas:area_id ( name ),
+      locations:location_id ( name ),
+      assets:asset_id ( asset_code, name ),
       reporter:reporter_id ( full_name ),
       case_assignments (
         assignee_id,
@@ -58,7 +84,12 @@ export default async function DashboardPage() {
         assignee:assignee_id ( full_name )
       )
     `)
+    .eq('warehouse_id', activeWarehouseId)
     .order('created_at', { ascending: false });
+
+  if (casesError) {
+    console.error('[Dashboard] Error fetching cases for warehouse:', activeWarehouseId, casesError);
+  }
 
   const rawCases = casesData ?? [];
 
@@ -93,8 +124,8 @@ export default async function DashboardPage() {
   const { start: jakartaStart, nextDay: jakartaNextDay } = getJakartaDayBoundaries(now);
 
   const openCount = normalizedCases.filter(c => c.status === 'open' || c.status === 'reopened').length;
-  const onProgressCount = normalizedCases.filter(c => c.status === 'on_progress' || c.status === 'waiting_repair' || c.status === 'waiting_verification').length;
-  const overdueCount = normalizedCases.filter(c => c.status !== 'closed' && c.due_date && new Date(c.due_date) <= now).length;
+  const onProgressCount = normalizedCases.filter(c => c.status === 'on_progress' || c.status === 'waiting_repair').length;
+  const overdueCount = normalizedCases.filter(c => c.status !== 'closed' && c.due_date && new Date(c.due_date) < now).length;
   const closedTodayCount = normalizedCases.filter(c => {
     if (c.status !== 'closed' || !c.closed_at) return false;
     const closedTime = new Date(c.closed_at);
@@ -108,11 +139,11 @@ export default async function DashboardPage() {
     closedTodayCount,
   };
 
-  // Needs Attention: Critical, High, or Overdue non-closed cases
+  // Needs Attention: Waiting QC, Critical, High, or Overdue non-closed cases
   const needsAttentionCases = normalizedCases.filter(c => {
     if (c.status === 'closed') return false;
-    const isOverdue = c.due_date && new Date(c.due_date) <= now;
-    return c.priority === 'critical' || c.priority === 'high' || isOverdue;
+    const isOverdue = c.due_date && new Date(c.due_date) < now;
+    return c.status === 'waiting_verification' || c.priority === 'critical' || c.priority === 'high' || isOverdue;
   }).slice(0, 5);
 
   // My Tasks: Cases where current user is current assignee and not closed

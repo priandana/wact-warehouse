@@ -15,11 +15,20 @@ export function useWarehouseContext(availableWarehouses: UserWarehouseAccess[]) 
   useEffect(() => {
     if (!availableWarehouses.length) return;
 
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const cookieMatch = typeof document !== 'undefined'
+      ? document.cookie
+          .split('; ')
+          .find((row) => row.startsWith(`${STORAGE_KEY}=`))
+          ?.split('=')[1]
+      : null;
+
+    const saved = localStorage.getItem(STORAGE_KEY) || cookieMatch;
     const found = saved && availableWarehouses.find((w) => w.warehouseId === saved);
 
     if (found) {
       setActiveWarehouseId(found.warehouseId);
+      localStorage.setItem(STORAGE_KEY, found.warehouseId);
+      document.cookie = `${STORAGE_KEY}=${found.warehouseId}; path=/; max-age=31536000; SameSite=Lax`;
     } else {
       // Default: prefer PDL if available
       const pdlWh = availableWarehouses.find(
@@ -28,6 +37,7 @@ export function useWarehouseContext(availableWarehouses: UserWarehouseAccess[]) 
       const defaultWh = pdlWh ?? availableWarehouses[0];
       setActiveWarehouseId(defaultWh.warehouseId);
       localStorage.setItem(STORAGE_KEY, defaultWh.warehouseId);
+      document.cookie = `${STORAGE_KEY}=${defaultWh.warehouseId}; path=/; max-age=31536000; SameSite=Lax`;
     }
   }, [availableWarehouses]);
 

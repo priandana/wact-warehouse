@@ -1,12 +1,13 @@
-// app/(app)/cases/page.tsx
-// Cases List Page — Server Component with Paginated Supabase Query
-
 import type { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { CasesListClient } from '@/components/cases/CasesListClient';
 import type { CaseCardData } from '@/components/shared/CaseCard';
 import { startOfDay, startOfWeek, startOfMonth } from 'date-fns';
+import { getUserWarehouseAccess } from '@/lib/permissions/getWarehouseAccess';
+import { EmptyState } from '@/components/shared/EmptyState';
+import { FolderOpen } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Daftar Kasus',
@@ -34,6 +35,37 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
   if (!user) {
     redirect('/login');
   }
+
+  // 1. Fetch user's accessible warehouses and cookie store
+  const [accessibleWarehouses, cookieStore] = await Promise.all([
+    getUserWarehouseAccess(user.id),
+    cookies(),
+  ]);
+
+  if (accessibleWarehouses.length === 0) {
+    return (
+      <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4">
+        <EmptyState
+          icon={FolderOpen}
+          title="Akses Gudang Tidak Ditemukan"
+          description="Akun Anda belum memiliki akses gudang aktif. Hubungi Administrator."
+        />
+      </div>
+    );
+  }
+
+  // 2. Validate active warehouse from cookie against accessible warehouses
+  const activeWarehouseCookie = cookieStore.get('wact_active_warehouse_id')?.value;
+  let activeWarehouse = accessibleWarehouses.find((w) => w.warehouseId === activeWarehouseCookie);
+
+  if (!activeWarehouse) {
+    const pdlWh = accessibleWarehouses.find(
+      (w) => w.warehouseCode === 'WH-PDL' || w.warehouseCode === 'PDL' || w.warehouseName.toLowerCase().includes('padalarang')
+    );
+    activeWarehouse = pdlWh ?? accessibleWarehouses[0];
+  }
+
+  const activeWarehouseId = activeWarehouse.warehouseId;
 
   const params = await searchParams;
   const q = params.q?.trim() ?? '';
@@ -69,7 +101,8 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
         is_current,
         assignee:assignee_id ( full_name )
       )
-    `, { count: 'exact' });
+    `, { count: 'exact' })
+    .eq('warehouse_id', activeWarehouseId);
 
   // 1. Search Query (Case number or title)
   if (q) {
@@ -117,7 +150,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
     { data: allVisibleCases },
   ] = await Promise.all([
     query,
-    supabase.from('cases').select('status, due_date'),
+    supabase.from('cases').select('status, due_date').eq('warehouse_id', activeWarehouseId),
   ]);
 
   if (error) {
