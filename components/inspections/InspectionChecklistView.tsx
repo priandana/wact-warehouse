@@ -385,10 +385,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5 pb-32 sm:pb-24">
-      {/* Suppress background BottomNav on mobile during active checklist execution */}
-      <style>{`nav[aria-label="Bottom navigation"] { display: none !important; }`}</style>
-
+    <div className="space-y-4 sm:space-y-5 pb-36 sm:pb-24">
       {/* ── 1. Top Navigation & Action ──────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <Link
@@ -720,8 +717,9 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
       </div>
 
       {/* ── 5. Fixed Bottom Action Bar ──────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 sm:px-6 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+      <div className="fixed bottom-[calc(100px+env(safe-area-inset-bottom,0px))] sm:bottom-0 left-0 right-0 z-50 px-3 sm:px-6 py-2 sm:py-3 pointer-events-none sm:pointer-events-auto sm:bg-white/95 sm:backdrop-blur-md sm:border-t sm:border-slate-200/80 sm:shadow-lg sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="max-w-4xl mx-auto pointer-events-auto">
+          <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 sm:border-0 rounded-2xl sm:rounded-none p-3 sm:p-0 shadow-lg shadow-slate-900/10 sm:shadow-none flex items-center justify-between gap-3">
           <div className="text-xs">
             <span className="text-slate-500 font-bold block sm:inline">
               Progress: {stats.filledCount}/{stats.total} Selesai &bull;{' '}
@@ -763,6 +761,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
           </div>
         </div>
       </div>
+    </div>
 
       {/* Cancel Modal */}
       {isCancelModalOpen && (

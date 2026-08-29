@@ -114,10 +114,10 @@ export function MobileCaseActionBar({
   return (
     // sm:hidden — desktop NEVER renders this. Two-column desktop layout is unchanged.
     // z-50 — above BottomNav (z-40), below modals (z-[60]) and MobileNavDrawer (z-[70])
-    // bottom: above BottomNav (68px inner div height + env(safe-area-inset-bottom) padding)
+    // bottom: cleanly docked above BottomNav & elevated center FAB (100px + safe area = 8px visual gap)
     <div
       className="sm:hidden fixed left-0 right-0 z-50 px-3"
-      style={{ bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))' }}
+      style={{ bottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}
       aria-label="Aksi kasus cepat"
     >
       <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-lg shadow-slate-900/8 px-2.5 py-2">

@@ -410,7 +410,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
   ];
 
   return (
-    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4 sm:space-y-5 pb-24">
+    <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-4 sm:space-y-5 pb-36 sm:pb-24">
       {/* ── Top Navigation Bar ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <Link

@@ -172,6 +172,9 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
     );
   }
 
+  // Check whether current route is a focused creation/wizard flow
+  const isFocusFlow = pathname === '/cases/new' || pathname === '/inspections/new';
+
   // Mobile Composition
   return (
     <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
@@ -227,11 +230,11 @@ export function AppShell({ children, warehouseName, warehouseCode, userName, use
       />
 
       {/* Mobile Content Area */}
-      <main className="flex-1 pb-safe-nav">
+      <main className={cn('flex-1', !isFocusFlow && 'pb-safe-nav')}>
         {children}
       </main>
 
-      <BottomNav />
+      {!isFocusFlow && <BottomNav />}
     </div>
   );
 }
