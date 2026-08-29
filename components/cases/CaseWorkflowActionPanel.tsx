@@ -11,6 +11,7 @@ import {
   buildCaseEvidencePath,
   compressImage,
   uploadFile,
+  deleteFile,
 } from '@/lib/supabase/storage';
 import {
   UserPlus,
@@ -141,25 +142,39 @@ export function CaseWorkflowActionPanel({
   const [evidenceCaption, setEvidenceCaption] = useState('');
   const [evidencePhase, setEvidencePhase] = useState<'during' | 'after'>('after');
   const [evidenceProcessing, setEvidenceProcessing] = useState(false);
+  const [uploadStep, setUploadStep] = useState<'idle' | 'uploading' | 'saving' | 'done'>('idle');
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const resetFormState = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
+    setUploadStep('idle');
     if (evidencePreview) URL.revokeObjectURL(evidencePreview);
     setEvidenceFile(null);
     setEvidencePreview(null);
     setEvidenceCaption('');
   };
 
-  const closeModal = () => {
-    if (loading) return;
+  const resetAndCloseModal = () => {
     setActiveModal(null);
     resetFormState();
   };
 
+  // User-requested modal close (cancel / X button / backdrop) - guarded while operation is active
+  const closeModal = () => {
+    if (loading) return;
+    resetAndCloseModal();
+  };
+
+  // Unguarded internal action completion - cleanly resets modal state and loading
+  const completeModalAction = () => {
+    setLoading(false);
+    resetAndCloseModal();
+  };
+
   // ── 1. Assign PIC Handler ───────────────────────────────────────────────
   const handleAssignPIC = async () => {
+    if (loading) return;
     if (!selectedAssigneeId) {
       setErrorMessage('Pilih salah satu staf untuk ditugaskan.');
       return;
@@ -189,7 +204,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('PIC berhasil ditugaskan!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 500);
     } catch (err: unknown) {
@@ -200,6 +215,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 2. Update Progress Handler ──────────────────────────────────────────
   const handleUpdateProgress = async () => {
+    if (loading) return;
     setLoading(true);
     setErrorMessage(null);
     try {
@@ -218,7 +234,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Progres kasus berhasil diperbarui!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 500);
     } catch (err: unknown) {
@@ -247,12 +263,17 @@ export function CaseWorkflowActionPanel({
   };
 
   const handleUploadEvidence = async () => {
+    if (loading) return;
     if (!evidenceFile) {
       setErrorMessage('Pilih atau ambil foto bukti terlebih dahulu.');
       return;
     }
     setLoading(true);
     setErrorMessage(null);
+    setUploadStep('uploading');
+
+    let uploadedStoragePath: string | null = null;
+
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = createClient() as any;
@@ -264,6 +285,9 @@ export function CaseWorkflowActionPanel({
         evidenceFile,
         'image/jpeg'
       );
+      uploadedStoragePath = storagePath;
+
+      setUploadStep('saving');
 
       const { error: rpcErr } = await supabase.rpc('add_case_evidence', {
         p_case_id: caseId,
@@ -277,19 +301,30 @@ export function CaseWorkflowActionPanel({
 
       if (rpcErr) throw new Error(rpcErr.message);
 
+      setUploadStep('done');
       setSuccessMessage('Foto bukti berhasil diunggah!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 500);
     } catch (err: unknown) {
+      // Clean up orphaned storage object if Storage upload succeeded but DB RPC failed
+      if (uploadedStoragePath) {
+        try {
+          await deleteFile(BUCKETS.CASE_EVIDENCES, uploadedStoragePath);
+        } catch (delErr) {
+          console.error('Diagnostic: Failed to remove orphaned storage object:', delErr);
+        }
+      }
       setErrorMessage(err instanceof Error ? err.message : 'Gagal mengunggah bukti');
+      setUploadStep('idle');
       setLoading(false);
     }
   };
 
   // ── 4. Request Verification Handler ─────────────────────────────────────
   const handleRequestVerification = async () => {
+    if (loading) return;
     setLoading(true);
     setErrorMessage(null);
     try {
@@ -303,6 +338,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Verifikasi berhasil diajukan ke tim QC/Koordinator!');
       setTimeout(() => {
+        setLoading(false);
         router.refresh();
       }, 600);
     } catch (err: unknown) {
@@ -313,6 +349,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 5. QC Verify (Approve) Handler ──────────────────────────────────────
   const handleVerifyApprove = async () => {
+    if (loading) return;
     setLoading(true);
     setErrorMessage(null);
     try {
@@ -328,7 +365,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Kasus berhasil diverifikasi & ditutup (Closed)!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 600);
     } catch (err: unknown) {
@@ -339,6 +376,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 6. QC Reject (Rework) Handler ───────────────────────────────────────
   const handleVerifyReject = async () => {
+    if (loading) return;
     if (!rejectionNote.trim()) {
       setErrorMessage('Alasan penolakan / catatan perbaikan wajib diisi.');
       return;
@@ -358,7 +396,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Kasus dikembalikan ke status On Progress untuk perbaikan!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 600);
     } catch (err: unknown) {
@@ -369,6 +407,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 7. Reopen Case Handler ──────────────────────────────────────────────
   const handleReopen = async () => {
+    if (loading) return;
     if (!reopenReason.trim()) {
       setErrorMessage('Alasan membuka kembali kasus wajib diisi.');
       return;
@@ -387,7 +426,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Kasus berhasil dibuka kembali (Reopened)!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 600);
     } catch (err: unknown) {
@@ -398,6 +437,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 8. Change Priority Handler ───────────────────────────────────────────
   const handleChangePriority = async () => {
+    if (loading) return;
     setLoading(true);
     setErrorMessage(null);
     try {
@@ -412,7 +452,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Prioritas kasus berhasil diubah!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 500);
     } catch (err: unknown) {
@@ -423,6 +463,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 9. Override Due Date Handler ─────────────────────────────────────────
   const handleOverrideDueDate = async () => {
+    if (loading) return;
     if (!newDueDate) {
       setErrorMessage('Batas waktu baru wajib dipilih.');
       return;
@@ -446,7 +487,7 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Batas waktu (Due Date) berhasil diperbarui!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 500);
     } catch (err: unknown) {
@@ -457,6 +498,7 @@ export function CaseWorkflowActionPanel({
 
   // ── 10. Force Close Handler (Admin Only) ─────────────────────────────────
   const handleForceClose = async () => {
+    if (loading) return;
     if (!forceCloseReason.trim()) {
       setErrorMessage('Alasan penutupan paksa wajib diisi.');
       return;
@@ -475,11 +517,12 @@ export function CaseWorkflowActionPanel({
 
       setSuccessMessage('Kasus berhasil ditutup paksa oleh Admin!');
       setTimeout(() => {
-        closeModal();
+        completeModalAction();
         router.refresh();
       }, 600);
     } catch (err: unknown) {
-setLoading(false);
+      setErrorMessage(err instanceof Error ? err.message : 'Gagal menutup paksa kasus');
+      setLoading(false);
     }
   };
 
@@ -1011,7 +1054,7 @@ setLoading(false);
                   {evidenceProcessing ? (
                     <>
                       <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
-                      <span className="text-xs font-bold">Memproses foto...</span>
+                      <span className="text-xs font-bold text-emerald-700">Menyiapkan foto...</span>
                     </>
                   ) : (
                     <>
@@ -1056,7 +1099,15 @@ setLoading(false);
                 className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                <span>Unggah Bukti</span>
+                <span>
+                  {uploadStep === 'uploading'
+                    ? 'Mengunggah foto...'
+                    : uploadStep === 'saving'
+                    ? 'Menyimpan bukti...'
+                    : uploadStep === 'done'
+                    ? 'Foto berhasil diunggah'
+                    : 'Unggah Bukti'}
+                </span>
               </button>
             </div>
           </div>
