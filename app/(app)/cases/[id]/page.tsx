@@ -8,6 +8,7 @@ import { notFound, redirect } from 'next/navigation';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PriorityBadge } from '@/components/shared/PriorityBadge';
 import { EvidenceGallery, type EvidenceItem } from '@/components/cases/EvidenceGallery';
+import { CaseActivityTimeline } from '@/components/cases/CaseActivityTimeline';
 import {
   CaseWorkflowActionPanel,
   type AssignableUser,
@@ -350,37 +351,6 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
   const slaInfo = getSlaStatus(item.due_date, item.status, item.closed_at);
   const isOverdue = slaInfo.isOverdue && !isClosed;
   const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
-
-  const formatActivityAction = (act: any) => {
-    switch (act.action) {
-      case 'created':
-        return 'Kasus dibuat dan dilaporkan';
-      case 'assigned':
-        return `Kasus ditugaskan ke PIC ${act.metadata?.assignee_name ? `(${act.metadata.assignee_name})` : ''}`;
-      case 'status_changed':
-        return `Status diubah ${act.from_status ? `dari ${act.from_status}` : ''} menjadi ${act.to_status}`;
-      case 'priority_changed':
-        return `Prioritas kasus diubah ${act.metadata?.from ? `dari ${act.metadata.from}` : ''} menjadi ${act.metadata?.to || ''}`;
-      case 'due_date_overridden':
-        return `Batas waktu SLA diperbarui ${act.metadata?.to ? `menjadi ${formatWib(act.metadata.to, 'dd MMM yyyy, HH:mm')}` : ''}`;
-      case 'force_closed':
-        return 'Kasus ditutup paksa oleh Administrator';
-      case 'evidence_added':
-        return `Bukti foto (${act.metadata?.phase === 'after' ? 'Fase Selesai / After' : 'Fase Awal / Before'}) diunggah`;
-      case 'commented':
-        return 'Komentar baru ditambahkan';
-      case 'verified':
-        return 'Pekerjaan diverifikasi dan disetujui oleh QC';
-      case 'verification_failed':
-        return 'Verifikasi ditolak — dikembalikan untuk perbaikan ulang';
-      case 'closed':
-        return 'Kasus diselesaikan dan ditutup (Closed)';
-      case 'reopened':
-        return 'Kasus dibuka kembali untuk investigasi lanjutan (Reopened)';
-      default:
-        return act.action.replace(/_/g, ' ');
-    }
-  };
 
   // 4. Stepper Stage Definition
   const steps = [
@@ -788,7 +758,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           )}
 
           {/* Card: Activity & Workflow Timeline */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
             <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
               <Activity className="w-4 h-4 text-blue-600" />
               <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
@@ -796,45 +766,10 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               </h2>
             </div>
 
-            {activities && activities.length > 0 ? (
-              <div className="space-y-2.5 pt-1">
-                {activities.map((act: any) => {
-                  const actorName = act.actor?.full_name || (act.actor_id ? profileMap.get(act.actor_id) : null) || 'Sistem / Administrator';
-                  return (
-                    <div key={act.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-100 text-xs">
-                      <div className="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                        {actorName ? actorName[0].toUpperCase() : 'S'}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className="font-bold text-slate-800 truncate">
-                            {actorName}
-                          </span>
-                          <span className="text-[10.5px] text-slate-400">
-                            {formatWib(act.created_at, 'dd MMM yyyy, HH:mm')}
-                          </span>
-                        </div>
-                        <p className="text-[11.5px] text-slate-700 font-semibold">
-                          {formatActivityAction(act)}
-                        </p>
-                        {act.metadata?.reason && (
-                          <p className="text-[11px] text-amber-900 italic mt-1.5 bg-amber-50 p-2 rounded-lg border border-amber-200/80">
-                            <strong>Alasan:</strong> &quot;{act.metadata.reason}&quot;
-                          </p>
-                        )}
-                        {act.metadata?.note && (
-                          <p className="text-[11px] text-slate-700 italic mt-1.5 bg-white p-2 rounded-lg border border-slate-200/80">
-                            <strong>Catatan:</strong> &quot;{act.metadata.note}&quot;
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-xs text-slate-400 italic py-2">Belum ada riwayat aktivitas.</p>
-            )}
+            <CaseActivityTimeline
+              activities={(activities as any[]) ?? []}
+              profileMap={profileMap}
+            />
           </div>
 
           {/* Card: Due Date Overrides History (if any) */}
