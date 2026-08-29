@@ -7,7 +7,7 @@ export default function DashboardLoading() {
       <SkeletonPageHeader hasAction={true} />
 
       {/* KPI Metrics */}
-      <SkeletonSummaryGrid count={4} />
+      <SkeletonSummaryGrid count={5} />
 
       {/* Quick Action & Chart Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

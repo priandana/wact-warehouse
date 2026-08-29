@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       <div className="page-padding py-5 max-w-6xl mx-auto">
         <HomeDashboard
           userName={userName}
-          stats={{ openCount: 0, onProgressCount: 0, overdueCount: 0, closedTodayCount: 0 }}
+          stats={{ openCount: 0, onProgressCount: 0, waitingVerificationCount: 0, overdueCount: 0, closedTodayCount: 0 }}
           needsAttentionCases={[]}
           myTasksCases={[]}
           recentCases={[]}
@@ -125,6 +125,7 @@ export default async function DashboardPage() {
 
   const openCount = normalizedCases.filter(c => c.status === 'open' || c.status === 'reopened').length;
   const onProgressCount = normalizedCases.filter(c => c.status === 'on_progress' || c.status === 'waiting_repair').length;
+  const waitingVerificationCount = normalizedCases.filter(c => c.status === 'waiting_verification').length;
   const overdueCount = normalizedCases.filter(c => c.status !== 'closed' && c.due_date && new Date(c.due_date) < now).length;
   const closedTodayCount = normalizedCases.filter(c => {
     if (c.status !== 'closed' || !c.closed_at) return false;
@@ -135,6 +136,7 @@ export default async function DashboardPage() {
   const stats = {
     openCount,
     onProgressCount,
+    waitingVerificationCount,
     overdueCount,
     closedTodayCount,
   };

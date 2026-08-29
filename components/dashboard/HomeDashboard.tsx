@@ -19,14 +19,16 @@ import {
   Flame,
   Check,
   UserCheck,
+  ShieldCheck,
   Building2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 
-interface DashboardStats {
+export interface DashboardStats {
   openCount: number;
   onProgressCount: number;
+  waitingVerificationCount: number;
   overdueCount: number;
   closedTodayCount: number;
 }
@@ -92,12 +94,18 @@ export function HomeDashboard({
                   <span>Operasional Normal & Terkendali</span>
                 </span>
               )}
+
+              {/* Mobile/Tablet Warehouse Tag */}
+              {activeWarehouse && (
+                <span className="inline-flex lg:hidden items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50/80 text-blue-700 font-bold text-[10px] border border-blue-200/60">
+                  <Building2 className="w-2.5 h-2.5 shrink-0" />
+                  <span>{activeWarehouse.warehouseCode}</span>
+                </span>
+              )}
             </div>
 
             {/* Personalized Greeting */}
-            <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-              {`${getGreeting()}, `}<span className="text-blue-600">{firstName}</span> 👋
-            </h1>
+            <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">{getGreeting()}, <span className="text-blue-600">{firstName}</span> 👋</h1>
             <p className="text-[11.5px] sm:text-xs text-slate-500 font-medium leading-relaxed max-w-lg">
               Pusat kendali monitoring aset, audit checklist QC, dan penanganan kasus operasional.
             </p>
@@ -105,7 +113,7 @@ export function HomeDashboard({
 
           {/* Desktop Only: Lightweight Integrated Operational Summary */}
           {activeWarehouse && (
-            <div className="hidden md:flex flex-col items-end text-right justify-center shrink-0 pl-5 border-l border-slate-100">
+            <div className="hidden lg:flex flex-col items-end text-right justify-center shrink-0 pl-5 border-l border-slate-100">
               <div className="flex items-center gap-1.5 justify-end">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 ring-2 ring-emerald-100" />
                 <span className="text-xs font-black text-slate-900 tracking-tight">{activeWarehouse.warehouseCode}</span>
@@ -122,6 +130,10 @@ export function HomeDashboard({
                   {stats.onProgressCount} Progress
                 </span>
                 <span className="text-slate-300">•</span>
+                <span className={stats.waitingVerificationCount > 0 ? 'text-purple-700 font-bold' : 'text-slate-600'}>
+                  {stats.waitingVerificationCount} QC
+                </span>
+                <span className="text-slate-300">•</span>
                 <span className={stats.overdueCount > 0 ? 'text-rose-600 font-bold' : 'text-emerald-700 font-bold'}>
                   {stats.overdueCount > 0 ? `${stats.overdueCount} Overdue` : '0 Overdue'}
                 </span>
@@ -131,9 +143,9 @@ export function HomeDashboard({
         </div>
       </div>
 
-      {/* ── 2. Compact Fintech KPI Metrics ───────────────────────────────── */}
-      <section aria-label="Status Kasus">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      {/* ── 2. Unified 5-Metric Command Center Row ────────────────────────── */}
+      <section aria-label="Status Kasus Operasional">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
           {/* 1. Open */}
           <Link
             href="/cases?status=open"
@@ -164,7 +176,22 @@ export function HomeDashboard({
             <p className="text-[10.5px] font-bold text-amber-700 mt-1">Sedang dikerjakan</p>
           </Link>
 
-          {/* 3. Overdue (Alert Highlight) */}
+          {/* 3. Menunggu Verifikasi QC */}
+          <Link
+            href="/cases?status=waiting_verification"
+            className="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-purple-300 active:scale-[0.98] transition-all group"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-purple-600">Verifikasi QC</span>
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-100/80 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <ShieldCheck className="w-3.5 h-3.5" />
+              </div>
+            </div>
+            <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">{stats.waitingVerificationCount}</p>
+            <p className="text-[10.5px] font-bold text-purple-700 mt-1">Awaiting audit</p>
+          </Link>
+
+          {/* 4. Overdue (Alert Highlight) */}
           <Link
             href="/cases?status=overdue"
             className={`p-3 sm:p-3.5 rounded-2xl bg-white border shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all group relative overflow-hidden ${
@@ -186,10 +213,10 @@ export function HomeDashboard({
             </p>
           </Link>
 
-          {/* 4. Closed Today */}
+          {/* 5. Selesai Hari Ini */}
           <Link
             href="/cases?status=closed"
-            className="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-emerald-300 active:scale-[0.98] transition-all group"
+            className="col-span-2 sm:col-span-1 lg:col-span-1 p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-xs hover:border-emerald-300 active:scale-[0.98] transition-all group"
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">Selesai Hari Ini</span>
@@ -197,60 +224,62 @@ export function HomeDashboard({
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">{stats.closedTodayCount}</p>
-            <p className="text-[10.5px] font-bold text-emerald-600 mt-1">Terverifikasi QC</p>
+            <div className="flex items-baseline justify-between sm:block">
+              <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">{stats.closedTodayCount}</p>
+              <p className="text-[10.5px] font-bold text-emerald-600 mt-1">Terverifikasi QC</p>
+            </div>
           </Link>
         </div>
       </section>
 
-      {/* ── 3. Quick Action Shortcuts (Functional Tinting) ───────────────── */}
+      {/* ── 3. Quick Action Shortcuts (2x2 Mobile / 4-Col Desktop) ─────────── */}
       <section aria-label="Aksi Cepat">
         <h2 className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 px-1">
           Aksi Cepat
         </h2>
-        <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
           {/* 1. Laporkan Kasus (Primary Gradient Action) */}
           <Link
             href="/cases/new"
-            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-xs shadow-blue-500/20 active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-3 sm:p-3 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-xs shadow-blue-500/20 active:scale-95 transition-all text-center group min-h-[52px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/20 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
               <Plus className="w-4 h-4 text-white stroke-[2.5]" />
             </div>
-            <span className="text-[10.5px] sm:text-[11px] font-bold leading-tight">Laporkan</span>
+            <span className="text-[11px] font-bold leading-tight">Laporkan</span>
           </Link>
 
           {/* 2. Scan QR (Subtle Amber Functional Tint) */}
           <Link
             href="/assets"
-            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-amber-50/40 hover:bg-amber-50/80 border border-amber-200/60 shadow-2xs active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-3 sm:p-3 rounded-2xl bg-amber-50/40 hover:bg-amber-50/80 border border-amber-200/60 shadow-2xs active:scale-95 transition-all text-center group min-h-[52px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-amber-100/70 text-amber-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-100/70 text-amber-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
               <QrCode className="w-4 h-4" />
             </div>
-            <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-800 leading-tight">Scan QR</span>
+            <span className="text-[11px] font-bold text-slate-800 leading-tight">Scan QR</span>
           </Link>
 
           {/* 3. QC Check (Subtle Emerald Functional Tint) */}
           <Link
             href="/inspections"
-            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-emerald-50/40 hover:bg-emerald-50/80 border border-emerald-200/60 shadow-2xs active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-3 sm:p-3 rounded-2xl bg-emerald-50/40 hover:bg-emerald-50/80 border border-emerald-200/60 shadow-2xs active:scale-95 transition-all text-center group min-h-[52px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-emerald-100/70 text-emerald-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100/70 text-emerald-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
               <ClipboardCheck className="w-4 h-4" />
             </div>
-            <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-800 leading-tight">Inspeksi</span>
+            <span className="text-[11px] font-bold text-slate-800 leading-tight">Inspeksi</span>
           </Link>
 
           {/* 4. Tugas Saya (Subtle Purple Functional Tint) */}
           <Link
             href="/my-tasks"
-            className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-purple-50/40 hover:bg-purple-50/80 border border-purple-200/60 shadow-2xs active:scale-95 transition-all text-center group"
+            className="flex flex-col items-center justify-center p-3 sm:p-3 rounded-2xl bg-purple-50/40 hover:bg-purple-50/80 border border-purple-200/60 shadow-2xs active:scale-95 transition-all text-center group min-h-[52px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-purple-100/70 text-purple-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-100/70 text-purple-700 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
               <UserCheck className="w-4 h-4" />
             </div>
-            <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-800 leading-tight">Tugasku</span>
+            <span className="text-[11px] font-bold text-slate-800 leading-tight">Tugasku</span>
           </Link>
         </div>
       </section>
@@ -270,13 +299,13 @@ export function HomeDashboard({
               </div>
               {needsAttentionCases.length > 0 && (
                 <span className="text-[10.5px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/80">
-                  {needsAttentionCases.length} Kasus
+                  {needsAttentionCases.length} Kasus Membutuhkan Tindakan
                 </span>
               )}
             </div>
 
             {needsAttentionCases.length > 0 ? (
-              <div className="space-y-2">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-rose-50/20 border border-rose-200/70 space-y-2">
                 {needsAttentionCases.map((item) => (
                   <CaseCard key={item.id} item={item} />
                 ))}

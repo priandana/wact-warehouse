@@ -20,12 +20,12 @@ export function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-/** Returns true when viewport ≥ 768px (tablet/desktop) */
+/** Returns true when viewport ≥ 1024px (desktop / landscape tablet) */
 export function useIsDesktop(): boolean {
-  return useMediaQuery('(min-width: 768px)');
+  return useMediaQuery('(min-width: 1024px)');
 }
 
-/** Returns true when viewport < 768px (mobile) */
+/** Returns true when viewport < 1024px (mobile / tablet portrait) */
 export function useIsMobile(): boolean {
   return !useIsDesktop();
 }

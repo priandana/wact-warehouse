@@ -89,9 +89,18 @@ export function SkeletonCard() {
 
 export function SkeletonSummaryGrid({ count = 4 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className={cn(
+      'grid grid-cols-2 gap-3',
+      count === 5 ? 'sm:grid-cols-3 lg:grid-cols-5' : 'lg:grid-cols-4'
+    )}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="p-4 rounded-2xl bg-white border border-slate-200/60 shadow-xs space-y-2">
+        <div
+          key={i}
+          className={cn(
+            'p-4 rounded-2xl bg-white border border-slate-200/60 shadow-xs space-y-2',
+            count === 5 && i === 4 ? 'col-span-2 sm:col-span-1 lg:col-span-1' : ''
+          )}
+        >
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-16 rounded-md" />
             <Skeleton className="w-8 h-8 rounded-xl" />
