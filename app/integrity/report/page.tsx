@@ -1,6 +1,7 @@
 // app/integrity/report/page.tsx
 // Public Anonymous Integrity Report Form
 // Zero reporter identity capture, EXIF stripping, high-entropy secret generation & confirmation screen.
+// Modern executive visual styling supporting both Light and Dark themes.
 
 'use client';
 
@@ -23,6 +24,21 @@ import {
   Info,
   CheckCircle2,
   FileText,
+  PackageX,
+  UtensilsCrossed,
+  FileSpreadsheet,
+  RotateCcw,
+  Truck,
+  Wrench,
+  Users2,
+  ClipboardCheck,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Sparkles,
+  MapPin,
+  ShieldCheck,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -38,23 +54,77 @@ interface WarehouseOption {
   code: string;
 }
 
-// Fallback warehouses in case public client fetches are blocked
 const DEFAULT_WAREHOUSES: WarehouseOption[] = [
   { id: '11111111-1111-1111-1111-111111111111', name: 'Warehouse Padalarang', code: 'PDL' },
   { id: '22222222-2222-2222-2222-222222222222', name: 'Warehouse Bandung', code: 'BDG' },
 ];
+
+// Visual Category Metadata with Custom Vibrant Icons
+const CATEGORY_UI_META: Record<
+  IntegrityCategory,
+  {
+    icon: typeof PackageX;
+    iconBg: string;
+    iconColor: string;
+  }
+> = {
+  theft: {
+    icon: PackageX,
+    iconBg: 'bg-rose-100 dark:bg-rose-950/60',
+    iconColor: 'text-rose-600 dark:text-rose-400',
+  },
+  unauthorized_consumption: {
+    icon: UtensilsCrossed,
+    iconBg: 'bg-amber-100 dark:bg-amber-950/60',
+    iconColor: 'text-amber-600 dark:text-amber-400',
+  },
+  stock_manipulation: {
+    icon: FileSpreadsheet,
+    iconBg: 'bg-orange-100 dark:bg-orange-950/60',
+    iconColor: 'text-orange-600 dark:text-orange-400',
+  },
+  return_manipulation: {
+    icon: RotateCcw,
+    iconBg: 'bg-purple-100 dark:bg-purple-950/60',
+    iconColor: 'text-purple-600 dark:text-purple-400',
+  },
+  unauthorized_goods_movement: {
+    icon: Truck,
+    iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+    iconColor: 'text-blue-600 dark:text-blue-400',
+  },
+  asset_misuse: {
+    icon: Wrench,
+    iconBg: 'bg-cyan-100 dark:bg-cyan-950/60',
+    iconColor: 'text-cyan-600 dark:text-cyan-400',
+  },
+  supplier_vendor_collusion: {
+    icon: Users2,
+    iconBg: 'bg-indigo-100 dark:bg-indigo-950/60',
+    iconColor: 'text-indigo-600 dark:text-indigo-400',
+  },
+  procedure_violation: {
+    icon: ClipboardCheck,
+    iconBg: 'bg-emerald-100 dark:bg-emerald-950/60',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
+  },
+  other: {
+    icon: AlertCircle,
+    iconBg: 'bg-slate-100 dark:bg-slate-800',
+    iconColor: 'text-slate-600 dark:text-slate-400',
+  },
+};
 
 export default function PublicIntegrityReportPage() {
   const [warehouses, setWarehouses] = useState<WarehouseOption[]>(DEFAULT_WAREHOUSES);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>(DEFAULT_WAREHOUSES[0].id);
   const [selectedCategory, setSelectedCategory] = useState<IntegrityCategory>('theft');
   const [incidentDatetime, setIncidentDatetime] = useState<string>('');
-  const [areaDescription, setAreaDescription] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [estimatedLossStr, setEstimatedLossStr] = useState<string>('');
   const [involvedParty, setInvolvedParty] = useState<string>('');
 
-  // Evidence photo state (compressed in browser to strip EXIF)
+  // Evidence photo state
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [photoMimeType, setPhotoMimeType] = useState<string | null>(null);
@@ -68,6 +138,7 @@ export default function PublicIntegrityReportPage() {
   // Success state
   const [createdReportCode, setCreatedReportCode] = useState<string | null>(null);
   const [createdAccessSecret, setCreatedAccessSecret] = useState<string | null>(null);
+  const [showSecret, setShowSecret] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
 
@@ -87,7 +158,7 @@ export default function PublicIntegrityReportPage() {
           }
         }
       } catch {
-        // use default fallback
+        // fallback to default
       }
     }
     loadWarehouses();
@@ -98,7 +169,7 @@ export default function PublicIntegrityReportPage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setErrorMessage('Format file harus berupa foto (JPEG, PNG, WEBP).');
+      setErrorMessage('Format file harus berupa foto (JPEG, PNG, atau WebP).');
       return;
     }
 
@@ -106,7 +177,7 @@ export default function PublicIntegrityReportPage() {
     setErrorMessage(null);
 
     try {
-      // Browser canvas compression strips EXIF metadata & resizes to max 1920px
+      // Browser canvas compression strips EXIF metadata
       const { blob, contentType } = await compressImage(file, 1920, 0.82);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -135,7 +206,7 @@ export default function PublicIntegrityReportPage() {
     setErrorMessage(null);
 
     if (!selectedWarehouseId) {
-      setErrorMessage('Pilih gudang terkait kejadian.');
+      setErrorMessage('Pilih lokasi gudang terkait.');
       return;
     }
     if (!description.trim() || description.trim().length < 10) {
@@ -155,193 +226,248 @@ export default function PublicIntegrityReportPage() {
         category: selectedCategory,
         description: description.trim(),
         incidentDatetime: incidentDatetime ? new Date(incidentDatetime).toISOString() : null,
-        areaId: null,
-        locationId: null,
         estimatedLoss: parsedLoss,
         involvedPartyDescription: involvedParty.trim() || null,
-        photoBase64: photoBase64,
-        photoMimeType: photoMimeType,
-        photoCaption: 'Foto bukti dari pelapor anonim',
+        photoBase64,
+        photoMimeType,
+        photoCaption: 'Foto bukti pelaporan',
       });
 
       if (res.success && res.reportCode && res.accessSecret) {
         setCreatedReportCode(res.reportCode);
         setCreatedAccessSecret(res.accessSecret);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        setErrorMessage(res.error || 'Gagal mengirimkan laporan. Silakan coba kembali.');
+        setErrorMessage(res.error || 'Gagal mengirim laporan. Silakan coba sesaat lagi.');
       }
     } catch {
-      setErrorMessage('Terjadi kendala jaringan saat mengirimkan laporan.');
+      setErrorMessage('Terjadi kendala jaringan saat mengirim laporan.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleCopy = (text: string, type: 'code' | 'secret') => {
+  const copyToClipboard = (text: string, type: 'code' | 'secret') => {
     navigator.clipboard.writeText(text);
     if (type === 'code') {
       setCopiedCode(true);
-      setTimeout(() => setCopiedCode(false), 2000);
+      setTimeout(() => setCopiedCode(false), 2500);
     } else {
       setCopiedSecret(true);
-      setTimeout(() => setCopiedSecret(false), 2000);
+      setTimeout(() => setCopiedSecret(false), 2500);
     }
   };
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // SUCCESS / ISOLATED CONFIRMATION SCREEN
-  // ═══════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════════════
+  // SUCCESS CONFIRMATION RECEIPT VIEW
+  // ════════════════════════════════════════════════════════════════════════════
   if (createdReportCode && createdAccessSecret) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-300">
-        {/* Top Celebration Card */}
-        <div className="bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-2xl relative overflow-hidden">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center mx-auto ring-8 ring-emerald-500/10">
+      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+        {/* Receipt Header Banner */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/10 mb-2">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-
-          <div className="space-y-1.5">
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Laporan Integritas Berhasil Dikirim
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-              Laporan Anda telah tercatat secara anonim tanpa menyimpan identitas akun atau perangkat Anda.
-            </p>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Laporan Berhasil Terkirim
+          </h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+            Laporan Anda telah tercatat secara aman dan anonim di sistem WACT.
+          </p>
         </div>
 
-        {/* Security Codes Card */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
-          {/* Urgent Warning Banner */}
-          <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/30 text-amber-200 text-xs space-y-1">
-            <div className="flex items-center gap-2 font-bold text-amber-300">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>Simpan Nomor Laporan & Kode Akses Anda Sekarang!</span>
+        {/* Security Credential Card */}
+        <div className="bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-6 relative overflow-hidden">
+          {/* Subtle Security Watermark Background */}
+          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                Kredensial Pelacakan Rahasia
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Simpan nomor dan kunci rahasia ini untuk mengecek status atau membalas pesan investigator.
+              </p>
             </div>
-            <p className="text-[11.5px] text-amber-200/90 leading-relaxed pl-6">
-              Untuk menjaga kerahasiaan total, WACT tidak mengirimkan email atau notifikasi ke akun Anda. Kode akses ini <strong>hanya ditampilkan sekali</strong> di layar ini.
-            </p>
           </div>
 
           {/* 1. Report Code */}
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-              Nomor Laporan (Report Code)
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-between">
+              <span>NOMOR LAPORAN</span>
+              {copiedCode && <span className="text-emerald-600 text-xs font-semibold">Tersalin!</span>}
             </label>
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-950 border border-slate-800 focus-within:border-blue-500 transition-colors">
-              <span className="font-mono text-base sm:text-lg font-black text-blue-400 tracking-wider select-all">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 font-mono text-base sm:text-lg font-extrabold tracking-wider text-slate-900 dark:text-white">
                 {createdReportCode}
-              </span>
+              </div>
               <button
                 type="button"
-                onClick={() => handleCopy(createdReportCode, 'code')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all active:scale-95 touch-target"
+                onClick={() => copyToClipboard(createdReportCode, 'code')}
+                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0"
+                title="Salin Nomor Laporan"
               >
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? 'Tersalin' : 'Salin'}</span>
+                {copiedCode ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
           {/* 2. Access Secret */}
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-              Kode Akses Rahasia (Secret Key)
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-between">
+              <span>KUNCI AKSES RAHASIA (SECRET KEY)</span>
+              {copiedSecret && <span className="text-emerald-600 text-xs font-semibold">Tersalin!</span>}
             </label>
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-950 border border-slate-800 focus-within:border-emerald-500 transition-colors">
-              <span className="font-mono text-sm sm:text-base font-black text-emerald-400 tracking-wider select-all break-all">
-                {createdAccessSecret}
-              </span>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 font-mono text-sm sm:text-base font-bold tracking-wider text-slate-900 dark:text-white flex items-center justify-between overflow-x-auto">
+                <span>{showSecret ? createdAccessSecret : '••••-••••-••••-••••-••••-••••'}</span>
+                <button
+                  type="button"
+                  onClick={() => setShowSecret(!showSecret)}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 focus:outline-none"
+                  title={showSecret ? 'Sembunyikan' : 'Tampilkan'}
+                >
+                  {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
               <button
                 type="button"
-                onClick={() => handleCopy(createdAccessSecret, 'secret')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all active:scale-95 shrink-0 ml-2 touch-target"
+                onClick={() => copyToClipboard(createdAccessSecret, 'secret')}
+                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0"
+                title="Salin Kunci Akses"
               >
-                {copiedSecret ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedSecret ? 'Tersalin' : 'Salin'}</span>
+                {copiedSecret ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-3 flex flex-col sm:flex-row gap-3">
+          {/* Warning Alert */}
+          <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-bold">Kunci ini tidak dapat dipulihkan jika hilang!</p>
+              <p className="text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                Karena sistem WACT tidak menyimpan identitas Anda, kunci akses rahasia ini adalah satu-satunya cara bagi Anda untuk memantau status atau membalas pesan tim investigasi.
+              </p>
+            </div>
+          </div>
+
+          {/* Action Links */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
             <Link
               href={`/integrity/track?code=${encodeURIComponent(createdReportCode)}&secret=${encodeURIComponent(createdAccessSecret)}`}
-              className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-blue-500/20 text-center flex items-center justify-center gap-2 active:scale-[0.98] transition-all min-h-[44px]"
+              className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md shadow-blue-500/20 text-center flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
             >
-              <span>Lacak Status Laporan Sekarang</span>
+              <span>Pantau Status Laporan Sekarang</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <Link
-              href="/integrity/report"
+            <button
+              type="button"
               onClick={() => {
                 setCreatedReportCode(null);
                 setCreatedAccessSecret(null);
                 setDescription('');
+                setEstimatedLossStr('');
+                setInvolvedParty('');
                 setPhotoPreview(null);
                 setPhotoBase64(null);
               }}
-              className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs text-center transition-colors min-h-[44px] flex items-center justify-center"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors"
             >
               Buat Laporan Baru
-            </Link>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // MAIN REPORT FORM VIEW
-  // ═══════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════════════════
+  // MAIN FORM VIEW
+  // ════════════════════════════════════════════════════════════════════════════
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      {/* ── 1. Page Header & Privacy Guarantees ───────────────────────────── */}
-      <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/20 text-blue-300 text-xs font-bold">
-          <Lock className="w-3.5 h-3.5 text-blue-400" />
-          <span>Saluran Pelaporan Anonim Terpercaya</span>
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+      {/* Hero Header Section */}
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Saluran Pelaporan Terpercaya & Terenkripsi</span>
         </div>
-
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Laporkan Pelanggaran Integritas
         </h1>
-
-        <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
-          Bantu wujudkan operasional gudang yang bersih dan tertib. Identitas Anda tidak dicatat oleh sistem WACT.
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+          Bantu wujudkan operasional gudang yang bersih, tertib, dan aman. Identitas Anda tidak dicatat oleh sistem WACT.
         </p>
+      </div>
 
-        {/* Prominent Privacy Alert */}
-        <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-800/60 text-xs text-blue-200 space-y-1.5">
-          <div className="flex items-center gap-2 font-bold text-blue-300">
-            <Info className="w-4 h-4 shrink-0 text-blue-400" />
-            <span>Jaminan Privasi & Petunjuk Anonimitas</span>
+      {/* 3-Point Privacy & Compliance Pillars */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+            <Lock className="w-4 h-4" />
           </div>
-          <p className="text-[11.5px] leading-relaxed text-blue-200/90 pl-6">
-            • Identitas pelapor <strong>tidak disimpan atau ditampilkan oleh WACT</strong>.<br />
-            • Jangan memasukkan nama, NIK/nomor karyawan, atau kontak pribadi Anda di dalam teks laporan jika ingin menjaga anonimitas.<br />
-            • Laporan merupakan informasi awal dan tidak menyatakan seseorang terbukti bersalah sebelum investigasi selesai.
-          </p>
+          <div>
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">100% Tanpa Identitas</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+              Tidak ada akun, IP, atau user-agent yang disimpan.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <Camera className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">Sanitasi Metadata</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+              EXIF & GPS foto otomatis dibersihkan dari server.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">Investigasi Terpisah</h4>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+              Hanya dapat diakses tim investigasi integritas.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* ── 2. Interactive Submission Form ────────────────────────────────── */}
-      <form onSubmit={handleSubmit} className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-8 space-y-6 shadow-2xl">
+      {/* Main Submission Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm dark:shadow-none space-y-7 transition-colors"
+      >
+        {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-xs font-semibold text-rose-300 flex items-center gap-2.5">
-            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-3 animate-shake">
+            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+            <p className="font-medium">{errorMessage}</p>
           </div>
         )}
 
-        {/* Warehouse Selection */}
-        <div className="space-y-2">
-          <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Building2 className="w-3.5 h-3.5 text-blue-400" />
-            <span>Lokasi Gudang Terkait <span className="text-rose-400">*</span></span>
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {/* ── STEP 1: LOKASI GUDANG ────────────────────────────────────────── */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span>1. Lokasi Gudang Terkait <span className="text-rose-500">*</span></span>
+            </label>
+            <span className="text-[11px] text-slate-500">Pilih unit gudang kejadian</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {warehouses.map((wh) => {
               const isSelected = selectedWarehouseId === wh.id;
               return (
@@ -350,203 +476,301 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedWarehouseId(wh.id)}
                   className={cn(
-                    'p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] min-h-[48px] touch-target',
+                    'p-4 rounded-xl border text-left transition-all flex items-center justify-between group',
                     isSelected
-                      ? 'bg-blue-600/20 border-blue-500 text-white font-bold ring-1 ring-blue-500/30'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                      ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
+                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Building2 className={cn('w-4 h-4 shrink-0', isSelected ? 'text-blue-400' : 'text-slate-500')} />
-                    <span className="text-xs truncate">{wh.name}</span>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        'w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors',
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      )}
+                    >
+                      {wh.code}
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                        {wh.name}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3" />
+                        <span>Unit Operasional {wh.code}</span>
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                    {wh.code}
-                  </span>
+
+                  <div
+                    className={cn(
+                      'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors',
+                      isSelected
+                        ? 'border-blue-600 bg-blue-600 text-white'
+                        : 'border-slate-300 dark:border-slate-700'
+                    )}
+                  >
+                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Category Selection */}
-        <div className="space-y-2">
-          <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Kategori Pelanggaran Integritas <span className="text-rose-400">*</span></span>
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {/* ── STEP 2: KATEGORI PELANGGARAN ─────────────────────────────────── */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span>2. Kategori Pelanggaran <span className="text-rose-500">*</span></span>
+            </label>
+            <span className="text-[11px] text-slate-500">Pilih jenis indikasi</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {(Object.keys(INTEGRITY_CATEGORIES) as IntegrityCategory[]).map((catKey) => {
-              const cat = INTEGRITY_CATEGORIES[catKey];
+              const meta = INTEGRITY_CATEGORIES[catKey];
+              const uiMeta = CATEGORY_UI_META[catKey];
+              const IconComp = uiMeta.icon;
               const isSelected = selectedCategory === catKey;
+
               return (
                 <button
                   key={catKey}
                   type="button"
                   onClick={() => setSelectedCategory(catKey)}
                   className={cn(
-                    'p-3 rounded-2xl border text-left flex flex-col justify-between transition-all active:scale-[0.98] min-h-[54px] touch-target',
+                    'p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[105px]',
                     isSelected
-                      ? 'bg-indigo-600/20 border-indigo-500 text-white font-bold ring-1 ring-indigo-500/30'
-                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                      ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
+                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <p className="text-xs font-bold leading-snug">{cat.label}</p>
-                  <p className="text-[10px] text-slate-500 font-normal leading-tight mt-0.5">
-                    {cat.description}
-                  </p>
+                  <div className="flex items-start justify-between w-full mb-2">
+                    <div
+                      className={cn(
+                        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
+                        uiMeta.iconBg,
+                        uiMeta.iconColor
+                      )}
+                    >
+                      <IconComp className="w-4.5 h-4.5" />
+                    </div>
+
+                    <div
+                      className={cn(
+                        'w-4 h-4 rounded-full border flex items-center justify-center shrink-0',
+                        isSelected
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-slate-300 dark:border-slate-700'
+                      )}
+                    >
+                      {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                      {meta.label}
+                    </h4>
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                      {meta.description}
+                    </p>
+                  </div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Incident Datetime & Area (Optional 2-Column) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span>Perkiraan Waktu Kejadian</span>
-            </label>
-            <input
-              type="datetime-local"
-              value={incidentDatetime}
-              onChange={(e) => setIncidentDatetime(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span>Area / Lokasi Spesifik di Gudang</span>
-            </label>
-            <input
-              type="text"
-              value={areaDescription}
-              onChange={(e) => setAreaDescription(e.target.value)}
-              placeholder="Contoh: Rak B-04 / Area Loading Bay 2"
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            />
-          </div>
-        </div>
-
-        {/* Chronology / Description (Required) */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-            <span className="flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-blue-400" />
-              <span>Kronologi & Detail Kejadian <span className="text-rose-400">*</span></span>
-            </span>
-            <span className="text-[10px] text-slate-500 font-normal">Min. 10 karakter</span>
+        {/* ── STEP 3: KRONOLOGI & DETAIL KEJADIAN ───────────────────────────── */}
+        <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>3. Kronologi & Detail Kejadian</span>
           </label>
-          <textarea
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Jelaskan apa yang terjadi secara rinci, barang apa yang terlibat, dan kronologi kejadian..."
-            className="w-full p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 leading-relaxed"
-            required
-          />
-        </div>
 
-        {/* Estimated Loss & Involved Parties (Optional 2-Column) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Estimasi Nilai Kerugian (Opsional)</span>
-            </label>
-            <input
-              type="text"
-              value={estimatedLossStr}
-              onChange={(e) => setEstimatedLossStr(e.target.value)}
-              placeholder="Contoh: 2500000"
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-            />
+          {/* Incident Datetime & Estimated Loss */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <span>Waktu / Tanggal Kejadian (Opsional)</span>
+              </label>
+              <input
+                type="datetime-local"
+                value={incidentDatetime}
+                onChange={(e) => setIncidentDatetime(e.target.value)}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                <span>Estimasi Nilai Kerugian (Opsional)</span>
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                  Rp
+                </span>
+                <input
+                  type="text"
+                  placeholder="Contoh: 5.000.000"
+                  value={estimatedLossStr}
+                  onChange={(e) => setEstimatedLossStr(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
           </div>
 
+          {/* Suspected / Involved Party */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-purple-400" />
-              <span>Informasi Dugaan Pihak Terkait (Opsional)</span>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 text-slate-400" />
+              <span>Pihak Terkait / Terduga / Vendor Terlibat (Opsional)</span>
             </label>
             <input
               type="text"
+              placeholder="Contoh: Vendor Ekspedisi X, Driver Plat B 1234 XX, atau shift malam"
               value={involvedParty}
               onChange={(e) => setInvolvedParty(e.target.value)}
-              placeholder="Contoh: Oknum driver vendor atau staf shift malam"
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+
+          {/* Description Textarea */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Kronologi & Fakta Kejadian <span className="text-rose-500">*</span>
+              </label>
+              <span
+                className={cn(
+                  'text-[11px] font-mono',
+                  description.trim().length >= 10
+                    ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                    : 'text-slate-400'
+                )}
+              >
+                {description.trim().length}/10 karakter min.
+              </span>
+            </div>
+            <textarea
+              rows={4}
+              required
+              placeholder="Jelaskan apa yang terjadi, lokasi spesifik di gudang (rak/zona/docking), barang atau dokumen terkait, dan bagaimana modus kejadian tersebut berlangsung..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
+            />
+            <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+              <span>Jangan menyertakan nama pribadi Anda sendiri jika ingin menjaga anonimitas mutlak.</span>
+            </p>
           </div>
         </div>
 
-        {/* Photo Evidence Upload (Optional) */}
-        <div className="space-y-2">
-          <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Camera className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Foto Bukti Pendukung (Opsional — EXIF & Metadata Dihapus Otomatis)</span>
-          </label>
+        {/* ── STEP 4: BUKTI FOTO (OPSIONAL) ─────────────────────────────────── */}
+        <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+              <Camera className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span>4. Foto Bukti Pendukung (Opsional)</span>
+            </label>
+            <span className="text-[10.5px] px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-200 dark:border-emerald-800/60">
+              Auto-Sanitized EXIF
+            </span>
+          </div>
 
           <input
             type="file"
-            accept="image/*"
             ref={fileInputRef}
+            accept="image/jpeg,image/png,image/webp"
             onChange={handlePhotoSelect}
             className="hidden"
           />
 
-          {photoPreview ? (
-            <div className="relative aspect-video max-h-60 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center group">
-              <img src={photoPreview} alt="Preview Foto Bukti" className="w-full h-full object-contain" />
-              <button
-                type="button"
-                onClick={handleRemovePhoto}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/90 text-slate-300 hover:text-white hover:bg-rose-600 transition-colors"
-                title="Hapus Foto"
-              >
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-          ) : (
+          {!photoPreview ? (
             <button
               type="button"
               disabled={photoProcessing}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full py-6 rounded-2xl border-2 border-dashed border-slate-800 hover:border-emerald-500/50 bg-slate-950/60 hover:bg-emerald-950/20 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-emerald-300 transition-all min-h-[90px] touch-target"
+              className="w-full p-6 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/30 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer"
             >
               {photoProcessing ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
-                  <span className="text-xs font-bold text-emerald-300">Menghapus metadata & mengoptimalkan foto...</span>
-                </>
+                <div className="flex items-center gap-2 text-xs text-blue-600 font-semibold">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Membersihkan metadata foto...</span>
+                </div>
               ) : (
                 <>
-                  <Camera className="w-6 h-6 text-slate-500" />
-                  <span className="text-xs font-bold">Pilih / Ambil Foto Bukti</span>
-                  <span className="text-[10px] text-slate-500">Maksimal 10MB • Metadata GPS/Kamera dihapus otomatis</span>
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Camera className="w-5 h-5" />
+                  </div>
+                  <div className="text-center">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      Klik untuk Unggah Foto Bukti
+                    </span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      JPEG, PNG, atau WebP (Maks. 10MB)
+                    </p>
+                  </div>
                 </>
               )}
             </button>
+          ) : (
+            <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950 max-w-sm">
+              <img
+                src={photoPreview}
+                alt="Pratinjau Bukti"
+                className="w-full h-48 object-cover"
+              />
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
+                title="Hapus foto"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+              <div className="p-2.5 bg-white dark:bg-slate-900 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between border-t border-slate-200 dark:border-slate-800">
+                <span className="font-semibold text-emerald-600 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Foto Siap Dikirim
+                </span>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Ganti Foto
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
         {/* Submit Button */}
-        <div className="pt-3">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
           <button
             type="submit"
             disabled={submitting || photoProcessing}
-            className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-blue-500/20 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 min-h-[48px] touch-target"
+            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.005] cursor-pointer"
           >
             {submitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Mengirimkan Laporan Anonim...</span>
+                <span>Mengenkripsi & Mengirim Laporan...</span>
               </>
             ) : (
               <>
-                <ShieldAlert className="w-4 h-4" />
-                <span>Kirim Laporan Anonim Sekarang</span>
+                <Lock className="w-4 h-4" />
+                <span>Kirim Laporan Secara 100% Anonim</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
               </>
             )}
           </button>
