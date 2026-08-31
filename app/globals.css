@@ -3,6 +3,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Vibrant Brand Colors */
   --color-primary:        #2563EB;   /* Blue 600 */

@@ -17,13 +17,34 @@ export default function IntegrityPublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white transition-colors duration-150">
+      {/* Inline Theme Initializer to prevent flash */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                var saved = localStorage.getItem('wact-integrity-theme');
+                if (saved === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else if (saved === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  // Default to light
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            })();
+          `,
+        }}
+      />
+
       {/* Background Ambient Blueprint Glow & Subtle Grid */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.08),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.06),transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.15),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.12),transparent_50%)] pointer-events-none" />
-      <div className="fixed inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-30 dark:opacity-60" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.06),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.15),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.12),transparent_50%)] pointer-events-none" />
+      <div className="fixed inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-25 dark:opacity-60" />
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/80 shadow-xs transition-colors duration-200">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/80 shadow-xs transition-colors duration-150">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo & Integrity Brand */}
           <div className="flex items-center gap-3">
