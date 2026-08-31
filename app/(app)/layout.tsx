@@ -65,6 +65,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <AppShellProvider
       warehouseAccess={warehouseAccess}
       userName={displayName}
+      isSuperAdmin={isSuperAdmin}
     >
       {children}
     </AppShellProvider>

@@ -4,6 +4,7 @@
 import React from 'react';
 import { Shield, ShieldAlert, Phone, Mail, Building2, MoreHorizontal, Edit3, Settings, Ban, RotateCcw, Lock } from 'lucide-react';
 import { RoleBadge } from './RoleBadge';
+import { getInitials, sortRoles } from '@/lib/utils/rolePresentation';
 
 export interface UserWarehouseMembership {
   id: string;
@@ -97,14 +98,14 @@ export function UserCard({
                 : 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/20'
             }`}
           >
-            {user.fullName?.[0]?.toUpperCase() || 'U'}
+            {getInitials(user.fullName)}
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-sm font-extrabold text-slate-900 truncate">{user.fullName}</h3>
               {user.isSuperAdmin && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
                   <ShieldAlert className="w-3 h-3" />
                   Super Admin
                 </span>
@@ -156,45 +157,48 @@ export function UserCard({
           <p className="text-xs text-slate-400 italic">Belum ada akses gudang aktif.</p>
         ) : (
           <div className="space-y-1.5">
-            {Array.from(membershipsByWarehouse.values()).map(({ warehouse, roles }) => (
-              <div
-                key={warehouse.id}
-                className={`p-2 rounded-xl flex items-center justify-between gap-2 text-xs ${
-                  warehouse.id === activeWarehouseId
-                    ? 'bg-blue-50/60 border border-blue-100'
-                    : 'bg-slate-50 border border-slate-100'
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span
-                    className={`font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded ${
-                      warehouse.id === activeWarehouseId
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-200 text-slate-700'
-                    }`}
-                  >
-                    {warehouse.code}
-                  </span>
-                  <div className="flex items-center gap-1 flex-wrap min-w-0">
-                    {roles.map((r) => (
-                      <RoleBadge key={r.id} roleName={r.name} displayName={r.display_name} size="sm" />
-                    ))}
+            {Array.from(membershipsByWarehouse.values()).map(({ warehouse, roles }) => {
+              const sortedRoles = sortRoles(roles);
+              return (
+                <div
+                  key={warehouse.id}
+                  className={`p-2 rounded-xl flex items-center justify-between gap-2 text-xs ${
+                    warehouse.id === activeWarehouseId
+                      ? 'bg-blue-50/60 border border-blue-100'
+                      : 'bg-slate-50 border border-slate-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span
+                      className={`font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded ${
+                        warehouse.id === activeWarehouseId
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-200 text-slate-700'
+                      }`}
+                    >
+                      {warehouse.code}
+                    </span>
+                    <div className="flex items-center gap-1 flex-wrap min-w-0">
+                      {sortedRoles.map((r) => (
+                        <RoleBadge key={r.id} roleName={r.name} displayName={r.display_name} size="sm" />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Manage Access shortcut for this warehouse */}
-                {canCallerMutate && (
-                  <button
-                    type="button"
-                    onClick={() => onManageAccess(user, warehouse.id)}
-                    className="p-1 rounded-lg hover:bg-white text-slate-400 hover:text-blue-600 transition-colors shrink-0 cursor-pointer"
-                    title="Kelola Role Gudang"
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            ))}
+                  {/* Manage Access shortcut for this warehouse */}
+                  {canCallerMutate && (
+                    <button
+                      type="button"
+                      onClick={() => onManageAccess(user, warehouse.id)}
+                      className="p-1 rounded-lg hover:bg-white text-slate-400 hover:text-blue-600 transition-colors shrink-0 cursor-pointer"
+                      title="Kelola Role Gudang"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

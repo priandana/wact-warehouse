@@ -2,6 +2,7 @@
 // Premium Enterprise Command Center Login View for WACT Warehouse
 // Full-Viewport Layout (100dvh) with zero root body scrolling, animated operational stepper, and responsive auth surface
 
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@/lib/supabase/server';
 import { LoginForm } from './LoginForm';
@@ -13,6 +14,7 @@ import {
   Sparkles,
   AlertCircle,
   Activity,
+  Shield,
 } from 'lucide-react';
 
 interface Props {
@@ -249,6 +251,18 @@ export default async function LoginPage({ searchParams }: Props) {
 
             {/* Main Interactive Login Form */}
             <LoginForm redirectTo={params.next ?? '/dashboard'} />
+
+            {/* Discreet Anonymous Reporting Link */}
+            <div className="pt-2 border-t border-slate-100 text-center">
+              <Link
+                href="/integrity/report"
+                referrerPolicy="no-referrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-slate-50"
+              >
+                <Shield className="w-3.5 h-3.5 text-slate-400" />
+                <span>Lapor Pelanggaran Secara Anonim</span>
+              </Link>
+            </div>
           </div>
         </div>
 

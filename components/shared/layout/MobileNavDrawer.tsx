@@ -19,18 +19,22 @@ import {
   LogOut,
   ChevronRight,
   Shield,
+  ShieldAlert,
   Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useActiveWarehouse } from './AppShellProvider';
 import { Capability } from '@/lib/permissions/capabilities';
 import { LogoutConfirmationModal } from '@/components/shared/LogoutConfirmationModal';
+import { getInitials, formatMultiRoleString } from '@/lib/utils/rolePresentation';
 
 interface MobileNavDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   userName?: string;
   userRole?: string;
+  userRoles?: string[];
+  isSuperAdmin?: boolean;
   warehouseName?: string;
   warehouseCode?: string;
   unreadCount?: number;
@@ -104,6 +108,13 @@ const DRAWER_GROUPS: DrawerNavGroup[] = [
     label: 'Pengaturan & Akses',
     items: [
       {
+        href: '/integrity',
+        icon: ShieldAlert,
+        label: 'Integrity Center',
+        description: 'Penyelidikan laporan anonim',
+        requiredCapability: (can) => can(Capability.INTEGRITY_VIEW),
+      },
+      {
         href: '/notifications',
         icon: Bell,
         label: 'Pusat Notifikasi',
@@ -132,6 +143,8 @@ export function MobileNavDrawer({
   onClose,
   userName,
   userRole,
+  userRoles,
+  isSuperAdmin = false,
   warehouseName,
   warehouseCode,
   unreadCount = 0,
@@ -174,38 +187,13 @@ export function MobileNavDrawer({
     setIsLogoutModalOpen(true);
   };
 
-  const getInitials = (name?: string) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .slice(0, 2)
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-  };
+  const effectiveIsSuperAdmin =
+    isSuperAdmin || userRole === 'superadmin' || userRole === 'super_admin';
 
-  const isSuperAdmin = userRole === 'superadmin' || userRole === 'super_admin';
-
-  const formatRoleName = (role?: string) => {
-    if (isSuperAdmin) return 'Super Admin';
-    if (!role) return 'Operator';
-    switch (role) {
-      case 'reporter':
-        return 'Reporter / Operator';
-      case 'qc_leader':
-        return 'QC Leader';
-      case 'pic_maintenance':
-        return 'PIC Maintenance';
-      case 'coordinator':
-        return 'Coordinator / Officer';
-      case 'regional_manager':
-        return 'Regional Manager';
-      case 'admin':
-        return 'Warehouse Admin';
-      default:
-        return role;
-    }
-  };
+  const roleText = formatMultiRoleString(userRoles || (userRole ? [userRole] : []), {
+    isSuperAdmin: effectiveIsSuperAdmin,
+    maxVisible: 2,
+  });
 
   const drawerContent = (
     <div
@@ -358,6 +346,23 @@ export function MobileNavDrawer({
 
         {/* ── 4. User Footer Profile & Sign Out ─────────────────────────── */}
         <div className="p-3 border-t border-slate-100 bg-slate-50/50 space-y-2">
+          {/* Discreet Anonymous Reporting Link */}
+          <Link
+            href="/integrity/report"
+            target="_blank"
+            referrerPolicy="no-referrer"
+            onClick={onClose}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-200 text-slate-600 hover:text-blue-700 text-xs font-semibold transition-all group"
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600" />
+              <span>Lapor Anonim (Integrity)</span>
+            </div>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-blue-700 text-slate-500">
+              Aman & Rahasia
+            </span>
+          </Link>
+
           {/* User Card */}
           <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
             <div className="flex items-center gap-2 min-w-0">
@@ -368,9 +373,9 @@ export function MobileNavDrawer({
                 <p className="text-xs font-bold text-slate-800 truncate leading-tight">
                   {userName || 'Pengguna'}
                 </p>
-                <p className="text-[10px] text-slate-400 font-medium truncate flex items-center gap-1">
-                  {isSuperAdmin && <Shield className="w-2.5 h-2.5 text-purple-600 shrink-0" />}
-                  <span>{formatRoleName(userRole)}</span>
+                <p className="text-[10px] text-slate-400 font-medium truncate flex items-center gap-1" title={roleText}>
+                  {effectiveIsSuperAdmin && <Shield className="w-2.5 h-2.5 text-indigo-600 shrink-0" />}
+                  <span>{roleText}</span>
                 </p>
               </div>
             </div>

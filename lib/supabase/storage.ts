@@ -9,6 +9,7 @@ export const BUCKETS = {
   INSPECTION_EVIDENCES: 'inspection-evidences',
   ASSET_PHOTOS:         'asset-photos',
   AVATARS:              'avatars',
+  INTEGRITY_EVIDENCES:  'integrity-evidences',
 } as const;
 
 export type BucketName = typeof BUCKETS[keyof typeof BUCKETS];
@@ -20,6 +21,7 @@ export type BucketName = typeof BUCKETS[keyof typeof BUCKETS];
  *   inspection-evidences/{warehouseId}/{inspectionId}/{uuid}.jpg
  *   asset-photos/{warehouseId}/{assetId}/{uuid}.jpg
  *   avatars/{userId}/{uuid}.jpg
+ *   integrity-evidences/{warehouseId}/{reportId}/{uuid}.jpg
  *
  * This structure is validated by Storage RLS policies (segment 1 = warehouseId).
  */
@@ -37,6 +39,10 @@ export function buildAssetPhotoPath(warehouseId: string, assetId: string, ext = 
 
 export function buildAvatarPath(userId: string, ext = 'jpg'): string {
   return `${userId}/${crypto.randomUUID()}.${ext}`;
+}
+
+export function buildIntegrityEvidencePath(warehouseId: string, reportId: string, ext = 'jpg'): string {
+  return `${warehouseId}/${reportId}/${crypto.randomUUID()}.${ext}`;
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────

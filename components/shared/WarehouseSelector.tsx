@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider';
+import { formatMultiRoleString } from '@/lib/utils/rolePresentation';
 
 interface WarehouseSelectorProps {
   className?: string;
@@ -122,13 +123,13 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                       )}
                     >
                       <div className="min-w-0 pr-2">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span className={cn('text-xs font-bold', isSelected ? 'text-blue-700' : 'text-slate-900')}>
                             {wh.warehouseCode}
                           </span>
                           {wh.roles.length > 0 && (
-                            <span className="text-[10px] text-slate-400 font-medium capitalize">
-                              ({wh.roles.join(', ')})
+                            <span className="text-[10px] text-slate-400 font-medium">
+                              ({formatMultiRoleString(wh.roles, { maxVisible: 3 })})
                             </span>
                           )}
                         </div>
@@ -213,8 +214,8 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                                 {wh.warehouseCode}
                               </span>
                               {wh.roles.length > 0 && (
-                                <span className="text-[10px] px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 font-semibold capitalize shadow-2xs">
-                                  ({wh.roles.join(', ')})
+                                <span className="text-[10px] px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600 font-semibold shadow-2xs">
+                                  {formatMultiRoleString(wh.roles, { maxVisible: 3 })}
                                 </span>
                               )}
                             </div>

@@ -2,7 +2,8 @@
 // components/cases/EvidenceGallery.tsx
 // Interactive Evidence Photo Gallery with Loading Skeletons, Fallbacks, and Fullscreen Lightbox Modal
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Image as ImageIcon,
   ImageOff,
@@ -40,6 +41,31 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
   const [errorMap, setErrorMap] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Body scroll lock with safe previous overflow restoration
+  useEffect(() => {
+    if (selectedIdx === null) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedIdx(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedIdx]);
 
   if (!evidences || evidences.length === 0) {
     return (
@@ -182,11 +208,14 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
         })}
       </div>
 
-      {/* ── Fullscreen Lightbox Modal ────────────────────────────────────── */}
-      {selectedIdx !== null && currentItem && (
+      {/* ── Fullscreen Lightbox Modal (React Portal) ────────────────────── */}
+      {mounted && selectedIdx !== null && currentItem && createPortal(
         <div
           className="fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
           onClick={() => setSelectedIdx(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Tampilan Foto Bukti Ukuran Penuh"
         >
           {/* Top Bar: Info & Close Button */}
           <div className="flex items-center justify-between text-white z-10" onClick={(e) => e.stopPropagation()}>
@@ -273,7 +302,8 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
               {selectedIdx + 1} / {evidences.length}
             </span>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

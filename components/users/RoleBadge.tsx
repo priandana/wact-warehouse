@@ -1,6 +1,9 @@
 // components/users/RoleBadge.tsx
+// Restrained role identity chips (distinct from workflow status badges).
+
 import React from 'react';
 import { Shield, ShieldAlert, Wrench, CheckCircle2, User, UserCheck } from 'lucide-react';
+import { getRoleDisplayName } from '@/lib/utils/rolePresentation';
 
 interface RoleBadgeProps {
   roleName: string;
@@ -12,53 +15,68 @@ export const ROLE_CONFIGS: Record<
   string,
   { label: string; bg: string; text: string; border: string; icon: React.ComponentType<{ className?: string }> }
 > = {
+  superadmin: {
+    label: 'Super Admin',
+    bg: 'bg-indigo-50/80',
+    text: 'text-indigo-800',
+    border: 'border-indigo-200/80',
+    icon: ShieldAlert,
+  },
+  super_admin: {
+    label: 'Super Admin',
+    bg: 'bg-indigo-50/80',
+    text: 'text-indigo-800',
+    border: 'border-indigo-200/80',
+    icon: ShieldAlert,
+  },
   admin: {
     label: 'Administrator',
-    bg: 'bg-rose-50',
-    text: 'text-rose-700',
-    border: 'border-rose-200',
+    bg: 'bg-blue-50',
+    text: 'text-blue-800',
+    border: 'border-blue-200',
     icon: ShieldAlert,
   },
   regional_manager: {
     label: 'Regional Manager',
-    bg: 'bg-purple-50',
-    text: 'text-purple-700',
-    border: 'border-purple-200',
+    bg: 'bg-slate-100',
+    text: 'text-slate-800',
+    border: 'border-slate-300/80',
     icon: Shield,
   },
   coordinator: {
-    label: 'Coordinator / Officer',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
+    label: 'Koordinator',
+    bg: 'bg-slate-100',
+    text: 'text-slate-800',
+    border: 'border-slate-200',
     icon: UserCheck,
   },
   qc_leader: {
     label: 'QC Leader',
-    bg: 'bg-indigo-50',
-    text: 'text-indigo-700',
-    border: 'border-indigo-200',
-    icon: CheckCircle2,
-  },
-  pic_maintenance: {
-    label: 'PIC / Maintenance',
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    border: 'border-amber-200',
-    icon: Wrench,
-  },
-  reporter: {
-    label: 'Reporter / Operator',
     bg: 'bg-slate-100',
     text: 'text-slate-700',
     border: 'border-slate-200',
+    icon: CheckCircle2,
+  },
+  pic_maintenance: {
+    label: 'PIC Maintenance',
+    bg: 'bg-slate-100',
+    text: 'text-slate-700',
+    border: 'border-slate-200',
+    icon: Wrench,
+  },
+  reporter: {
+    label: 'Reporter',
+    bg: 'bg-slate-50',
+    text: 'text-slate-600',
+    border: 'border-slate-200/70',
     icon: User,
   },
 };
 
 export function RoleBadge({ roleName, displayName, size = 'sm' }: RoleBadgeProps) {
-  const config = ROLE_CONFIGS[roleName] || {
-    label: displayName || roleName,
+  const normKey = (roleName || '').trim().toLowerCase();
+  const config = ROLE_CONFIGS[normKey] || {
+    label: getRoleDisplayName(roleName, displayName),
     bg: 'bg-slate-50',
     text: 'text-slate-700',
     border: 'border-slate-200',
@@ -67,6 +85,7 @@ export function RoleBadge({ roleName, displayName, size = 'sm' }: RoleBadgeProps
 
   const Icon = config.icon;
   const isSm = size === 'sm';
+  const labelText = getRoleDisplayName(roleName, displayName);
 
   return (
     <span
@@ -75,7 +94,7 @@ export function RoleBadge({ roleName, displayName, size = 'sm' }: RoleBadgeProps
       }`}
     >
       <Icon className={isSm ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
-      <span>{displayName || config.label}</span>
+      <span>{labelText}</span>
     </span>
   );
 }

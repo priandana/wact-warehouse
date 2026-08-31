@@ -1311,6 +1311,330 @@ export type Database = {
         Relationships: [
         ];
       };
+      integrity_reports: {
+        Row: {
+          id: string;
+          report_code: string;
+          warehouse_id: string;
+          area_id: string | null;
+          location_id: string | null;
+          category: string;
+          severity: string;
+          status: string;
+          incident_datetime: string | null;
+          description: string;
+          estimated_loss: number | null;
+          involved_party_description: string | null;
+          assigned_investigator_id: string | null;
+          resolution_notes: string | null;
+          resolution_action: string | null;
+          resolved_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          report_code: string;
+          warehouse_id: string;
+          area_id?: string | null;
+          location_id?: string | null;
+          category: string;
+          severity?: string;
+          status?: string;
+          incident_datetime?: string | null;
+          description: string;
+          estimated_loss?: number | null;
+          involved_party_description?: string | null;
+          assigned_investigator_id?: string | null;
+          resolution_notes?: string | null;
+          resolution_action?: string | null;
+          resolved_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_code?: string;
+          warehouse_id?: string;
+          area_id?: string | null;
+          location_id?: string | null;
+          category?: string;
+          severity?: string;
+          status?: string;
+          incident_datetime?: string | null;
+          description?: string;
+          estimated_loss?: number | null;
+          involved_party_description?: string | null;
+          assigned_investigator_id?: string | null;
+          resolution_notes?: string | null;
+          resolution_action?: string | null;
+          resolved_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_reports_warehouse_id_fkey";
+            columns: ["warehouse_id"];
+            isOneToOne: false;
+            referencedRelation: "warehouses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "integrity_reports_assigned_investigator_id_fkey";
+            columns: ["assigned_investigator_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_report_secrets: {
+        Row: {
+          report_id: string;
+          access_secret_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          report_id: string;
+          access_secret_hash: string;
+          created_at?: string;
+        };
+        Update: {
+          report_id?: string;
+          access_secret_hash?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_report_secrets_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: true;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_messages: {
+        Row: {
+          id: string;
+          report_id: string;
+          sender_type: string;
+          sender_id: string | null;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          report_id: string;
+          sender_type: string;
+          sender_id?: string | null;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          sender_type?: string;
+          sender_id?: string | null;
+          message?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_messages_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "integrity_messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_internal_notes: {
+        Row: {
+          id: string;
+          report_id: string;
+          author_id: string;
+          note: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          report_id: string;
+          author_id: string;
+          note: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          author_id?: string;
+          note?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_internal_notes_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "integrity_internal_notes_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_evidences: {
+        Row: {
+          id: string;
+          report_id: string;
+          message_id: string | null;
+          storage_path: string;
+          file_name: string;
+          file_size: number | null;
+          mime_type: string;
+          source_type: string;
+          caption: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          report_id: string;
+          message_id?: string | null;
+          storage_path: string;
+          file_name: string;
+          file_size?: number | null;
+          mime_type?: string;
+          source_type: string;
+          caption?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          message_id?: string | null;
+          storage_path?: string;
+          file_name?: string;
+          file_size?: number | null;
+          mime_type?: string;
+          source_type?: string;
+          caption?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_evidences_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_activities: {
+        Row: {
+          id: string;
+          report_id: string;
+          actor_type: string;
+          actor_id: string | null;
+          action: string;
+          from_status: string | null;
+          to_status: string | null;
+          metadata: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          report_id: string;
+          actor_type: string;
+          actor_id?: string | null;
+          action: string;
+          from_status?: string | null;
+          to_status?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          actor_type?: string;
+          actor_id?: string | null;
+          action?: string;
+          from_status?: string | null;
+          to_status?: string | null;
+          metadata?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_activities_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "integrity_activities_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      integrity_assignments: {
+        Row: {
+          id: string;
+          report_id: string;
+          investigator_id: string;
+          assigned_by: string;
+          is_current: boolean;
+          assigned_at: string;
+          unassigned_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          report_id: string;
+          investigator_id: string;
+          assigned_by: string;
+          is_current?: boolean;
+          assigned_at?: string;
+          unassigned_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          investigator_id?: string;
+          assigned_by?: string;
+          is_current?: boolean;
+          assigned_at?: string;
+          unassigned_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_assignments_report_id_fkey";
+            columns: ["report_id"];
+            isOneToOne: false;
+            referencedRelation: "integrity_reports";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       profile_directory: {

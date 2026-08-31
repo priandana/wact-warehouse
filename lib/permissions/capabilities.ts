@@ -41,6 +41,16 @@ export const Capability = {
   SLA_MANAGE:                'sla.manage',
   USER_MANAGE:               'user.manage',
   WAREHOUSE_MANAGE:          'warehouse.manage',
+
+  // Integrity Center (Anonymous Reporting & Investigation)
+  INTEGRITY_VIEW:            'integrity.view',
+  INTEGRITY_INVESTIGATE:     'integrity.investigate',
+  INTEGRITY_ASSIGN:          'integrity.assign',
+  INTEGRITY_CHANGE_SEVERITY: 'integrity.change_severity',
+  INTEGRITY_MESSAGE:         'integrity.message',
+  INTEGRITY_INTERNAL_NOTE:   'integrity.internal_note',
+  INTEGRITY_RESOLVE:         'integrity.resolve',
+  INTEGRITY_EXPORT:          'integrity.export',
 } as const;
 
 export type Capability = typeof Capability[keyof typeof Capability];

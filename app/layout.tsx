@@ -36,7 +36,7 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: LayoutProps) {
   return (
-    <html lang="id" className={`${plusJakarta.variable} h-full`}>
+    <html lang="id" data-scroll-behavior="smooth" className={`${plusJakarta.variable} h-full`}>
       <body className="min-h-full antialiased font-[var(--font-plus-jakarta),ui-sans-serif,system-ui,sans-serif]">
         {children}
       </body>

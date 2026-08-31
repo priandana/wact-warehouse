@@ -16,6 +16,7 @@ import {
 } from '@/components/cases/CaseWorkflowActionPanel';
 import { BUCKETS } from '@/lib/supabase/storage';
 import { getSlaStatus } from '@/lib/utils/sla';
+import { formatMultiRoleString } from '@/lib/utils/rolePresentation';
 import { resolveCapabilities } from '@/lib/permissions/resolveCapabilities';
 import { Capability } from '@/lib/permissions/capabilities';
 import Link from 'next/link';
@@ -260,7 +261,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           id: string;
           full_name: string;
           avatar_url: string | null;
-          picRoleDisplayName?: string;
+          roles: string[];
           hasActivePicRole: boolean;
         }
       >();
@@ -281,15 +282,18 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
             id: row.user_id,
             full_name: profile.full_name || 'Staff',
             avatar_url: profile.avatar_url,
+            roles: [],
             hasActivePicRole: false,
           });
         }
 
         const userEntry = userMap.get(row.user_id)!;
         const role = row.roles as { id: string; name: string; display_name: string } | null;
-        if (role?.name === 'pic_maintenance') {
-          userEntry.hasActivePicRole = true;
-          userEntry.picRoleDisplayName = role.display_name || 'PIC / Maintenance';
+        if (role?.name) {
+          userEntry.roles.push(role.name);
+          if (role.name === 'pic_maintenance') {
+            userEntry.hasActivePicRole = true;
+          }
         }
       }
 
@@ -301,7 +305,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           full_name: u.full_name,
           avatar_url: u.avatar_url,
           role_name: 'pic_maintenance',
-          role_display_name: u.picRoleDisplayName || 'PIC / Maintenance',
+          role_display_name: formatMultiRoleString(u.roles, { maxVisible: 2 }),
+          roles: u.roles,
         }))
         .sort((a, b) => a.full_name.localeCompare(b.full_name, 'id', { sensitivity: 'base' }));
     }

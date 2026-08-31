@@ -38,6 +38,8 @@ import { cn } from '@/lib/utils/cn';
 import { Select } from '@/components/shared/Select';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { MobileCaseActionBar } from './MobileCaseActionBar';
+import { CaseWorkflowModal } from './CaseWorkflowModal';
+import { getInitials, formatMultiRoleString } from '@/lib/utils/rolePresentation';
 
 export interface AssignableUser {
   id: string;
@@ -45,6 +47,7 @@ export interface AssignableUser {
   avatar_url?: string | null;
   role_name?: string;
   role_display_name?: string;
+  roles?: string[];
 }
 
 export interface RootCauseItem {
@@ -797,734 +800,668 @@ export function CaseWorkflowActionPanel({
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 1: ASSIGN PIC                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'assign' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Tugaskan PIC Kasus</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-
-            {errorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>{successMessage}</span>
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                Pilih Staf / Teknisi PIC
-              </label>
-              {assignableUsers.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-center space-y-1.5 my-1">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 mx-auto" />
-                  <p className="text-xs font-bold text-amber-900">
-                    Belum ada PIC / Maintenance aktif di {warehouseName || 'warehouse ini'}.
-                  </p>
-                  <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
-                    Tambahkan role PIC / Maintenance pada pengguna aktif terlebih dahulu.
-                  </p>
-                </div>
-              ) : (
-                <div className="max-h-60 overflow-y-auto space-y-1.5 no-scrollbar py-1">
-                  {assignableUsers.map((u) => {
-                    const isSelected = selectedAssigneeId === u.id;
-                    return (
-                      <button
-                        key={u.id}
-                        type="button"
-                        onClick={() => setSelectedAssigneeId(u.id)}
-                        className={cn(
-                          'w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all',
-                          isSelected
-                            ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500 font-bold text-blue-900'
-                            : 'bg-slate-50 border-slate-200 text-slate-800 hover:bg-slate-100'
-                        )}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                            {u.full_name[0].toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs truncate">{u.full_name}</p>
-                            {u.role_display_name && (
-                              <p className="text-[10px] text-slate-500 font-semibold truncate">{u.role_display_name}</p>
-                            )}
-                          </div>
-                        </div>
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'assign'}
+        onRequestClose={closeModal}
+        title="Tugaskan PIC Kasus"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={UserPlus}
+        iconColor="text-blue-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleAssignPIC}
-                disabled={loading || !selectedAssigneeId || assignableUsers.length === 0}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
-                <span>Simpan Penugasan</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleAssignPIC}
+              disabled={loading || !selectedAssigneeId || assignableUsers.length === 0}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:active:scale-100 transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : (
+                <>
+                  <UserCheck className="w-4 h-4" />
+                  <span>Simpan Penugasan</span>
+                </>
+              )}
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        {successMessage && (
+          <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Pilih Staf / Teknisi PIC
+          </label>
+          {assignableUsers.length === 0 ? (
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-center space-y-1.5 my-1">
+              <AlertTriangle className="w-5 h-5 text-amber-600 mx-auto" />
+              <p className="text-xs font-bold text-amber-900">
+                Belum ada PIC / Maintenance aktif di {warehouseName || 'warehouse ini'}.
+              </p>
+              <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                Tambahkan role PIC / Maintenance pada pengguna aktif terlebih dahulu.
+              </p>
+            </div>
+          ) : (
+            <div className="max-h-64 overflow-y-auto space-y-2 no-scrollbar py-0.5" role="radiogroup" aria-label="Daftar Staf PIC">
+              {assignableUsers.map((u) => {
+                const isSelected = selectedAssigneeId === u.id;
+                const roleSubtitle =
+                  u.role_display_name ||
+                  (u.roles && u.roles.length > 0
+                    ? formatMultiRoleString(u.roles, { maxVisible: 2 })
+                    : 'PIC Maintenance');
+
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => setSelectedAssigneeId(u.id)}
+                    className={cn(
+                      'group w-full flex items-center justify-between p-3 rounded-2xl min-h-[50px] text-left transition-all duration-150 active:scale-[0.99] touch-target',
+                      isSelected
+                        ? 'bg-blue-50/70 border border-blue-500 ring-1 ring-blue-500/20 text-blue-950 font-bold'
+                        : 'bg-slate-50/80 border border-slate-200/80 text-slate-800 hover:bg-slate-100/90 hover:border-slate-300'
+                    )}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 rounded-xl bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                        {getInitials(u.full_name)}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={cn('text-xs truncate font-bold', isSelected ? 'text-blue-900' : 'text-slate-900')}>
+                          {u.full_name}
+                        </p>
+                        <p className={cn('text-[11px] truncate font-medium mt-0.5', isSelected ? 'text-blue-700' : 'text-slate-500')}>
+                          {roleSubtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 ml-2">
+                      {isSelected ? (
+                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border-2 border-slate-300 group-hover:border-slate-400 transition-colors" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 2: UPDATE PROGRESS & KOREKSI                                  */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'progress' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-blue-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Update Progres & Akar Masalah</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              {/* Root Cause Selection */}
-              <Select
-                label="Akar Masalah (Root Cause)"
-                value={selectedRootCauseId}
-                onChange={setSelectedRootCauseId}
-                placeholder="-- Pilih Akar Masalah --"
-                searchable={true}
-                searchPlaceholder="Cari akar masalah..."
-                options={rootCauses.map((rc) => ({ value: rc.id, label: rc.name }))}
-              />
-
-              {/* Corrective Action */}
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Tindakan Korektif (Corrective Action)
-                </label>
-                <textarea
-                  rows={2}
-                  value={correctiveAction}
-                  onChange={(e) => setCorrectiveAction(e.target.value)}
-                  placeholder="Tindakan langsung yang telah dilakukan untuk mengatasi masalah..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-
-              {/* Preventive Action */}
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Tindakan Pencegahan (Preventive Action)
-                </label>
-                <textarea
-                  rows={2}
-                  value={preventiveAction}
-                  onChange={(e) => setPreventiveAction(e.target.value)}
-                  placeholder="Langkah pencegahan agar masalah serupa tidak terulang kembali..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'progress'}
+        onRequestClose={closeModal}
+        title="Update Progres & Akar Masalah"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={FileText}
+        iconColor="text-blue-600"
+        loading={loading}
+        maxWidth="lg"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleUpdateProgress}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                <span>Simpan Perubahan</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleUpdateProgress}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+              <span>Simpan Perubahan</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        {/* Root Cause Selection */}
+        <Select
+          label="Akar Masalah (Root Cause)"
+          value={selectedRootCauseId}
+          onChange={setSelectedRootCauseId}
+          placeholder="-- Pilih Akar Masalah --"
+          searchable={true}
+          searchPlaceholder="Cari akar masalah..."
+          options={rootCauses.map((rc) => ({ value: rc.id, label: rc.name }))}
+        />
+
+        {/* Corrective Action */}
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Tindakan Korektif (Corrective Action)
+          </label>
+          <textarea
+            rows={2}
+            value={correctiveAction}
+            onChange={(e) => setCorrectiveAction(e.target.value)}
+            placeholder="Tindakan langsung yang telah dilakukan untuk mengatasi masalah..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          />
         </div>
-      )}
+
+        {/* Preventive Action */}
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Tindakan Pencegahan (Preventive Action)
+          </label>
+          <textarea
+            rows={2}
+            value={preventiveAction}
+            onChange={(e) => setPreventiveAction(e.target.value)}
+            placeholder="Langkah pencegahan agar masalah serupa tidak terulang kembali..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          />
+        </div>
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 3: UPLOAD AFTER / DURING EVIDENCE                             */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'evidence' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <Camera className="w-4 h-4 text-emerald-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Unggah Bukti Hasil Perbaikan</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                ref={photoInputRef}
-                onChange={handleSelectEvidenceFile}
-                className="hidden"
-              />
-
-              {/* Photo Picker / Preview */}
-              {evidencePreview ? (
-                <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
-                  <img src={evidencePreview} alt="Preview" className="w-full h-full object-contain" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEvidenceFile(null);
-                      setEvidencePreview(null);
-                    }}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
-                  >
-                    <XCircle className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  disabled={evidenceProcessing}
-                  onClick={() => photoInputRef.current?.click()}
-                  className="w-full py-8 rounded-2xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50/40 flex flex-col items-center justify-center gap-2 text-slate-600 hover:text-emerald-700 transition-all"
-                >
-                  {evidenceProcessing ? (
-                    <>
-                      <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
-                      <span className="text-xs font-bold text-emerald-700">Menyiapkan foto...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="w-7 h-7 text-slate-400" />
-                      <span className="text-xs font-extrabold">Ambil / Pilih Foto Hasil Selesai (After)</span>
-                    </>
-                  )}
-                </button>
-              )}
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Keterangan Foto (Caption)
-                </label>
-                <input
-                  type="text"
-                  value={evidenceCaption}
-                  onChange={(e) => setEvidenceCaption(e.target.value)}
-                  placeholder="Contoh: Penggantian bearing dan kabel sensor selesai diuji"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'evidence'}
+        onRequestClose={closeModal}
+        title="Unggah Bukti Hasil Perbaikan"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={Camera}
+        iconColor="text-emerald-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleUploadEvidence}
-                disabled={loading || !evidenceFile || evidenceProcessing}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                <span>
-                  {uploadStep === 'uploading'
-                    ? 'Mengunggah foto...'
-                    : uploadStep === 'saving'
-                    ? 'Menyimpan bukti...'
-                    : uploadStep === 'done'
-                    ? 'Foto berhasil diunggah'
-                    : 'Unggah Bukti'}
-                </span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleUploadEvidence}
+              disabled={loading || !evidenceFile || evidenceProcessing}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+              <span>
+                {uploadStep === 'uploading'
+                  ? 'Mengunggah foto...'
+                  : uploadStep === 'saving'
+                  ? 'Menyimpan bukti...'
+                  : uploadStep === 'done'
+                  ? 'Foto berhasil diunggah'
+                  : 'Unggah Bukti'}
+              </span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          ref={photoInputRef}
+          onChange={handleSelectEvidenceFile}
+          className="hidden"
+        />
+
+        {/* Photo Picker / Preview */}
+        {evidencePreview ? (
+          <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
+            <img src={evidencePreview} alt="Preview" className="w-full h-full object-contain" />
+            <button
+              type="button"
+              onClick={() => {
+                setEvidenceFile(null);
+                setEvidencePreview(null);
+              }}
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={evidenceProcessing}
+            onClick={() => photoInputRef.current?.click()}
+            className="w-full py-8 rounded-2xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50 hover:bg-emerald-50/40 flex flex-col items-center justify-center gap-2 text-slate-600 hover:text-emerald-700 transition-all"
+          >
+            {evidenceProcessing ? (
+              <>
+                <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
+                <span className="text-xs font-bold text-emerald-700">Menyiapkan foto...</span>
+              </>
+            ) : (
+              <>
+                <Camera className="w-7 h-7 text-slate-400" />
+                <span className="text-xs font-extrabold">Ambil / Pilih Foto Hasil Selesai (After)</span>
+              </>
+            )}
+          </button>
+        )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Keterangan Foto (Caption)
+          </label>
+          <input
+            type="text"
+            value={evidenceCaption}
+            onChange={(e) => setEvidenceCaption(e.target.value)}
+            placeholder="Contoh: Penggantian bearing dan kabel sensor selesai diuji"
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          />
         </div>
-      )}
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 4: QC APPROVE & CLOSE                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'verify' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Verifikasi & Tutup Kasus</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <p className="text-xs text-slate-600">
-                Apakah Anda yakin pekerjaan perbaikan pada kasus <strong>{caseNumber}</strong> telah sesuai standar QC operasional gudang?
-              </p>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Catatan Verifikasi (Opsional)
-                </label>
-                <textarea
-                  rows={2}
-                  value={verificationNote}
-                  onChange={(e) => setVerificationNote(e.target.value)}
-                  placeholder="Contoh: Telah diuji running test selama 30 menit, kondisi normal..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'verify'}
+        onRequestClose={closeModal}
+        title="Verifikasi & Tutup Kasus"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={CheckCircle2}
+        iconColor="text-emerald-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleVerifyApprove}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                <span>Setujui & Selesaikan</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleVerifyApprove}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+              <span>Setujui & Selesaikan</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <p className="text-xs text-slate-600 leading-relaxed">
+          Apakah Anda yakin pekerjaan perbaikan pada kasus <strong>{caseNumber}</strong> telah sesuai standar QC operasional gudang?
+        </p>
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Catatan Verifikasi (Opsional)
+          </label>
+          <textarea
+            rows={2}
+            value={verificationNote}
+            onChange={(e) => setVerificationNote(e.target.value)}
+            placeholder="Contoh: Telah diuji running test selama 30 menit, kondisi normal..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+          />
         </div>
-      )}
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 5: QC REJECT (REWORK)                                         */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'reject' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-rose-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Tolak Verifikasi (Minta Perbaikan)</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Alasan Penolakan / Catatan Perbaikan <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={rejectionNote}
-                  onChange={(e) => setRejectionNote(e.target.value)}
-                  placeholder="Jelaskan bagian yang belum tuntas atau perlu diperbaiki ulang oleh PIC..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'reject'}
+        onRequestClose={closeModal}
+        title="Tolak Verifikasi (Minta Perbaikan)"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={XCircle}
+        iconColor="text-rose-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleVerifyReject}
-                disabled={loading || !rejectionNote.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-                <span>Kembalikan ke PIC</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleVerifyReject}
+              disabled={loading || !rejectionNote.trim()}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+              <span>Kembalikan ke PIC</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Alasan Penolakan / Catatan Perbaikan <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            rows={3}
+            value={rejectionNote}
+            onChange={(e) => setRejectionNote(e.target.value)}
+            placeholder="Jelaskan bagian yang belum tuntas atau perlu diperbaiki ulang oleh PIC..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            autoFocus
+          />
         </div>
-      )}
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 6: REOPEN CASE                                                */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'reopen' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <RotateCw className="w-4 h-4 text-amber-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Buka Kembali Kasus (Reopen)</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Alasan Membuka Kembali <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={reopenReason}
-                  onChange={(e) => setReopenReason(e.target.value)}
-                  placeholder="Jelaskan alasan mengapa kasus ini perlu dibuka dan diinvestigasi kembali..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'reopen'}
+        onRequestClose={closeModal}
+        title="Buka Kembali Kasus (Reopen)"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={RotateCw}
+        iconColor="text-amber-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleReopen}
-                disabled={loading || !reopenReason.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-xs hover:bg-amber-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
-                <span>Buka Kembali</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleReopen}
+              disabled={loading || !reopenReason.trim()}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-xs hover:bg-amber-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
+              <span>Buka Kembali</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Alasan Membuka Kembali <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            rows={3}
+            value={reopenReason}
+            onChange={(e) => setReopenReason(e.target.value)}
+            placeholder="Jelaskan alasan mengapa kasus ini perlu dibuka dan diinvestigasi kembali..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            autoFocus
+          />
         </div>
-      )}
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 7: CHANGE PRIORITY                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'priority' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <Tag className="w-4 h-4 text-indigo-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Ubah Prioritas Kasus</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <Select
-                label="Tingkat Prioritas Kasus"
-                value={selectedPriority}
-                onChange={setSelectedPriority}
-                options={[
-                  { value: 'low', label: 'Rendah (Low) — SLA 72 Jam' },
-                  { value: 'medium', label: 'Sedang (Medium) — SLA 24 Jam' },
-                  { value: 'high', label: 'Tinggi (High) — SLA 8 Jam' },
-                  { value: 'critical', label: 'Kritis (Critical) — SLA 2 Jam' },
-                ]}
-              />
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'priority'}
+        onRequestClose={closeModal}
+        title="Ubah Prioritas Kasus"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={Tag}
+        iconColor="text-indigo-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleChangePriority}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tag className="w-4 h-4" />}
-                <span>Simpan Prioritas</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleChangePriority}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tag className="w-4 h-4" />}
+              <span>Simpan Prioritas</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
-        </div>
-      )}
+        )}
+
+        <Select
+          label="Tingkat Prioritas Kasus"
+          value={selectedPriority}
+          onChange={setSelectedPriority}
+          options={[
+            { value: 'low', label: 'Rendah (Low) — SLA 72 Jam' },
+            { value: 'medium', label: 'Sedang (Medium) — SLA 24 Jam' },
+            { value: 'high', label: 'Tinggi (High) — SLA 8 Jam' },
+            { value: 'critical', label: 'Kritis (Critical) — SLA 2 Jam' },
+          ]}
+        />
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 8: OVERRIDE DUE DATE                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'due_date' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-purple-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Ubah Batas Waktu SLA Kasus</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Batas Waktu Baru (Due Date) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="datetime-local"
-                  value={newDueDate}
-                  onChange={(e) => setNewDueDate(e.target.value)}
-                  className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Alasan Perubahan Batas Waktu <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={dueDateReason}
-                  onChange={(e) => setDueDateReason(e.target.value)}
-                  placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'due_date'}
+        onRequestClose={closeModal}
+        title="Ubah Batas Waktu SLA Kasus"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={Calendar}
+        iconColor="text-purple-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleOverrideDueDate}
-                disabled={loading || !newDueDate || !dueDateReason.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs hover:bg-purple-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
-                <span>Perbarui Batas Waktu</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleOverrideDueDate}
+              disabled={loading || !newDueDate || !dueDateReason.trim()}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs hover:bg-purple-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
+              <span>Perbarui Batas Waktu</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Batas Waktu Baru (Due Date) <span className="text-rose-500">*</span>
+          </label>
+          <input
+            type="datetime-local"
+            value={newDueDate}
+            onChange={(e) => setNewDueDate(e.target.value)}
+            className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          />
         </div>
-      )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Alasan Perubahan Batas Waktu <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            rows={2}
+            value={dueDateReason}
+            onChange={(e) => setDueDateReason(e.target.value)}
+            placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            autoFocus
+          />
+        </div>
+      </CaseWorkflowModal>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* MODAL 9: FORCE CLOSE (ADMIN ONLY)                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {activeModal === 'force_close' && (
-        <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-rose-600" />
-                <h3 className="text-sm font-extrabold text-slate-900">Tutup Paksa Kasus (Admin Only)</h3>
-              </div>
-              <button onClick={closeModal} className="p-1 rounded-full text-slate-400 hover:text-slate-700">
-                <XCircle className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto overscroll-contain flex-1 space-y-4 touch-pan-y">
-              {errorMessage && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
-                ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
-                  Alasan Penutupan Paksa <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows={3}
-                  value={forceCloseReason}
-                  onChange={(e) => setForceCloseReason(e.target.value)}
-                  placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
-                  autoFocus
-                />
-              </div>
-            </div>
-
-            {/* Sticky Actions Footer */}
-            <div
-              className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
-              style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
+      <CaseWorkflowModal
+        isOpen={activeModal === 'force_close'}
+        onRequestClose={closeModal}
+        title="Tutup Paksa Kasus (Admin Only)"
+        subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
+        icon={ShieldAlert}
+        iconColor="text-rose-600"
+        loading={loading}
+        maxWidth="md"
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={loading}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
-              <button
-                type="button"
-                onClick={closeModal}
-                disabled={loading}
-                className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleForceClose}
-                disabled={loading || !forceCloseReason.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
-                <span>Tutup Paksa Sekarang</span>
-              </button>
-            </div>
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleForceClose}
+              disabled={loading || !forceCloseReason.trim()}
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
+              <span>Tutup Paksa Sekarang</span>
+            </button>
+          </>
+        }
+      >
+        {errorMessage && (
+          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <span>{errorMessage}</span>
           </div>
+        )}
+
+        <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
+          ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
         </div>
-      )}
+
+        <div className="space-y-1">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+            Alasan Penutupan Paksa <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            rows={3}
+            value={forceCloseReason}
+            onChange={(e) => setForceCloseReason(e.target.value)}
+            placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
+            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            autoFocus
+          />
+        </div>
+      </CaseWorkflowModal>
 
       {/* ── Mobile Sticky Action Bar ─────────────────────────────────────── */}
       {/* Rendered here — inside CaseWorkflowActionPanel — so it shares the   */}

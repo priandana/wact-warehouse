@@ -34,9 +34,10 @@ interface AppShellProviderProps {
   children: React.ReactNode;
   warehouseAccess: UserWarehouseAccess[];
   userName: string;
+  isSuperAdmin?: boolean;
 }
 
-export function AppShellProvider({ children, warehouseAccess, userName }: AppShellProviderProps) {
+export function AppShellProvider({ children, warehouseAccess, userName, isSuperAdmin }: AppShellProviderProps) {
   const { activeWarehouse, activeWarehouseId, availableWarehouses, switchWarehouse } =
     useWarehouseContext(warehouseAccess);
 
@@ -60,6 +61,8 @@ export function AppShellProvider({ children, warehouseAccess, userName }: AppShe
         warehouseCode={activeWarehouse?.warehouseCode}
         userName={userName}
         userRole={activeWarehouse?.roles[0]}
+        userRoles={activeWarehouse?.roles || []}
+        isSuperAdmin={isSuperAdmin}
       >
         {children}
       </AppShell>

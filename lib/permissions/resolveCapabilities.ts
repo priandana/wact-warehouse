@@ -5,7 +5,7 @@
 
 import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase/server';
-import { type Capability } from './capabilities';
+import { Capability } from './capabilities';
 import { roleCapabilities } from './roleCapabilities';
 
 export const resolveCapabilities = cache(async function resolveCapabilities(
@@ -27,7 +27,7 @@ export const resolveCapabilities = cache(async function resolveCapabilities(
   }
 
   if (profileData.is_super_admin) {
-    return new Set(roleCapabilities.admin);
+    return new Set(Object.values(Capability) as Capability[]);
   }
 
   // Fetch all active role names for user in this warehouse
