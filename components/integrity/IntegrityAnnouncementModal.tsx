@@ -1,18 +1,22 @@
 // components/integrity/IntegrityAnnouncementModal.tsx
 // Premium Auto-Open Public Announcement Modal for /integrity/report
-// Features: session-based single auto-open per version, Light/Dark styling, focus trap, and privacy reassurance.
+// Features: Restrained enterprise motion, staggered reveal, privacy reassurance pillars, and Light/Dark polish.
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
-  Info,
-  AlertTriangle,
-  AlertCircle,
-  X,
-  ShieldCheck,
-  ArrowRight,
   Shield,
+  ShieldAlert,
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  X,
+  Lock,
+  UserX,
+  Camera,
+  ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { PublicAnnouncementDisplay, IntegrityAnnouncementType } from '@/lib/integrity/types';
@@ -27,41 +31,47 @@ interface IntegrityAnnouncementModalProps {
 const TYPE_CONFIG: Record<
   IntegrityAnnouncementType,
   {
-    icon: typeof Info;
-    headerBg: string;
-    iconBg: string;
-    iconColor: string;
+    icon: typeof Shield;
     badgeLabel: string;
     badgeClass: string;
-    accentBorder: string;
+    heroGlowClass: string;
+    iconBgClass: string;
+    iconColorClass: string;
+    borderAccentClass: string;
   }
 > = {
   info: {
-    icon: Info,
-    headerBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-    iconBg: 'bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400',
-    iconColor: 'text-blue-600 dark:text-blue-400',
+    icon: Shield,
     badgeLabel: 'Informasi Resmi',
-    badgeClass: 'bg-blue-100 dark:bg-blue-900/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700/60',
-    accentBorder: 'border-blue-500/30',
+    badgeClass:
+      'bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border-blue-200/80 dark:border-blue-800/60',
+    heroGlowClass: 'from-blue-500/10 via-indigo-500/5 to-transparent',
+    iconBgClass:
+      'bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200/90 dark:border-blue-800/80 shadow-blue-500/10',
+    iconColorClass: 'text-blue-600 dark:text-blue-400',
+    borderAccentClass: 'border-blue-500/20 dark:border-blue-500/30',
   },
   important: {
     icon: AlertCircle,
-    headerBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    iconBg: 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400',
-    iconColor: 'text-amber-600 dark:text-amber-400',
     badgeLabel: 'Pemberitahuan Penting',
-    badgeClass: 'bg-amber-100 dark:bg-amber-900/80 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700/60',
-    accentBorder: 'border-amber-500/30',
+    badgeClass:
+      'bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60',
+    heroGlowClass: 'from-amber-500/10 via-orange-500/5 to-transparent',
+    iconBgClass:
+      'bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border-amber-200/90 dark:border-amber-800/80 shadow-amber-500/10',
+    iconColorClass: 'text-amber-600 dark:text-amber-400',
+    borderAccentClass: 'border-amber-500/20 dark:border-amber-500/30',
   },
   warning: {
-    icon: AlertTriangle,
-    headerBg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-    iconBg: 'bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400',
-    iconColor: 'text-rose-600 dark:text-rose-400',
+    icon: ShieldAlert,
     badgeLabel: 'Peringatan Integritas',
-    badgeClass: 'bg-rose-100 dark:bg-rose-900/80 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-700/60',
-    accentBorder: 'border-rose-500/30',
+    badgeClass:
+      'bg-rose-50 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60',
+    heroGlowClass: 'from-rose-500/10 via-pink-500/5 to-transparent',
+    iconBgClass:
+      'bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border-rose-200/90 dark:border-rose-800/80 shadow-rose-500/10',
+    iconColorClass: 'text-rose-600 dark:text-rose-400',
+    borderAccentClass: 'border-rose-500/20 dark:border-rose-500/30',
   },
 };
 
@@ -71,25 +81,52 @@ export function IntegrityAnnouncementModal({
   onClose,
   onOpenTrustModal,
 }: IntegrityAnnouncementModalProps) {
+  const [mounted, setMounted] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const primaryButtonRef = useRef<HTMLButtonElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
-  // Focus trap & Escape key listener
   useEffect(() => {
-    if (!isOpen) return;
+    if (isOpen) {
+      setMounted(true);
+      setIsClosing(false);
+      previousActiveElement.current = document.activeElement as HTMLElement | null;
 
-    previousActiveElement.current = document.activeElement as HTMLElement | null;
+      const timer = setTimeout(() => {
+        primaryButtonRef.current?.focus();
+      }, 80);
 
-    // Focus primary button when modal opens
-    const timer = setTimeout(() => {
-      primaryButtonRef.current?.focus();
-    }, 50);
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = '';
+      };
+    } else {
+      setMounted(false);
+    }
+  }, [isOpen]);
+
+  const handleGracefulClose = () => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+      setMounted(false);
+      previousActiveElement.current?.focus();
+    }, 180);
+  };
+
+  // Keyboard accessibility (Escape + Focus Trap)
+  useEffect(() => {
+    if (!isOpen || !mounted) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        onClose();
+        handleGracefulClose();
         return;
       }
 
@@ -117,81 +154,93 @@ export function IntegrityAnnouncementModal({
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, mounted, isClosing]);
 
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-      previousActiveElement.current?.focus();
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen || !announcement) return null;
+  if (!isOpen && !mounted) return null;
+  if (!announcement) return null;
 
   const typeConfig = TYPE_CONFIG[announcement.type] || TYPE_CONFIG.info;
   const IconComp = typeConfig.icon;
 
   const handleTrustModalClick = () => {
-    onClose();
+    handleGracefulClose();
     if (onOpenTrustModal) {
       setTimeout(() => {
         onOpenTrustModal();
-      }, 100);
+      }, 190);
     }
   };
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3.5 sm:p-4 md:p-6 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="announcement-modal-title"
     >
-      {/* Backdrop */}
+      {/* ── Backdrop with restrained blur and smooth opacity ── */}
       <div
-        className="fixed inset-0 bg-slate-950/75 backdrop-blur-md transition-opacity animate-in fade-in duration-200"
-        onClick={onClose}
+        className={cn(
+          'fixed inset-0 bg-slate-950/70 backdrop-blur-[2px] transition-opacity duration-200 ease-out motion-reduce:transition-none',
+          isClosing ? 'opacity-0' : 'opacity-100'
+        )}
+        onClick={handleGracefulClose}
         aria-hidden="true"
       />
 
-      {/* Modal Container */}
+      {/* ── Modal Dialog Container with Enterprise Motion ── */}
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full max-w-lg bg-white dark:bg-slate-900 border rounded-3xl shadow-2xl overflow-hidden z-10 my-auto flex flex-col max-h-[90vh] transition-all animate-in zoom-in-95 duration-200',
-          'border-slate-200/90 dark:border-slate-800'
+          'relative w-full max-w-lg bg-white dark:bg-slate-900 border rounded-3xl shadow-2xl overflow-hidden z-10 my-auto flex flex-col max-h-[88vh] transition-all',
+          'border-slate-200/90 dark:border-slate-800/90',
+          'motion-reduce:transition-none motion-reduce:transform-none',
+          isClosing
+            ? 'duration-180 ease-in opacity-0 scale-[0.96] translate-y-2'
+            : 'duration-260 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 scale-100 translate-y-0'
         )}
       >
-        {/* Top Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
+        {/* Subtle Top Gradient Glow */}
+        <div
+          className={cn(
+            'absolute top-0 inset-x-0 h-32 bg-gradient-to-b pointer-events-none opacity-80',
+            typeConfig.heroGlowClass
+          )}
+        />
+
+        {/* ── Top Header Section (Stagger 1) ── */}
+        <div className="relative flex items-center justify-between p-5 sm:p-6 pb-3 border-b border-slate-100 dark:border-slate-800/80 shrink-0">
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                'w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs',
-                typeConfig.iconBg
+                'w-10 h-10 rounded-2xl border flex items-center justify-center shrink-0 shadow-xs transition-transform duration-200',
+                typeConfig.iconBgClass
               )}
             >
               <IconComp className="w-5 h-5" />
             </div>
+
             <div>
-              <span
-                className={cn(
-                  'text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md border inline-block mb-0.5',
-                  typeConfig.badgeClass
-                )}
-              >
-                {typeConfig.badgeLabel}
-              </span>
-              <h2 className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-                Pengumuman Saluran Integritas
-              </h2>
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md border inline-block',
+                    typeConfig.badgeClass
+                  )}
+                >
+                  {typeConfig.badgeLabel}
+                </span>
+              </div>
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wide uppercase mt-0.5">
+                Pengumuman Integritas
+              </p>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleGracefulClose}
             aria-label="Tutup Pengumuman"
             className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
@@ -199,48 +248,99 @@ export function IntegrityAnnouncementModal({
           </button>
         </div>
 
-        {/* Scrollable Content Body */}
-        <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
-          {/* Announcement Title */}
-          <h3
-            id="announcement-modal-title"
-            className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white"
-          >
-            {announcement.title}
-          </h3>
+        {/* ── Scrollable Content Area (Staggered 2, 3, 4) ── */}
+        <div className="relative p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
+          {/* Stagger 2: Title */}
+          <div className="space-y-1">
+            <h3
+              id="announcement-modal-title"
+              className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-snug"
+            >
+              {announcement.title}
+            </h3>
+          </div>
 
-          {/* Announcement Body */}
-          <div className="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+          {/* Stagger 3: Announcement Body */}
+          <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/90 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
             {announcement.body}
           </div>
 
-          {/* Privacy Reassurance Badge */}
-          <div className="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-start gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-            <p className="text-[11.5px] leading-relaxed text-emerald-950 dark:text-emerald-200 font-medium">
-              Identitas Anda tidak dicatat oleh sistem WACT dan tidak ditampilkan kepada investigator.
-            </p>
+          {/* Stagger 4: Compact 3-Fact Privacy Reassurance Block */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100/90 dark:border-blue-900/40 space-y-2.5">
+            <div className="text-[10px] font-black uppercase tracking-wider text-blue-900 dark:text-blue-300 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+              <span>Jaminan Privasi Sistem WACT</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2 text-xs">
+              <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
+                <div className="w-5 h-5 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <Lock className="w-3 h-3" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-bold text-slate-900 dark:text-white">Identitas Anda tidak disimpan: </span>
+                  <span className="text-[11.5px] text-slate-600 dark:text-slate-400">
+                    Sistem WACT tidak mencatat nama, akun, IP, atau user-agent.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
+                <div className="w-5 h-5 rounded-lg bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <UserX className="w-3 h-3" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-bold text-slate-900 dark:text-white">Investigator tidak melihat pelapor: </span>
+                  <span className="text-[11.5px] text-slate-600 dark:text-slate-400">
+                    Laporan diperiksa secara independen tanpa data pribadi pengirim.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 text-slate-700 dark:text-slate-300">
+                <div className="w-5 h-5 rounded-lg bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <Camera className="w-3 h-3" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-bold text-slate-900 dark:text-white">Metadata foto dibersihkan: </span>
+                  <span className="text-[11.5px] text-slate-600 dark:text-slate-400">
+                    Data lokasi GPS dan EXIF kamera otomatis dibersihkan sebelum disimpan.
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons Footer */}
-        <div className="p-5 sm:p-6 pt-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-2.5 shrink-0">
-          {/* Primary CTA */}
+        {/* ── Action Buttons Footer (Stagger 5) ── */}
+        <div className="p-5 sm:p-6 pt-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/60 flex flex-col gap-2.5 shrink-0">
+          {/* Primary CTA Button */}
           <button
             ref={primaryButtonRef}
             type="button"
-            onClick={onClose}
-            className="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[44px]"
+            onClick={handleGracefulClose}
+            className={cn(
+              'w-full py-3.5 px-5 rounded-2xl font-black text-xs sm:text-sm text-white shadow-md shadow-blue-500/20',
+              'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500',
+              'hover:shadow-lg hover:shadow-blue-500/25 active:scale-[0.98] transition-all',
+              'flex items-center justify-center gap-2 cursor-pointer min-h-[44px]',
+              'motion-reduce:transition-none motion-reduce:transform-none'
+            )}
           >
             <span>Saya Mengerti, Lanjut Melapor</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          {/* Secondary Action */}
+          {/* Secondary Action Link */}
           <button
             type="button"
             onClick={handleTrustModalClick}
-            className="w-full py-2 px-3 rounded-xl text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer min-h-[38px]"
+            className={cn(
+              'w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-colors',
+              'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400',
+              'hover:bg-slate-100 dark:hover:bg-slate-800/60',
+              'flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px]'
+            )}
           >
             <Shield className="w-3.5 h-3.5" />
             <span>Lihat bagaimana anonimitas bekerja</span>
