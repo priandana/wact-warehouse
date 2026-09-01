@@ -40,6 +40,7 @@ import {
   ShieldCheck,
   Clock,
   HelpCircle,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -55,6 +56,20 @@ import { compressImage } from '@/lib/supabase/storage';
 import { IntegrityTrustModal } from '@/components/integrity/IntegrityTrustModal';
 import { IntegrityAnnouncementBanner } from '@/components/integrity/IntegrityAnnouncementBanner';
 import { IntegrityAnnouncementModal } from '@/components/integrity/IntegrityAnnouncementModal';
+
+function formatIndonesianDate(isoDate: string): string {
+  if (!isoDate) return '';
+  const parts = isoDate.split('-');
+  if (parts.length !== 3) return isoDate;
+  const [year, month, day] = parts;
+  const months = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  const monthIdx = parseInt(month, 10) - 1;
+  const monthName = months[monthIdx] || month;
+  return `${parseInt(day, 10)} ${monthName} ${year}`;
+}
 
 interface WarehouseOption {
   id: string;
@@ -711,32 +726,94 @@ export default function PublicIntegrityReportPage() {
             <span>3. Kronologi & Detail Kejadian</span>
           </label>
 
-          {/* Row 1: Tanggal & Waktu Kejadian (1-col on mobile, 2-col on desktop) */}
+          {/* Row 1: Tanggal & Waktu Kejadian (Custom WACT visual shell with native picker overlay) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full box-border">
+            {/* Tanggal Kejadian */}
             <div className="space-y-1.5 w-full min-w-0 max-w-full box-border">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Tanggal Kejadian (Opsional)</span>
               </label>
-              <input
-                type="date"
-                value={incidentDate}
-                onChange={(e) => handleDateChange(e.target.value)}
-                className="integrity-date-input block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-              />
+
+              <div className="relative w-full min-w-0 max-w-full">
+                {/* Visible WACT Field Shell */}
+                <div className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors">
+                  <span className={cn('truncate', incidentDate ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
+                    {incidentDate ? formatIndonesianDate(incidentDate) : 'Pilih tanggal'}
+                  </span>
+
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    {incidentDate && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDateChange('');
+                        }}
+                        className="relative z-20 p-1 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
+                        title="Hapus tanggal"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <Calendar className="w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Invisible native interaction target covering the full button */}
+                <input
+                  type="date"
+                  value={incidentDate}
+                  onChange={(e) => handleDateChange(e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  aria-label="Tanggal Kejadian"
+                />
+              </div>
             </div>
 
+            {/* Waktu Kejadian */}
             <div className="space-y-1.5 w-full min-w-0 max-w-full box-border">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Waktu Kejadian (Opsional)</span>
               </label>
-              <input
-                type="time"
-                value={incidentTime}
-                onChange={(e) => handleTimeChange(e.target.value)}
-                className="integrity-date-input block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-              />
+
+              <div className="relative w-full min-w-0 max-w-full">
+                {/* Visible WACT Field Shell */}
+                <div className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors">
+                  <span className={cn('truncate', incidentTime ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
+                    {incidentTime ? `${incidentTime} WIB` : 'Pilih waktu'}
+                  </span>
+
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    {incidentTime && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleTimeChange('');
+                        }}
+                        className="relative z-20 p-1 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
+                        title="Hapus waktu"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <Clock className="w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Invisible native interaction target covering the full button */}
+                <input
+                  type="time"
+                  value={incidentTime}
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  aria-label="Waktu Kejadian"
+                />
+              </div>
             </div>
           </div>
 
