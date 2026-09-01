@@ -149,6 +149,7 @@ export default async function IntegrityReportDetailPage({ params }: Props) {
 
   const messages: IntegrityMessage[] = (rawMessages || []).map((m) => {
     const senderObj = Array.isArray(m.sender) ? m.sender[0] : m.sender;
+    const msgEvidences = evidences.filter((e) => e.message_id === m.id);
     return {
       id: m.id,
       report_id: m.report_id,
@@ -157,6 +158,7 @@ export default async function IntegrityReportDetailPage({ params }: Props) {
       sender_name: senderObj?.full_name || null,
       message: m.message,
       created_at: m.created_at,
+      evidences: msgEvidences,
     };
   });
 

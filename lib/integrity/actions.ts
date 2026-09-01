@@ -668,7 +668,10 @@ export async function assignInvestigator(
 export async function sendInvestigatorMessage(
   reportId: string,
   warehouseId: string,
-  messageText: string
+  messageText: string,
+  photoBase64?: string | null,
+  photoMimeType?: string | null,
+  photoCaption?: string | null
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const authCheck = await requireInvestigatorCapability(warehouseId, Capability.INTEGRITY_MESSAGE);
@@ -682,17 +685,54 @@ export async function sendInvestigatorMessage(
 
     const adminClient = createAdminClient();
 
-    const { error: insertErr } = await adminClient
+    const { data: insertedMsg, error: insertErr } = await adminClient
       .from('integrity_messages')
       .insert({
         report_id: reportId,
         sender_type: 'investigator',
         sender_id: authCheck.userId,
         message: messageText.trim(),
-      });
+      })
+      .select('id')
+      .single();
 
-    if (insertErr) {
+    if (insertErr || !insertedMsg) {
       return { success: false, error: 'Gagal mengirim pesan ke pelapor.' };
+    }
+
+    // Handle optional investigator photo attachment linked directly to this message
+    if (photoBase64 && photoBase64.trim()) {
+      try {
+        const rawBuffer = Buffer.from(photoBase64, 'base64');
+        const { sanitizedBuffer, contentType, extension } = sanitizeServerImage(
+          rawBuffer,
+          photoMimeType || 'image/jpeg'
+        );
+        const randomId = crypto.randomUUID();
+        const storagePath = `${warehouseId}/${reportId}/${randomId}.${extension}`;
+
+        const { error: uploadErr } = await adminClient.storage
+          .from('integrity-evidences')
+          .upload(storagePath, sanitizedBuffer, {
+            contentType,
+            upsert: false,
+          });
+
+        if (!uploadErr) {
+          await adminClient.from('integrity_evidences').insert({
+            report_id: reportId,
+            message_id: insertedMsg.id,
+            storage_path: storagePath,
+            file_name: `bukti-pesan-investigator.${extension}`,
+            file_size: sanitizedBuffer.length,
+            mime_type: contentType,
+            source_type: 'investigator',
+            caption: photoCaption?.trim() || 'Foto lampiran dari tim investigasi',
+          });
+        }
+      } catch {
+        // ignore photo upload catch
+      }
     }
 
     await adminClient.from('integrity_activities').insert({
@@ -700,6 +740,7 @@ export async function sendInvestigatorMessage(
       actor_type: 'investigator',
       actor_id: authCheck.userId,
       action: 'investigator_message_sent',
+      metadata: { has_photo: Boolean(photoBase64) },
     });
 
     revalidatePath(`/integrity/${reportId}`);
