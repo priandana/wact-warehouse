@@ -54,6 +54,7 @@ import {
 import { compressImage } from '@/lib/supabase/storage';
 import { IntegrityTrustModal } from '@/components/integrity/IntegrityTrustModal';
 import { IntegrityAnnouncementBanner } from '@/components/integrity/IntegrityAnnouncementBanner';
+import { IntegrityAnnouncementModal } from '@/components/integrity/IntegrityAnnouncementModal';
 
 interface WarehouseOption {
   id: string;
@@ -131,8 +132,9 @@ export default function PublicIntegrityReportPage() {
   const [estimatedLossStr, setEstimatedLossStr] = useState<string>('');
   const [involvedParty, setInvolvedParty] = useState<string>('');
 
-  // Announcement state
+  // Announcement state & Auto-Open Modal state
   const [announcement, setAnnouncement] = useState<PublicAnnouncementDisplay | null>(null);
+  const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
 
   // Trust Modal state
   const [isTrustModalOpen, setIsTrustModalOpen] = useState(false);
@@ -154,6 +156,20 @@ export default function PublicIntegrityReportPage() {
   const [showSecret, setShowSecret] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
+
+  const handleCloseAnnouncementModal = () => {
+    setIsAnnouncementModalOpen(false);
+    if (announcement) {
+      const storageKey = `wact_integrity_announcement_seen_${announcement.id || announcement.title}_${announcement.updated_at || ''}`;
+      try {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(storageKey, 'true');
+        }
+      } catch {
+        // fail gracefully if sessionStorage is restricted
+      }
+    }
+  };
 
   // Load active warehouses & announcements on mount
   useEffect(() => {
@@ -178,6 +194,16 @@ export default function PublicIntegrityReportPage() {
         const ann = await getPublicIntegrityAnnouncement('report');
         if (ann) {
           setAnnouncement(ann);
+          // Auto-open check once per session per announcement version
+          const storageKey = `wact_integrity_announcement_seen_${ann.id || ann.title}_${ann.updated_at || ''}`;
+          try {
+            const seen = typeof window !== 'undefined' ? sessionStorage.getItem(storageKey) : null;
+            if (!seen) {
+              setIsAnnouncementModalOpen(true);
+            }
+          } catch {
+            setIsAnnouncementModalOpen(true);
+          }
         }
       } catch {
         // fallback
@@ -413,6 +439,14 @@ export default function PublicIntegrityReportPage() {
   // ════════════════════════════════════════════════════════════════════════════
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+      {/* Auto-Open Announcement Modal (First visit in session per announcement version) */}
+      <IntegrityAnnouncementModal
+        announcement={announcement}
+        isOpen={isAnnouncementModalOpen}
+        onClose={handleCloseAnnouncementModal}
+        onOpenTrustModal={() => setIsTrustModalOpen(true)}
+      />
+
       {/* Trust Explainer Modal */}
       <IntegrityTrustModal
         isOpen={isTrustModalOpen}
