@@ -712,8 +712,8 @@ export default function PublicIntegrityReportPage() {
           </label>
 
           {/* Row 1: Tanggal & Waktu Kejadian (1-col on mobile, 2-col on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full">
-            <div className="space-y-1.5 w-full min-w-0 max-w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full box-border">
+            <div className="space-y-1.5 w-full min-w-0 max-w-full box-border">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Tanggal Kejadian (Opsional)</span>
@@ -722,11 +722,12 @@ export default function PublicIntegrityReportPage() {
                 type="date"
                 value={incidentDate}
                 onChange={(e) => handleDateChange(e.target.value)}
+                style={{ WebkitAppearance: 'none', appearance: 'none', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}
                 className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               />
             </div>
 
-            <div className="space-y-1.5 w-full min-w-0 max-w-full">
+            <div className="space-y-1.5 w-full min-w-0 max-w-full box-border">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Waktu Kejadian (Opsional)</span>
@@ -735,6 +736,7 @@ export default function PublicIntegrityReportPage() {
                 type="time"
                 value={incidentTime}
                 onChange={(e) => handleTimeChange(e.target.value)}
+                style={{ WebkitAppearance: 'none', appearance: 'none', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}
                 className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               />
             </div>
