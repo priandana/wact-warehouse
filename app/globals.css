@@ -240,6 +240,24 @@ body {
     will-change: transform, opacity;
   }
 
+  @keyframes indeterminate-bar {
+    0% {
+      transform: translateX(-100%) scaleX(0.2);
+    }
+    50% {
+      transform: translateX(0%) scaleX(0.7);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.2);
+    }
+  }
+
+  .animate-indeterminate-bar {
+    animation: indeterminate-bar 1.2s infinite ease-in-out;
+    transform-origin: 0% 50%;
+    width: 100%;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-ambient-glow,
     .animate-beam-flow,
@@ -247,7 +265,8 @@ body {
     .animate-modal-backdrop,
     .animate-modal-backdrop-out,
     .animate-modal-dialog,
-    .animate-modal-dialog-out {
+    .animate-modal-dialog-out,
+    .animate-indeterminate-bar {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;

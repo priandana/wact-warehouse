@@ -1,6 +1,7 @@
 'use client';
 // components/shared/layout/AppShell.tsx
 // Responsive App Shell — Mobile (Integrated Top Header + Bottom Nav) & Desktop (Sidebar + Topbar)
+// Smooth content cross-fade transition and restrained top progress indicator during warehouse switching.
 
 import { useState, useEffect, useCallback } from 'react';
 import { useIsDesktop } from '@/lib/hooks/useMediaQuery';
@@ -26,6 +27,7 @@ interface AppShellProps {
   userRole?: string;
   userRoles?: string[];
   isSuperAdmin?: boolean;
+  isSwitchingWarehouse?: boolean;
 }
 
 export function AppShell({
@@ -36,6 +38,7 @@ export function AppShell({
   userRole,
   userRoles,
   isSuperAdmin,
+  isSwitchingWarehouse,
 }: AppShellProps) {
   const isDesktop = useIsDesktop();
   const pathname = usePathname();
@@ -140,7 +143,14 @@ export function AppShell({
         />
         <div className="flex-1 flex flex-col min-w-0">
           {/* Desktop Clean Topbar */}
-          <header className="h-16 px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-20 flex items-center justify-between">
+          <header className="h-16 px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-20 flex items-center justify-between relative">
+            {/* Indeterminate top indicator during warehouse switching */}
+            {isSwitchingWarehouse && (
+              <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-blue-100/50 overflow-hidden z-50 pointer-events-none">
+                <div className="h-full bg-blue-600 shadow-[0_0_8px_#2563eb] animate-indeterminate-bar" />
+              </div>
+            )}
+
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 WACT
@@ -180,8 +190,13 @@ export function AppShell({
             </div>
           </header>
 
-          {/* Main Content Viewport */}
-          <main className="flex-1 p-6 sm:p-8 overflow-y-auto max-w-7xl w-full mx-auto">
+          {/* Main Content Viewport — Smooth cross-fade transition without layout shift */}
+          <main
+            className={cn(
+              'flex-1 p-6 sm:p-8 overflow-y-auto max-w-7xl w-full mx-auto transition-opacity duration-200 ease-out',
+              isSwitchingWarehouse && 'opacity-45 pointer-events-none'
+            )}
+          >
             {children}
           </main>
         </div>
@@ -198,7 +213,14 @@ export function AppShell({
       <NavigationProgressBar />
 
       {/* Mobile Topbar */}
-      <header className="h-14 px-3 sm:px-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between">
+      <header className="h-14 px-3 sm:px-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between relative">
+        {/* Indeterminate top indicator during warehouse switching */}
+        {isSwitchingWarehouse && (
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-blue-100/50 overflow-hidden z-50 pointer-events-none">
+            <div className="h-full bg-blue-600 shadow-[0_0_6px_#2563eb] animate-indeterminate-bar" />
+          </div>
+        )}
+
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -247,8 +269,14 @@ export function AppShell({
         unreadCount={unreadCount}
       />
 
-      {/* Mobile Content Area */}
-      <main className={cn('flex-1', !isFocusFlow && 'pb-safe-nav')}>
+      {/* Mobile Content Area — Smooth cross-fade transition without layout shift */}
+      <main
+        className={cn(
+          'flex-1 transition-opacity duration-200 ease-out',
+          !isFocusFlow && 'pb-safe-nav',
+          isSwitchingWarehouse && 'opacity-45 pointer-events-none'
+        )}
+      >
         {children}
       </main>
 

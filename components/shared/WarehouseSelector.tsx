@@ -1,13 +1,13 @@
 'use client';
 // components/shared/WarehouseSelector.tsx
-// Seamless active warehouse pill with responsive presentation:
+// Seamless active warehouse pill with responsive presentation & smooth loading states:
 // - Desktop (>= 640px): Compact floating popover dropdown
 // - Mobile (< 640px): High-polish mobile bottom sheet via Viewport-Level React Portal
+// - Visual switching feedback with micro-spinner and 120ms item selection transition
 
-import { ChevronDown, Check, Building2, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ChevronDown, Check, Building2, X, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { useActiveWarehouse } from '@/components/shared/layout/AppShellProvider';
 import { formatMultiRoleString } from '@/lib/utils/rolePresentation';
@@ -17,13 +17,24 @@ interface WarehouseSelectorProps {
 }
 
 export function WarehouseSelector({ className }: WarehouseSelectorProps) {
-  const router = useRouter();
-  const { activeWarehouse, availableWarehouses, switchWarehouse } = useActiveWarehouse();
+  const {
+    activeWarehouse,
+    availableWarehouses,
+    switchWarehouse,
+    isSwitchingWarehouse,
+    targetWarehouseId,
+  } = useActiveWarehouse();
+
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [justSelectedId, setJustSelectedId] = useState<string | null>(null);
+  const selectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    return () => {
+      if (selectTimerRef.current) clearTimeout(selectTimerRef.current);
+    };
   }, []);
 
   // Prevent background scrolling on mobile (< 640px) and handle Escape key on all viewports
@@ -68,28 +79,59 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
   }
 
   const handleSelectWarehouse = (warehouseId: string) => {
+    // Invariant #4: No-op if selecting already active warehouse
     if (warehouseId === activeWarehouse.warehouseId) {
       setOpen(false);
       return;
     }
-    switchWarehouse(warehouseId);
-    setOpen(false);
-    router.refresh();
+
+    // Invariant #5: Prevent switch races
+    if (isSwitchingWarehouse) {
+      return;
+    }
+
+    // Snappy 120ms item selection feedback before closing dropdown / sheet
+    setJustSelectedId(warehouseId);
+
+    selectTimerRef.current = setTimeout(() => {
+      switchWarehouse(warehouseId);
+      setOpen(false);
+      setJustSelectedId(null);
+    }, 120);
   };
+
+  // Identify target warehouse being switched to
+  const displayWh = isSwitchingWarehouse && targetWarehouseId
+    ? availableWarehouses.find((w) => w.warehouseId === targetWarehouseId) || activeWarehouse
+    : activeWarehouse;
 
   return (
     <div className={cn('relative inline-block text-left', className)}>
       <button
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold border border-slate-200/80 shadow-2xs transition-all duration-150 active:scale-95 touch-target"
+        onClick={() => {
+          if (!isSwitchingWarehouse) {
+            setOpen(!open);
+          }
+        }}
+        disabled={isSwitchingWarehouse}
+        className={cn(
+          'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold border border-slate-200/80 shadow-2xs transition-all duration-150 active:scale-95 touch-target cursor-pointer',
+          isSwitchingWarehouse && 'opacity-85 pointer-events-none'
+        )}
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Pilih Gudang Operasional"
       >
-        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 ring-2 ring-emerald-100" />
-        <span className="font-extrabold text-slate-900 tracking-tight">{activeWarehouse.warehouseCode}</span>
+        {isSwitchingWarehouse ? (
+          <Loader2 className="w-3 h-3 animate-spin text-blue-600 shrink-0" />
+        ) : (
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 ring-2 ring-emerald-100" />
+        )}
+        <span className="font-extrabold text-slate-900 tracking-tight transition-opacity duration-150">
+          {displayWh.warehouseCode}
+        </span>
         <span className="text-[11px] text-slate-500 truncate max-w-[100px] hidden sm:inline">
-          {activeWarehouse.warehouseName}
+          {displayWh.warehouseName}
         </span>
         <ChevronDown className={cn('w-3.5 h-3.5 text-slate-400 transition-transform duration-200', open && 'rotate-180')} />
       </button>
@@ -111,20 +153,25 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
               <div className="py-1 max-h-60 overflow-y-auto space-y-1 no-scrollbar">
                 {availableWarehouses.map((wh) => {
                   const isSelected = wh.warehouseId === activeWarehouse.warehouseId;
+                  const isPendingThis = wh.warehouseId === justSelectedId || (isSwitchingWarehouse && wh.warehouseId === targetWarehouseId);
+
                   return (
                     <button
                       key={wh.warehouseId}
                       onClick={() => handleSelectWarehouse(wh.warehouseId)}
+                      disabled={isSwitchingWarehouse}
                       className={cn(
-                        'w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all',
-                        isSelected
+                        'w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-all duration-120 cursor-pointer',
+                        isPendingThis
+                          ? 'bg-blue-100/80 text-blue-950 font-bold ring-1 ring-blue-300'
+                          : isSelected
                           ? 'bg-blue-50/90 text-blue-900 font-semibold ring-1 ring-blue-200/60'
                           : 'hover:bg-slate-50 text-slate-700'
                       )}
                     >
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className={cn('text-xs font-bold', isSelected ? 'text-blue-700' : 'text-slate-900')}>
+                          <span className={cn('text-xs font-bold', isSelected || isPendingThis ? 'text-blue-700' : 'text-slate-900')}>
                             {wh.warehouseCode}
                           </span>
                           {wh.roles.length > 0 && (
@@ -135,7 +182,11 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                         </div>
                         <p className="text-xs text-slate-500 truncate">{wh.warehouseName}</p>
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-blue-600 shrink-0 stroke-[2.5]" />}
+                      {isPendingThis ? (
+                        <Loader2 className="w-4 h-4 text-blue-600 shrink-0 animate-spin" />
+                      ) : isSelected ? (
+                        <Check className="w-4 h-4 text-blue-600 shrink-0 stroke-[2.5]" />
+                      ) : null}
                     </button>
                   );
                 })}
@@ -179,7 +230,7 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                   </div>
                   <button
                     onClick={() => setOpen(false)}
-                    className="p-1.5 -mr-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition-all touch-target"
+                    className="p-1.5 -mr-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition-all touch-target cursor-pointer"
                     aria-label="Tutup dialog"
                   >
                     <X className="w-5 h-5" />
@@ -190,13 +241,18 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                 <div className="overflow-y-auto space-y-2.5 py-1.5 flex-1 no-scrollbar overscroll-contain">
                   {availableWarehouses.map((wh) => {
                     const isSelected = wh.warehouseId === activeWarehouse.warehouseId;
+                    const isPendingThis = wh.warehouseId === justSelectedId || (isSwitchingWarehouse && wh.warehouseId === targetWarehouseId);
+
                     return (
                       <button
                         key={wh.warehouseId}
                         onClick={() => handleSelectWarehouse(wh.warehouseId)}
+                        disabled={isSwitchingWarehouse}
                         className={cn(
-                          'w-full flex items-center justify-between p-4 rounded-2xl text-left transition-all active:scale-[0.98] touch-target',
-                          isSelected
+                          'w-full flex items-center justify-between p-4 rounded-2xl text-left transition-all duration-120 active:scale-[0.98] touch-target cursor-pointer',
+                          isPendingThis
+                            ? 'bg-blue-100/90 border-2 border-blue-600 text-blue-950 shadow-xs'
+                            : isSelected
                             ? 'bg-blue-50/90 border-2 border-blue-600 text-blue-950 shadow-xs'
                             : 'bg-slate-50 hover:bg-slate-100/90 border border-slate-200/70 text-slate-700'
                         )}
@@ -204,13 +260,13 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                         <div className="flex items-center gap-3.5 min-w-0 pr-2">
                           <div className={cn(
                             'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-sm tracking-tight',
-                            isSelected ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200/80 shadow-2xs'
+                            isSelected || isPendingThis ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200/80 shadow-2xs'
                           )}>
                             {wh.warehouseCode.replace(/^WH-/, '')}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={cn('text-sm font-bold tracking-tight', isSelected ? 'text-blue-950' : 'text-slate-900')}>
+                              <span className={cn('text-sm font-bold tracking-tight', isSelected || isPendingThis ? 'text-blue-950' : 'text-slate-900')}>
                                 {wh.warehouseCode}
                               </span>
                               {wh.roles.length > 0 && (
@@ -224,7 +280,9 @@ export function WarehouseSelector({ className }: WarehouseSelectorProps) {
                             </p>
                           </div>
                         </div>
-                        {isSelected ? (
+                        {isPendingThis ? (
+                          <Loader2 className="w-5 h-5 text-blue-600 shrink-0 animate-spin" />
+                        ) : isSelected ? (
                           <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
                             <Check className="w-4 h-4 stroke-[3]" />
                           </div>
