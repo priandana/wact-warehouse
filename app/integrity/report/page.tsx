@@ -438,7 +438,7 @@ export default function PublicIntegrityReportPage() {
   // MAIN FORM VIEW (PART A & B)
   // ════════════════════════════════════════════════════════════════════════════
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+    <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-fade-in min-w-0">
       {/* Auto-Open Announcement Modal (First visit in session per announcement version) */}
       <IntegrityAnnouncementModal
         announcement={announcement}
@@ -454,23 +454,23 @@ export default function PublicIntegrityReportPage() {
       />
 
       {/* Hero Header Section */}
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-2.5 sm:space-y-3 px-1 sm:px-0">
         <div className="flex flex-wrap items-center justify-center gap-2">
           {/* Primary Trust Trigger (Part A) */}
           <button
             type="button"
             onClick={() => setIsTrustModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all cursor-pointer group"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all cursor-pointer group min-h-[38px] max-w-full text-center"
           >
-            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-            <span>Lihat bagaimana anonimitas bekerja</span>
+            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
+            <span className="truncate">Lihat bagaimana anonimitas bekerja</span>
           </button>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl min-[390px]:text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight break-words">
           Laporkan Pelanggaran Integritas
         </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+        <p className="text-xs min-[390px]:text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
           Bantu wujudkan operasional gudang yang bersih, tertib, dan aman. Identitas Anda tidak dicatat oleh sistem WACT.
         </p>
 
@@ -479,7 +479,7 @@ export default function PublicIntegrityReportPage() {
           <button
             type="button"
             onClick={() => setIsTrustModalOpen(true)}
-            className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold hover:underline cursor-pointer"
+            className="inline-flex items-center justify-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold hover:underline cursor-pointer min-h-[36px]"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Pelajari perlindungan privasi</span>
@@ -488,11 +488,16 @@ export default function PublicIntegrityReportPage() {
       </div>
 
       {/* Dynamic Announcement Banner (Part G) */}
-      {announcement && <IntegrityAnnouncementBanner announcement={announcement} />}
+      {announcement && (
+        <IntegrityAnnouncementBanner
+          announcement={announcement}
+          onOpenModal={() => setIsAnnouncementModalOpen(true)}
+        />
+      )}
 
       {/* 3-Point Privacy & Compliance Pillars */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3.5 w-full">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Lock className="w-4 h-4" />
           </div>
@@ -504,7 +509,7 @@ export default function PublicIntegrityReportPage() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Camera className="w-4 h-4" />
           </div>
@@ -516,7 +521,7 @@ export default function PublicIntegrityReportPage() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-start gap-3">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-4 h-4" />
           </div>
@@ -532,13 +537,13 @@ export default function PublicIntegrityReportPage() {
       {/* Main Submission Form */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm dark:shadow-none space-y-7 transition-colors"
+        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 shadow-sm dark:shadow-none space-y-6 sm:space-y-7 transition-colors w-full min-w-0 max-w-full"
       >
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-3 animate-shake">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-3 animate-shake">
             <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-            <p className="font-medium">{errorMessage}</p>
+            <p className="font-medium break-words">{errorMessage}</p>
           </div>
         )}
 
@@ -546,13 +551,13 @@ export default function PublicIntegrityReportPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>1. Lokasi Gudang Terkait <span className="text-rose-500">*</span></span>
             </label>
-            <span className="text-[11px] text-slate-500">Pilih unit gudang kejadian</span>
+            <span className="text-[10.5px] sm:text-[11px] text-slate-500 truncate">Pilih unit</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 min-[375px]:grid-cols-2 gap-2.5 sm:gap-3 w-full">
             {warehouses.map((wh) => {
               const isSelected = selectedWarehouseId === wh.id;
               return (
@@ -561,16 +566,16 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedWarehouseId(wh.id)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer',
+                    'p-3.5 sm:p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer min-h-[56px]',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     <div
                       className={cn(
-                        'w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors',
+                        'w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors shrink-0',
                         isSelected
                           ? 'bg-blue-600 text-white shadow-xs'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
@@ -578,12 +583,12 @@ export default function PublicIntegrityReportPage() {
                     >
                       {wh.code}
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    <div className="min-w-0">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                         {wh.name}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3" />
+                      <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate">
+                        <MapPin className="w-3 h-3 shrink-0" />
                         <span>Unit Operasional {wh.code}</span>
                       </p>
                     </div>
@@ -591,7 +596,7 @@ export default function PublicIntegrityReportPage() {
 
                   <div
                     className={cn(
-                      'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors',
+                      'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ml-2',
                       isSelected
                         ? 'border-blue-600 bg-blue-600 text-white'
                         : 'border-slate-300 dark:border-slate-700'
@@ -609,13 +614,13 @@ export default function PublicIntegrityReportPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>2. Kategori Pelanggaran <span className="text-rose-500">*</span></span>
             </label>
-            <span className="text-[11px] text-slate-500">Pilih jenis indikasi</span>
+            <span className="text-[10.5px] sm:text-[11px] text-slate-500 truncate">Pilih jenis</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 min-[375px]:grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full">
             {(Object.keys(INTEGRITY_CATEGORIES) as IntegrityCategory[]).map((catKey) => {
               const meta = INTEGRITY_CATEGORIES[catKey];
               const uiMeta = CATEGORY_UI_META[catKey];
@@ -628,21 +633,21 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedCategory(catKey)}
                   className={cn(
-                    'p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[105px] cursor-pointer',
+                    'p-3 sm:p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[96px] sm:min-h-[105px] cursor-pointer',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <div className="flex items-start justify-between w-full mb-2">
+                  <div className="flex items-start justify-between w-full mb-1.5 sm:mb-2">
                     <div
                       className={cn(
-                        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
+                        'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
                         uiMeta.iconBg,
                         uiMeta.iconColor
                       )}
                     >
-                      <IconComp className="w-4.5 h-4.5" />
+                      <IconComp className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </div>
 
                     <div
@@ -658,10 +663,10 @@ export default function PublicIntegrityReportPage() {
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight break-words">
                       {meta.label}
                     </h4>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-[10px] sm:text-[10.5px] text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 line-clamp-2 leading-relaxed break-words">
                       {meta.description}
                     </p>
                   </div>

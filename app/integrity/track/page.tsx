@@ -181,19 +181,19 @@ function TrackContent() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+    <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-fade-in min-w-0">
       {/* ── 1. Header & Tracking Auth Form ────────────────────────────────── */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-xs">
-          <Search className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Pelacakan Status & Saluran Komunikasi Terenkripsi</span>
+      <div className="text-center space-y-2.5 sm:space-y-3 px-1 sm:px-0">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-xs max-w-full truncate">
+          <Search className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span className="truncate">Pelacakan Status & Saluran Komunikasi Terenkripsi</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl min-[390px]:text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight break-words">
           Cek Status Laporan Anonim
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+        <p className="text-xs min-[390px]:text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
           Pantau perkembangan penanganan kasus dan berkomunikasi langsung dengan tim investigasi tanpa mengungkap identitas.
         </p>
       </div>
@@ -207,17 +207,17 @@ function TrackContent() {
           e.preventDefault();
           handleSearch();
         }}
-        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-5 shadow-sm dark:shadow-none transition-colors"
+        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 space-y-4 sm:space-y-5 shadow-sm dark:shadow-none transition-colors w-full min-w-0 max-w-full"
       >
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-800 dark:text-rose-200 flex items-center gap-2.5 animate-shake">
-            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-800 dark:text-rose-200 flex items-start sm:items-center gap-2.5 animate-shake">
+            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5 sm:mt-0" />
+            <span className="break-words">{errorMessage}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+          <div className="space-y-1.5 min-w-0">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Nomor Laporan
             </label>
@@ -226,12 +226,12 @@ function TrackContent() {
               value={reportCode}
               onChange={(e) => setReportCode(e.target.value.toUpperCase())}
               placeholder="Contoh: INT-PDL-8K2M4X"
-              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-blue-600 dark:text-blue-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-blue-600 dark:text-blue-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               required
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 min-w-0">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Kode Akses Rahasia
             </label>
@@ -240,7 +240,7 @@ function TrackContent() {
               value={accessSecret}
               onChange={(e) => setAccessSecret(e.target.value)}
               placeholder="Contoh: WACT-INT-XXXX-XXXX-XXXX-XXXX"
-              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px]"
               required
             />
           </div>
@@ -249,7 +249,7 @@ function TrackContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.005]"
+          className="w-full py-3 sm:py-3.5 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
         >
           {loading ? (
             <>
@@ -267,7 +267,7 @@ function TrackContent() {
 
       {/* ── 2. Verified Report Details ────────────────────────────────────── */}
       {report && (
-        <div className="space-y-6 animate-fade-in">
+        <div className="space-y-5 sm:space-y-6 animate-fade-in w-full min-w-0">
           {/* Main Status Card */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm dark:shadow-none transition-colors">
             {/* Top Bar */}
