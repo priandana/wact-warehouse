@@ -25,7 +25,7 @@ import {
 } from './types';
 import { Capability } from '@/lib/permissions/capabilities';
 import { hasCapability } from '@/lib/permissions/resolveCapabilities';
-import { isAnnouncementActive } from './schedule';
+import { isAnnouncementActive, validateAndNormalizeSchedule } from './schedule';
 
 // ══════════════════════════════════════════════════════════════════════════════
 // 1. PUBLIC ANONYMOUS SUBMISSION (CREDENTIAL-FREE / ZERO IDENTITY LOGGING)
@@ -959,7 +959,7 @@ export interface SaveAnnouncementInput {
  */
 export async function saveIntegrityAnnouncement(
   input: SaveAnnouncementInput
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const authCheck = await requireSuperAdmin();
     if (!authCheck.authorized || !authCheck.userId) {
@@ -973,6 +973,11 @@ export async function saveIntegrityAnnouncement(
       return { success: false, error: 'Isi pengumuman minimal 10 karakter.' };
     }
 
+    const scheduleCheck = validateAndNormalizeSchedule(input.publishStart, input.publishEnd);
+    if (!scheduleCheck.success) {
+      return { success: false, error: scheduleCheck.error };
+    }
+
     const adminClient = createAdminClient();
 
     const payload = {
@@ -982,11 +987,13 @@ export async function saveIntegrityAnnouncement(
       is_active: input.isActive,
       show_on_report: input.showOnReport,
       show_on_track: input.showOnTrack,
-      publish_start: input.publishStart ? new Date(input.publishStart).toISOString() : null,
-      publish_end: input.publishEnd ? new Date(input.publishEnd).toISOString() : null,
+      publish_start: scheduleCheck.publish_start ?? null,
+      publish_end: scheduleCheck.publish_end ?? null,
       updated_by: authCheck.userId,
       updated_at: new Date().toISOString(),
     };
+
+    let savedId = input.id;
 
     if (input.id) {
       const { error: updateErr } = await adminClient
@@ -995,24 +1002,31 @@ export async function saveIntegrityAnnouncement(
         .eq('id', input.id);
 
       if (updateErr) {
-        return { success: false, error: 'Gagal memperbarui pengumuman.' };
+        console.error('[Integrity] Update announcement error:', updateErr);
+        return { success: false, error: 'Gagal memperbarui pengumuman ke database.' };
       }
     } else {
-      const { error: insertErr } = await adminClient
+      const { data: insertData, error: insertErr } = await adminClient
         .from('integrity_public_announcements')
-        .insert(payload);
+        .insert(payload)
+        .select('id')
+        .single();
 
       if (insertErr) {
-        return { success: false, error: 'Gagal membuat pengumuman baru.' };
+        console.error('[Integrity] Insert announcement error:', insertErr);
+        return { success: false, error: 'Gagal membuat pengumuman baru ke database.' };
       }
+
+      savedId = insertData?.id;
     }
 
     revalidatePath('/integrity/report');
     revalidatePath('/integrity/track');
     revalidatePath('/integrity/settings');
 
-    return { success: true };
-  } catch {
+    return { success: true, id: savedId };
+  } catch (err: any) {
+    console.error('[Integrity] Unexpected error in saveIntegrityAnnouncement:', err);
     return { success: false, error: 'Terjadi kendala saat menyimpan pengumuman.' };
   }
 }

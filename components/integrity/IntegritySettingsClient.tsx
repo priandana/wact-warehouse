@@ -119,17 +119,20 @@ export function IntegritySettingsClient({
     try {
       const res = await saveIntegrityAnnouncement({
         id: selectedAnnouncementId || undefined,
-        title,
-        body,
+        title: title.trim(),
+        body: body.trim(),
         type,
         isActive,
         showOnReport,
         showOnTrack,
-        publishStart: publishStart || null,
-        publishEnd: publishEnd || null,
+        publishStart: publishStart.trim() || null,
+        publishEnd: publishEnd.trim() || null,
       });
 
       if (res.success) {
+        if (res.id) {
+          setSelectedAnnouncementId(res.id);
+        }
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 4000);
       } else {
