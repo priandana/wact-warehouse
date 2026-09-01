@@ -722,8 +722,7 @@ export default function PublicIntegrityReportPage() {
                 type="date"
                 value={incidentDate}
                 onChange={(e) => handleDateChange(e.target.value)}
-                style={{ WebkitAppearance: 'none', appearance: 'none', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}
-                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                className="integrity-date-input block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               />
             </div>
 
@@ -736,8 +735,7 @@ export default function PublicIntegrityReportPage() {
                 type="time"
                 value={incidentTime}
                 onChange={(e) => handleTimeChange(e.target.value)}
-                style={{ WebkitAppearance: 'none', appearance: 'none', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}
-                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                className="integrity-date-input block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
               />
             </div>
           </div>
