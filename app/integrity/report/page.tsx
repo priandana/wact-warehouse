@@ -711,43 +711,37 @@ export default function PublicIntegrityReportPage() {
             <span>3. Kronologi & Detail Kejadian</span>
           </label>
 
-          {/* Incident Datetime & Estimated Loss */}
+          {/* Row 1: Tanggal & Waktu Kejadian (1-col on mobile, 2-col on desktop) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full">
-            {/* Date & Time Dual Inputs (Zero Intrinsic Width Overflow) */}
             <div className="space-y-1.5 w-full min-w-0 max-w-full">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>Waktu / Tanggal Kejadian (Opsional)</span>
+                <span>Tanggal Kejadian (Opsional)</span>
               </label>
-
-              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 w-full min-w-0 max-w-full">
-                <div className="space-y-1 min-w-0">
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">
-                    Tanggal
-                  </span>
-                  <input
-                    type="date"
-                    value={incidentDate}
-                    onChange={(e) => handleDateChange(e.target.value)}
-                    className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-                  />
-                </div>
-
-                <div className="space-y-1 min-w-0">
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">
-                    Jam
-                  </span>
-                  <input
-                    type="time"
-                    value={incidentTime}
-                    onChange={(e) => handleTimeChange(e.target.value)}
-                    className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-                  />
-                </div>
-              </div>
+              <input
+                type="date"
+                value={incidentDate}
+                onChange={(e) => handleDateChange(e.target.value)}
+                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+              />
             </div>
 
-            {/* Estimated Loss */}
+            <div className="space-y-1.5 w-full min-w-0 max-w-full">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>Waktu Kejadian (Opsional)</span>
+              </label>
+              <input
+                type="time"
+                value={incidentTime}
+                onChange={(e) => handleTimeChange(e.target.value)}
+                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Estimasi Kerugian & Pihak Terlibat (1-col on mobile, 2-col on desktop) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full">
             <div className="space-y-1.5 w-full min-w-0 max-w-full">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <DollarSign className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -762,28 +756,27 @@ export default function PublicIntegrityReportPage() {
                   placeholder="Contoh: 5.000.000"
                   value={estimatedLossStr}
                   onChange={(e) => setEstimatedLossStr(e.target.value)}
-                  className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                  className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
                 />
               </div>
             </div>
+
+            <div className="space-y-1.5 w-full min-w-0 max-w-full">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>Pihak Terkait / Terduga / Vendor Terlibat (Opsional)</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Contoh: Vendor Ekspedisi X, Driver Plat B 1234 XX, atau shift malam"
+                value={involvedParty}
+                onChange={(e) => setInvolvedParty(e.target.value)}
+                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+              />
+            </div>
           </div>
 
-          {/* Suspected / Involved Party */}
-          <div className="space-y-1.5 w-full min-w-0 max-w-full">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span>Pihak Terkait / Terduga / Vendor Terlibat (Opsional)</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Contoh: Vendor Ekspedisi X, Driver Plat B 1234 XX, atau shift malam"
-              value={involvedParty}
-              onChange={(e) => setInvolvedParty(e.target.value)}
-              className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
-            />
-          </div>
-
-          {/* Description Textarea */}
+          {/* Row 3: Description Textarea */}
           <div className="space-y-2 w-full min-w-0 max-w-full">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -806,7 +799,7 @@ export default function PublicIntegrityReportPage() {
               placeholder="Jelaskan apa yang terjadi, lokasi spesifik di gudang (rak/zona/docking), barang atau dokumen terkait, dan bagaimana modus kejadian tersebut berlangsung..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
+              className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
             />
 
             {/* Reporter Self-Identification Warning (Part E) */}
