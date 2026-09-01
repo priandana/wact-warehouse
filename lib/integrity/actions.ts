@@ -19,11 +19,13 @@ import {
   type IntegritySeverity,
   type IntegrityStatus,
   type PublicTrackedReport,
+  type PublicAnnouncementDisplay,
   INTEGRITY_CATEGORIES,
   INTEGRITY_STATUSES,
 } from './types';
 import { Capability } from '@/lib/permissions/capabilities';
 import { hasCapability } from '@/lib/permissions/resolveCapabilities';
+import { isAnnouncementActive } from './schedule';
 
 // ══════════════════════════════════════════════════════════════════════════════
 // 1. PUBLIC ANONYMOUS SUBMISSION (CREDENTIAL-FREE / ZERO IDENTITY LOGGING)
@@ -802,5 +804,247 @@ export async function uploadInvestigatorEvidence(
     return { success: true };
   } catch {
     return { success: false, error: 'Gagal mengunggah bukti.' };
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 4. PUBLIC ANNOUNCEMENTS & SUPER ADMIN SETTINGS ACTIONS
+// ══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch the currently active and published public announcement for a given page.
+ * Strictly public-safe contract: Returns sanitized PublicAnnouncementDTO ONLY.
+ * ABSOLUTELY ZERO updated_by, profile IDs, email, or internal audit metadata.
+ * Returns null when no active/scheduled announcement exists (respecting admin disable).
+ */
+export async function getPublicIntegrityAnnouncement(
+  page: 'report' | 'track'
+): Promise<PublicAnnouncementDisplay | null> {
+  // Runtime-validate page selector (fail closed on arbitrary inputs)
+  if (page !== 'report' && page !== 'track') {
+    return null;
+  }
+
+  try {
+    const adminClient = createAdminClient();
+    const columnToCheck = page === 'report' ? 'show_on_report' : 'show_on_track';
+
+    const { data, error } = await adminClient
+      .from('integrity_public_announcements')
+      .select('id, title, body, type, is_active, show_on_report, show_on_track, publish_start, publish_end, updated_at')
+      .eq('is_active', true)
+      .eq(columnToCheck, true)
+      .order('updated_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      // Fail quiet: No active announcements published
+      return null;
+    }
+
+    const now = new Date();
+    const activeMatch = data.find((item) => isAnnouncementActive(item, now));
+
+    if (!activeMatch) {
+      return null;
+    }
+
+    // STRICT SANITIZATION: Never return updated_by or editor identity
+    return {
+      id: activeMatch.id,
+      title: activeMatch.title,
+      body: activeMatch.body,
+      type: (activeMatch.type as any) || 'info',
+      show_on_report: activeMatch.show_on_report,
+      show_on_track: activeMatch.show_on_track,
+      publish_start: activeMatch.publish_start,
+      publish_end: activeMatch.publish_end,
+      updated_at: activeMatch.updated_at,
+    };
+  } catch {
+    // Fail quiet on runtime exception
+    return null;
+  }
+}
+
+/**
+ * Strict server-side authorization check for Super Admin operations:
+ * 1. Resolves authenticated session server-side from auth cookies.
+ * 2. Fetches user profile from database using createAdminClient().
+ * 3. Verifies canonical profile.is_super_admin === true (fail-closed).
+ * 4. Verifies canonical profile.is_active === true (fail-closed).
+ * Rejects non-Super Admin roles (Warehouse Admin, Investigator, Coordinator, anonymous).
+ */
+export async function requireSuperAdmin(): Promise<{ authorized: boolean; userId?: string; error?: string }> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { authorized: false, error: 'Sesi login tidak valid atau tidak ditemukan.' };
+  }
+
+  const adminClient = createAdminClient();
+  const { data: profile, error: profileError } = await adminClient
+    .from('profiles')
+    .select('id, is_super_admin, is_active')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { authorized: false, error: 'Profil pengguna tidak ditemukan.' };
+  }
+
+  // Fail closed: Exact boolean true required for active account status
+  if (profile.is_active !== true) {
+    return { authorized: false, error: 'Akun pengguna tidak aktif atau dinonaktifkan.' };
+  }
+
+  // Fail closed: Exact boolean true required for global super admin
+  if (profile.is_super_admin !== true) {
+    return {
+      authorized: false,
+      error: 'Akses ditolak: Hanya Global Super Admin yang dapat mengelola pengumuman dan pengaturan integritas.',
+    };
+  }
+
+  return { authorized: true, userId: user.id };
+}
+
+/**
+ * Fetch announcement management list for Super Admin settings
+ */
+export async function getIntegritySettingsAnnouncements(): Promise<{
+  success: boolean;
+  announcements?: any[];
+  error?: string;
+}> {
+  try {
+    const authCheck = await requireSuperAdmin();
+    if (!authCheck.authorized) {
+      return { success: false, error: authCheck.error };
+    }
+
+    const adminClient = createAdminClient();
+    const { data, error } = await adminClient
+      .from('integrity_public_announcements')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return { success: false, error: 'Gagal mengambil data pengumuman integritas.' };
+    }
+
+    return { success: true, announcements: data ?? [] };
+  } catch {
+    return { success: false, error: 'Gagal memuat pengaturan.' };
+  }
+}
+
+export interface SaveAnnouncementInput {
+  id?: string;
+  title: string;
+  body: string;
+  type: 'info' | 'important' | 'warning';
+  isActive: boolean;
+  showOnReport: boolean;
+  showOnTrack: boolean;
+  publishStart?: string | null;
+  publishEnd?: string | null;
+}
+
+/**
+ * Save or update public announcement (Strictly Super Admin only)
+ */
+export async function saveIntegrityAnnouncement(
+  input: SaveAnnouncementInput
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const authCheck = await requireSuperAdmin();
+    if (!authCheck.authorized || !authCheck.userId) {
+      return { success: false, error: authCheck.error };
+    }
+
+    if (!input.title || input.title.trim().length < 3) {
+      return { success: false, error: 'Judul pengumuman minimal 3 karakter.' };
+    }
+    if (!input.body || input.body.trim().length < 10) {
+      return { success: false, error: 'Isi pengumuman minimal 10 karakter.' };
+    }
+
+    const adminClient = createAdminClient();
+
+    const payload = {
+      title: input.title.trim(),
+      body: input.body.trim(),
+      type: input.type,
+      is_active: input.isActive,
+      show_on_report: input.showOnReport,
+      show_on_track: input.showOnTrack,
+      publish_start: input.publishStart ? new Date(input.publishStart).toISOString() : null,
+      publish_end: input.publishEnd ? new Date(input.publishEnd).toISOString() : null,
+      updated_by: authCheck.userId,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (input.id) {
+      const { error: updateErr } = await adminClient
+        .from('integrity_public_announcements')
+        .update(payload)
+        .eq('id', input.id);
+
+      if (updateErr) {
+        return { success: false, error: 'Gagal memperbarui pengumuman.' };
+      }
+    } else {
+      const { error: insertErr } = await adminClient
+        .from('integrity_public_announcements')
+        .insert(payload);
+
+      if (insertErr) {
+        return { success: false, error: 'Gagal membuat pengumuman baru.' };
+      }
+    }
+
+    revalidatePath('/integrity/report');
+    revalidatePath('/integrity/track');
+    revalidatePath('/integrity/settings');
+
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Terjadi kendala saat menyimpan pengumuman.' };
+  }
+}
+
+/**
+ * Delete public announcement (Strictly Super Admin only)
+ */
+export async function deleteIntegrityAnnouncement(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const authCheck = await requireSuperAdmin();
+    if (!authCheck.authorized || !authCheck.userId) {
+      return { success: false, error: authCheck.error };
+    }
+
+    const adminClient = createAdminClient();
+    const { error } = await adminClient
+      .from('integrity_public_announcements')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      return { success: false, error: 'Gagal menghapus pengumuman.' };
+    }
+
+    revalidatePath('/integrity/report');
+    revalidatePath('/integrity/track');
+    revalidatePath('/integrity/settings');
+
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Terjadi kendala saat menghapus pengumuman.' };
   }
 }

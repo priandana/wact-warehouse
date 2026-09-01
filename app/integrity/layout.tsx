@@ -44,7 +44,7 @@ export default function IntegrityPublicLayout({
       <div className="fixed inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-25 dark:opacity-60" />
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/80 shadow-xs transition-colors duration-150">
+      <header className="sticky top-0 z-20 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/80 shadow-xs transition-colors duration-150">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo & Integrity Brand */}
           <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ export default function IntegrityPublicLayout({
       </header>
 
       {/* Main Content Viewport */}
-      <main className="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 relative">
         {children}
       </main>
 

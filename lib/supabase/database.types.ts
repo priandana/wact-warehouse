@@ -1311,6 +1311,59 @@ export type Database = {
         Relationships: [
         ];
       };
+      integrity_public_announcements: {
+        Row: {
+          id: string;
+          title: string;
+          body: string;
+          type: string;
+          is_active: boolean;
+          show_on_report: boolean;
+          show_on_track: boolean;
+          publish_start: string | null;
+          publish_end: string | null;
+          updated_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          body: string;
+          type?: string;
+          is_active?: boolean;
+          show_on_report?: boolean;
+          show_on_track?: boolean;
+          publish_start?: string | null;
+          publish_end?: string | null;
+          updated_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          body?: string;
+          type?: string;
+          is_active?: boolean;
+          show_on_report?: boolean;
+          show_on_track?: boolean;
+          publish_start?: string | null;
+          publish_end?: string | null;
+          updated_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "integrity_public_announcements_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       integrity_reports: {
         Row: {
           id: string;

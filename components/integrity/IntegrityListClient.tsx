@@ -19,6 +19,8 @@ import {
   User,
   CheckCircle2,
   ExternalLink,
+  Settings,
+  Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import {
@@ -44,6 +46,7 @@ interface IntegrityListClientProps {
     critical: number;
     resolved: number;
   };
+  isSuperAdmin?: boolean;
 }
 
 export function IntegrityListClient({
@@ -51,6 +54,7 @@ export function IntegrityListClient({
   warehouseName,
   warehouseCode,
   counts,
+  isSuperAdmin,
 }: IntegrityListClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -95,34 +99,53 @@ export function IntegrityListClient({
   return (
     <div className="page-padding py-4 sm:py-5 max-w-6xl mx-auto space-y-6">
       {/* ── 1. Header Banner ──────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 text-white shadow-xl">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
-              <Shield className="w-4 h-4" />
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 text-white shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
+                <Shield className="w-4 h-4" />
+              </div>
+              <h1 className="text-lg sm:text-xl font-black tracking-tight text-white">
+                Integrity Investigation Center
+              </h1>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                {warehouseCode}
+              </span>
             </div>
-            <h1 className="text-lg sm:text-xl font-black tracking-tight text-white">
-              Integrity Investigation Center
-            </h1>
-            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">
-              {warehouseCode}
-            </span>
+            <p className="text-xs text-slate-400 font-medium">
+              Pusat penanganan dan investigasi laporan pelanggaran operasional di {warehouseName}.
+            </p>
           </div>
-          <p className="text-xs text-slate-400 font-medium">
-            Pusat penanganan dan investigasi laporan pelanggaran operasional di {warehouseName}.
-          </p>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/integrity/report"
+              target="_blank"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors flex items-center gap-1.5 min-h-[44px]"
+            >
+              <span>Portal Publik</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href="/integrity/report"
-            target="_blank"
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors flex items-center gap-1.5 touch-target"
-          >
-            <span>Portal Publik</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+        {/* Sub-Nav Switcher (If Super Admin) */}
+        {isSuperAdmin && (
+          <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+            <div className="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 shadow-sm min-h-[44px]">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Laporan Masuk</span>
+            </div>
+            <Link
+              href="/integrity/settings"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5 min-h-[44px]"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Pengaturan & Pengumuman</span>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* ── 2. KPI Metrics Bar ────────────────────────────────────────────── */}

@@ -39,14 +39,21 @@ import {
   MapPin,
   ShieldCheck,
   Clock,
+  HelpCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import {
   type IntegrityCategory,
+  type PublicAnnouncementDisplay,
   INTEGRITY_CATEGORIES,
 } from '@/lib/integrity/types';
-import { submitAnonymousReport } from '@/lib/integrity/actions';
+import {
+  submitAnonymousReport,
+  getPublicIntegrityAnnouncement,
+} from '@/lib/integrity/actions';
 import { compressImage } from '@/lib/supabase/storage';
+import { IntegrityTrustModal } from '@/components/integrity/IntegrityTrustModal';
+import { IntegrityAnnouncementBanner } from '@/components/integrity/IntegrityAnnouncementBanner';
 
 interface WarehouseOption {
   id: string;
@@ -124,6 +131,12 @@ export default function PublicIntegrityReportPage() {
   const [estimatedLossStr, setEstimatedLossStr] = useState<string>('');
   const [involvedParty, setInvolvedParty] = useState<string>('');
 
+  // Announcement state
+  const [announcement, setAnnouncement] = useState<PublicAnnouncementDisplay | null>(null);
+
+  // Trust Modal state
+  const [isTrustModalOpen, setIsTrustModalOpen] = useState(false);
+
   // Evidence photo state
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
@@ -142,9 +155,9 @@ export default function PublicIntegrityReportPage() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
 
-  // Load active warehouses on mount
+  // Load active warehouses & announcements on mount
   useEffect(() => {
-    async function loadWarehouses() {
+    async function loadInitialData() {
       try {
         const res = await fetch('/api/integrity/warehouses', {
           credentials: 'omit',
@@ -158,10 +171,19 @@ export default function PublicIntegrityReportPage() {
           }
         }
       } catch {
-        // fallback to default
+        // fallback
+      }
+
+      try {
+        const ann = await getPublicIntegrityAnnouncement('report');
+        if (ann) {
+          setAnnouncement(ann);
+        }
+      } catch {
+        // fallback
       }
     }
-    loadWarehouses();
+    loadInitialData();
   }, []);
 
   const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,7 +281,7 @@ export default function PublicIntegrityReportPage() {
   };
 
   // ════════════════════════════════════════════════════════════════════════════
-  // SUCCESS CONFIRMATION RECEIPT VIEW
+  // SUCCESS CONFIRMATION RECEIPT VIEW (PART F)
   // ════════════════════════════════════════════════════════════════════════════
   if (createdReportCode && createdAccessSecret) {
     return (
@@ -270,10 +292,10 @@ export default function PublicIntegrityReportPage() {
             <CheckCircle2 className="w-8 h-8" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Laporan Berhasil Terkirim
+            Laporan berhasil dikirim secara anonim.
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-            Laporan Anda telah tercatat secara aman dan anonim di sistem WACT.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            Tim investigator tidak menerima nama atau akun Anda. Simpan Nomor Laporan dan Kode Akses Rahasia untuk memantau perkembangan laporan.
           </p>
         </div>
 
@@ -307,7 +329,7 @@ export default function PublicIntegrityReportPage() {
               <button
                 type="button"
                 onClick={() => copyToClipboard(createdReportCode, 'code')}
-                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0"
+                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0 cursor-pointer"
                 title="Salin Nomor Laporan"
               >
                 {copiedCode ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
@@ -327,7 +349,7 @@ export default function PublicIntegrityReportPage() {
                 <button
                   type="button"
                   onClick={() => setShowSecret(!showSecret)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 focus:outline-none"
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 focus:outline-none cursor-pointer"
                   title={showSecret ? 'Sembunyikan' : 'Tampilkan'}
                 >
                   {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -336,7 +358,7 @@ export default function PublicIntegrityReportPage() {
               <button
                 type="button"
                 onClick={() => copyToClipboard(createdAccessSecret, 'secret')}
-                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0"
+                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0 cursor-pointer"
                 title="Salin Kunci Akses"
               >
                 {copiedSecret ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
@@ -376,7 +398,7 @@ export default function PublicIntegrityReportPage() {
                 setPhotoPreview(null);
                 setPhotoBase64(null);
               }}
-              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors cursor-pointer"
             >
               Buat Laporan Baru
             </button>
@@ -387,23 +409,52 @@ export default function PublicIntegrityReportPage() {
   }
 
   // ════════════════════════════════════════════════════════════════════════════
-  // MAIN FORM VIEW
+  // MAIN FORM VIEW (PART A & B)
   // ════════════════════════════════════════════════════════════════════════════
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+      {/* Trust Explainer Modal */}
+      <IntegrityTrustModal
+        isOpen={isTrustModalOpen}
+        onClose={() => setIsTrustModalOpen(false)}
+      />
+
       {/* Hero Header Section */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Saluran Pelaporan Terpercaya & Terenkripsi</span>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Primary Trust Trigger (Part A) */}
+          <button
+            type="button"
+            onClick={() => setIsTrustModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all cursor-pointer group"
+          >
+            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+            <span>Lihat bagaimana anonimitas bekerja</span>
+          </button>
         </div>
+
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Laporkan Pelanggaran Integritas
         </h1>
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
           Bantu wujudkan operasional gudang yang bersih, tertib, dan aman. Identitas Anda tidak dicatat oleh sistem WACT.
         </p>
+
+        {/* Secondary Smaller Trust Trigger (Part A) */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setIsTrustModalOpen(true)}
+            className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold hover:underline cursor-pointer"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>Pelajari perlindungan privasi</span>
+          </button>
+        </div>
       </div>
+
+      {/* Dynamic Announcement Banner (Part G) */}
+      {announcement && <IntegrityAnnouncementBanner announcement={announcement} />}
 
       {/* 3-Point Privacy & Compliance Pillars */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
@@ -476,7 +527,7 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedWarehouseId(wh.id)}
                   className={cn(
-                    'p-4 rounded-xl border text-left transition-all flex items-center justify-between group',
+                    'p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
@@ -543,7 +594,7 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedCategory(catKey)}
                   className={cn(
-                    'p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[105px]',
+                    'p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[105px] cursor-pointer',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
@@ -644,7 +695,7 @@ export default function PublicIntegrityReportPage() {
           </div>
 
           {/* Description Textarea */}
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Kronologi & Fakta Kejadian <span className="text-rose-500">*</span>
@@ -668,10 +719,14 @@ export default function PublicIntegrityReportPage() {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
             />
-            <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-              <span>Jangan menyertakan nama pribadi Anda sendiri jika ingin menjaga anonimitas mutlak.</span>
-            </p>
+
+            {/* Reporter Self-Identification Warning (Part E) */}
+            <div className="p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-[11.5px] text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Peringatan Anonimitas:</strong> Untuk tetap anonim, jangan menuliskan nama, nomor karyawan, nomor telepon, atau informasi pribadi Anda sendiri di dalam kronologi.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -733,7 +788,7 @@ export default function PublicIntegrityReportPage() {
               <button
                 type="button"
                 onClick={handleRemovePhoto}
-                className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors"
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-rose-600 transition-colors cursor-pointer"
                 title="Hapus foto"
               >
                 <XCircle className="w-4 h-4" />
@@ -745,7 +800,7 @@ export default function PublicIntegrityReportPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-blue-600 hover:underline font-medium"
+                  className="text-blue-600 hover:underline font-medium cursor-pointer"
                 >
                   Ganti Foto
                 </button>

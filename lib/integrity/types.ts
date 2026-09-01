@@ -281,3 +281,40 @@ export interface PublicTrackedReport {
     source_type: 'anonymous_reporter' | 'investigator';
   }>;
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PUBLIC ANNOUNCEMENT MANAGEMENT TYPES
+// ══════════════════════════════════════════════════════════════════════════════
+
+export type IntegrityAnnouncementType = 'info' | 'important' | 'warning';
+
+export interface IntegrityPublicAnnouncement {
+  id: string;
+  title: string;
+  body: string;
+  type: IntegrityAnnouncementType;
+  is_active: boolean;
+  show_on_report: boolean;
+  show_on_track: boolean;
+  publish_start: string | null;
+  publish_end: string | null;
+  updated_at: string;
+}
+
+/**
+ * Public Sanitized DTO for Anonymous Portal Consumers.
+ * ABSOLUTELY ZERO updated_by, profile IDs, email, or internal audit metadata.
+ */
+export interface PublicAnnouncementDTO {
+  id?: string;
+  title: string;
+  body: string;
+  type: IntegrityAnnouncementType;
+  show_on_report?: boolean;
+  show_on_track?: boolean;
+  publish_start?: string | null;
+  publish_end?: string | null;
+  updated_at?: string;
+}
+
+export type PublicAnnouncementDisplay = PublicAnnouncementDTO;

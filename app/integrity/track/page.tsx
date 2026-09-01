@@ -36,15 +36,18 @@ import {
 import { cn } from '@/lib/utils/cn';
 import {
   type PublicTrackedReport,
+  type PublicAnnouncementDisplay,
   INTEGRITY_STATUSES,
   INTEGRITY_SEVERITIES,
 } from '@/lib/integrity/types';
 import {
   trackAnonymousReport,
   sendAnonymousReply,
+  getPublicIntegrityAnnouncement,
 } from '@/lib/integrity/actions';
 import { formatWib } from '@/lib/utils/dateFormat';
 import { compressImage } from '@/lib/supabase/storage';
+import { IntegrityAnnouncementBanner } from '@/components/integrity/IntegrityAnnouncementBanner';
 
 function TrackContent() {
   const searchParams = useSearchParams();
@@ -59,6 +62,9 @@ function TrackContent() {
   // Loaded report data
   const [report, setReport] = useState<PublicTrackedReport | null>(null);
 
+  // Announcement state
+  const [announcement, setAnnouncement] = useState<PublicAnnouncementDisplay | null>(null);
+
   // Reply form state
   const [replyText, setReplyText] = useState('');
   const [replyPhotoPreview, setReplyPhotoPreview] = useState<string | null>(null);
@@ -72,8 +78,18 @@ function TrackContent() {
   // Fullscreen photo modal state
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
 
-  // Auto-search if code & secret are present in query string
+  // Auto-search & load announcement on mount
   useEffect(() => {
+    async function loadAnnouncement() {
+      try {
+        const ann = await getPublicIntegrityAnnouncement('track');
+        if (ann) setAnnouncement(ann);
+      } catch {
+        // fallback
+      }
+    }
+    loadAnnouncement();
+
     if (initialCode && initialSecret) {
       handleSearch(initialCode, initialSecret);
     }
@@ -181,6 +197,9 @@ function TrackContent() {
           Pantau perkembangan penanganan kasus dan berkomunikasi langsung dengan tim investigasi tanpa mengungkap identitas.
         </p>
       </div>
+
+      {/* Dynamic Announcement Banner (Part G) */}
+      {announcement && <IntegrityAnnouncementBanner announcement={announcement} />}
 
       {/* Tracking Form Card */}
       <form

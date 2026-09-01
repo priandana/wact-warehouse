@@ -151,12 +151,22 @@ export default async function IntegrityDashboardPage() {
     resolved: reports.filter((r) => r.status === 'resolved' || r.status === 'unsubstantiated' || r.status === 'duplicate').length,
   };
 
+  // Check if current user is Super Admin
+  const { data: profile } = await adminClient
+    .from('profiles')
+    .select('is_super_admin')
+    .eq('id', user.id)
+    .single();
+
+  const isSuperAdmin = profile?.is_super_admin === true;
+
   return (
     <IntegrityListClient
       reports={reports}
       warehouseName={activeWarehouse.warehouseName}
       warehouseCode={activeWarehouse.warehouseCode}
       counts={counts}
+      isSuperAdmin={isSuperAdmin}
     />
   );
 }
