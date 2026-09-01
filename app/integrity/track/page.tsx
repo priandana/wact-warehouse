@@ -516,20 +516,20 @@ function TrackContent() {
                 </div>
               )}
 
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 w-full min-w-0 max-w-full box-border">
                 <textarea
                   rows={2}
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Tulis pesan balasan atau informasi tambahan untuk tim investigasi..."
-                  className="flex-1 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+                  className="flex-1 min-w-0 max-w-full box-border p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed min-h-[44px]"
                 />
 
                 <button
                   type="button"
                   disabled={photoProcessing}
                   onClick={() => fileInputRef.current?.click()}
-                  className="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer"
+                  className="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
                   title="Lampirkan Foto Bukti Tambahan"
                 >
                   <Camera className="w-5 h-5" />
@@ -538,7 +538,7 @@ function TrackContent() {
                 <button
                   type="submit"
                   disabled={sendingReply || !replyText.trim() || photoProcessing}
-                  className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center shrink-0 cursor-pointer"
+                  className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
                   title="Kirim Balasan Anonim"
                 >
                   {sendingReply ? (

@@ -128,9 +128,37 @@ export default function PublicIntegrityReportPage() {
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>(DEFAULT_WAREHOUSES[0].id);
   const [selectedCategory, setSelectedCategory] = useState<IntegrityCategory>('theft');
   const [incidentDatetime, setIncidentDatetime] = useState<string>('');
+  const [incidentDate, setIncidentDate] = useState<string>('');
+  const [incidentTime, setIncidentTime] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [estimatedLossStr, setEstimatedLossStr] = useState<string>('');
   const [involvedParty, setInvolvedParty] = useState<string>('');
+
+  const handleDateChange = (dateVal: string) => {
+    setIncidentDate(dateVal);
+    if (dateVal && incidentTime) {
+      setIncidentDatetime(`${dateVal}T${incidentTime}`);
+    } else if (dateVal) {
+      setIncidentDatetime(`${dateVal}T00:00`);
+    } else {
+      setIncidentDatetime('');
+    }
+  };
+
+  const handleTimeChange = (timeVal: string) => {
+    setIncidentTime(timeVal);
+    if (incidentDate && timeVal) {
+      setIncidentDatetime(`${incidentDate}T${timeVal}`);
+    } else if (timeVal) {
+      const today = new Date().toISOString().slice(0, 10);
+      setIncidentDate(today);
+      setIncidentDatetime(`${today}T${timeVal}`);
+    } else if (incidentDate) {
+      setIncidentDatetime(`${incidentDate}T00:00`);
+    } else {
+      setIncidentDatetime('');
+    }
+  };
 
   // Announcement state & Auto-Open Modal state
   const [announcement, setAnnouncement] = useState<PublicAnnouncementDisplay | null>(null);
@@ -548,7 +576,7 @@ export default function PublicIntegrityReportPage() {
         )}
 
         {/* ── STEP 1: LOKASI GUDANG ────────────────────────────────────────── */}
-        <div className="space-y-3">
+        <div className="space-y-3 w-full min-w-0 max-w-full">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
               <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
@@ -557,7 +585,7 @@ export default function PublicIntegrityReportPage() {
             <span className="text-[10.5px] sm:text-[11px] text-slate-500 truncate">Pilih unit</span>
           </div>
 
-          <div className="grid grid-cols-1 min-[375px]:grid-cols-2 gap-2.5 sm:gap-3 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full min-w-0 max-w-full">
             {warehouses.map((wh) => {
               const isSelected = selectedWarehouseId === wh.id;
               return (
@@ -566,16 +594,16 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedWarehouseId(wh.id)}
                   className={cn(
-                    'p-3.5 sm:p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer min-h-[56px]',
+                    'p-3.5 sm:p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer min-h-[56px] w-full min-w-0 max-w-full box-border',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div
                       className={cn(
-                        'w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors shrink-0',
+                        'w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors shrink-0',
                         isSelected
                           ? 'bg-blue-600 text-white shadow-xs'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
@@ -583,11 +611,11 @@ export default function PublicIntegrityReportPage() {
                     >
                       {wh.code}
                     </div>
-                    <div className="min-w-0">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white break-words">
                         {wh.name}
                       </h4>
-                      <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate">
+                      <p className="text-[10.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3 h-3 shrink-0" />
                         <span>Unit Operasional {wh.code}</span>
                       </p>
@@ -596,7 +624,7 @@ export default function PublicIntegrityReportPage() {
 
                   <div
                     className={cn(
-                      'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ml-2',
+                      'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ml-3',
                       isSelected
                         ? 'border-blue-600 bg-blue-600 text-white'
                         : 'border-slate-300 dark:border-slate-700'
@@ -611,7 +639,7 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* ── STEP 2: KATEGORI PELANGGARAN ─────────────────────────────────── */}
-        <div className="space-y-3">
+        <div className="space-y-3 w-full min-w-0 max-w-full">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
@@ -620,7 +648,7 @@ export default function PublicIntegrityReportPage() {
             <span className="text-[10.5px] sm:text-[11px] text-slate-500 truncate">Pilih jenis</span>
           </div>
 
-          <div className="grid grid-cols-1 min-[375px]:grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full min-w-0 max-w-full">
             {(Object.keys(INTEGRITY_CATEGORIES) as IntegrityCategory[]).map((catKey) => {
               const meta = INTEGRITY_CATEGORIES[catKey];
               const uiMeta = CATEGORY_UI_META[catKey];
@@ -633,13 +661,13 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedCategory(catKey)}
                   className={cn(
-                    'p-3 sm:p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[96px] sm:min-h-[105px] cursor-pointer',
+                    'p-3 sm:p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[96px] sm:min-h-[105px] h-full w-full min-w-0 max-w-full box-border cursor-pointer',
                     isSelected
                       ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
                       : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                   )}
                 >
-                  <div className="flex items-start justify-between w-full mb-1.5 sm:mb-2">
+                  <div className="flex items-start justify-between w-full min-w-0 mb-1.5 sm:mb-2">
                     <div
                       className={cn(
                         'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
@@ -652,7 +680,7 @@ export default function PublicIntegrityReportPage() {
 
                     <div
                       className={cn(
-                        'w-4 h-4 rounded-full border flex items-center justify-center shrink-0',
+                        'w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ml-2',
                         isSelected
                           ? 'border-blue-600 bg-blue-600 text-white'
                           : 'border-slate-300 dark:border-slate-700'
@@ -662,7 +690,7 @@ export default function PublicIntegrityReportPage() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="w-full min-w-0">
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight break-words">
                       {meta.label}
                     </h4>
@@ -677,34 +705,56 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* ── STEP 3: KRONOLOGI & DETAIL KEJADIAN ───────────────────────────── */}
-        <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800 w-full min-w-0 max-w-full">
           <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>3. Kronologi & Detail Kejadian</span>
           </label>
 
           {/* Incident Datetime & Estimated Loss */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full">
+            {/* Date & Time Dual Inputs (Zero Intrinsic Width Overflow) */}
+            <div className="space-y-1.5 w-full min-w-0 max-w-full">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Waktu / Tanggal Kejadian (Opsional)</span>
               </label>
-              <input
-                type="datetime-local"
-                value={incidentDatetime}
-                onChange={(e) => setIncidentDatetime(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+
+              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 w-full min-w-0 max-w-full">
+                <div className="space-y-1 min-w-0">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Tanggal
+                  </span>
+                  <input
+                    type="date"
+                    value={incidentDate}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                    className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                  />
+                </div>
+
+                <div className="space-y-1 min-w-0">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">
+                    Jam
+                  </span>
+                  <input
+                    type="time"
+                    value={incidentTime}
+                    onChange={(e) => handleTimeChange(e.target.value)}
+                    className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1.5">
+            {/* Estimated Loss */}
+            <div className="space-y-1.5 w-full min-w-0 max-w-full">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                <DollarSign className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>Estimasi Nilai Kerugian (Opsional)</span>
               </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+              <div className="relative w-full min-w-0 max-w-full">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
                   Rp
                 </span>
                 <input
@@ -712,16 +762,16 @@ export default function PublicIntegrityReportPage() {
                   placeholder="Contoh: 5.000.000"
                   value={estimatedLossStr}
                   onChange={(e) => setEstimatedLossStr(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
                 />
               </div>
             </div>
           </div>
 
           {/* Suspected / Involved Party */}
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 w-full min-w-0 max-w-full">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-slate-400" />
+              <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>Pihak Terkait / Terduga / Vendor Terlibat (Opsional)</span>
             </label>
             <input
@@ -729,12 +779,12 @@ export default function PublicIntegrityReportPage() {
               placeholder="Contoh: Vendor Ekspedisi X, Driver Plat B 1234 XX, atau shift malam"
               value={involvedParty}
               onChange={(e) => setInvolvedParty(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
             />
           </div>
 
           {/* Description Textarea */}
-          <div className="space-y-2">
+          <div className="space-y-2 w-full min-w-0 max-w-full">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Kronologi & Fakta Kejadian <span className="text-rose-500">*</span>
@@ -756,13 +806,13 @@ export default function PublicIntegrityReportPage() {
               placeholder="Jelaskan apa yang terjadi, lokasi spesifik di gudang (rak/zona/docking), barang atau dokumen terkait, dan bagaimana modus kejadian tersebut berlangsung..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
+              className="w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
             />
 
             {/* Reporter Self-Identification Warning (Part E) */}
-            <div className="p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-[11.5px] text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+            <div className="p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-[11.5px] text-amber-800 dark:text-amber-300 flex items-start gap-2.5 w-full min-w-0 box-border">
               <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <p className="leading-relaxed">
+              <p className="leading-relaxed break-words">
                 <strong>Peringatan Anonimitas:</strong> Untuk tetap anonim, jangan menuliskan nama, nomor karyawan, nomor telepon, atau informasi pribadi Anda sendiri di dalam kronologi.
               </p>
             </div>

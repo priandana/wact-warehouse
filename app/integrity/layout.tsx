@@ -125,13 +125,13 @@ export default function IntegrityPublicLayout({
         </div>
       </header>
 
-      {/* Main Content Viewport */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-12 relative min-w-0">
+      {/* Main Content Viewport with Safe Area */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-6 sm:py-12 relative min-w-0 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
         {children}
       </main>
 
       {/* Bottom Compliance & Privacy Footer */}
-      <footer className="relative z-10 border-t border-slate-200/90 dark:border-slate-900/80 bg-white/70 dark:bg-slate-950/60 backdrop-blur-xs py-6">
+      <footer className="relative z-10 border-t border-slate-200/90 dark:border-slate-900/80 bg-white/70 dark:bg-slate-950/60 backdrop-blur-xs py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-slate-400 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-2">
             <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
