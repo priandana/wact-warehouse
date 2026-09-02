@@ -40,6 +40,7 @@ import {
   INTEGRITY_CATEGORIES,
   INTEGRITY_STATUSES,
   INTEGRITY_SEVERITIES,
+  isIntegrityReportClosed,
 } from '@/lib/integrity/types';
 import {
   updateReportStatus,
@@ -140,6 +141,7 @@ export function IntegrityDetailClient({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isIntegrityReportClosed(report.status)) return;
     if (!msgInput.trim() && !msgPhotoBase64) return;
 
     setSendingMsg(true);
@@ -635,63 +637,82 @@ export function IntegrityDetailClient({
                 )}
               </div>
 
-              {/* Send Message Form */}
-              <form onSubmit={handleSendMessage} className="pt-2 space-y-2">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  ref={msgFileInputRef}
-                  onChange={handleMsgPhotoSelect}
-                  className="hidden"
-                />
-
-                {msgPhotoPreview && (
-                  <div className="relative inline-block rounded-xl overflow-hidden border border-slate-300 bg-slate-100">
-                    <img src={msgPhotoPreview} alt="Preview" className="w-20 h-20 object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMsgPhotoPreview(null);
-                        setMsgPhotoBase64(null);
-                        setMsgPhotoMimeType(null);
-                      }}
-                      className="absolute top-1 right-1 p-1 rounded-full bg-slate-900/90 text-white hover:bg-rose-600 cursor-pointer"
-                      title="Hapus foto"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
+              {/* Conditional Send Message Form or Read-Only Notice */}
+              {isIntegrityReportClosed(report.status) ? (
+                <div className="pt-3 border-t border-slate-100">
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-slate-200/80 text-slate-600 flex items-center justify-center shrink-0">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">
+                        Investigasi Telah Selesai — Percakapan Ditutup
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                        Laporan ini berstatus <span className="font-semibold text-slate-700">{statusMeta?.label || report.status}</span>. Percakapan dua arah dengan pelapor anonim telah dinonaktifkan.
+                      </p>
+                    </div>
                   </div>
-                )}
-
-                <div className="flex items-start gap-2">
-                  <textarea
-                    rows={2}
-                    value={msgInput}
-                    onChange={(e) => setMsgInput(e.target.value)}
-                    placeholder="Kirim pertanyaan atau klarifikasi ke pelapor anonim..."
-                    className="flex-1 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 leading-relaxed"
+                </div>
+              ) : (
+                /* Send Message Form */
+                <form onSubmit={handleSendMessage} className="pt-2 space-y-2">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    ref={msgFileInputRef}
+                    onChange={handleMsgPhotoSelect}
+                    className="hidden"
                   />
 
-                  <button
-                    type="button"
-                    disabled={processingMsgPhoto}
-                    onClick={() => msgFileInputRef.current?.click()}
-                    className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-blue-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer touch-target"
-                    title="Lampirkan Foto Bukti"
-                  >
-                    <Camera className="w-5 h-5" />
-                  </button>
+                  {msgPhotoPreview && (
+                    <div className="relative inline-block rounded-xl overflow-hidden border border-slate-300 bg-slate-100">
+                      <img src={msgPhotoPreview} alt="Preview" className="w-20 h-20 object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMsgPhotoPreview(null);
+                          setMsgPhotoBase64(null);
+                          setMsgPhotoMimeType(null);
+                        }}
+                        className="absolute top-1 right-1 p-1 rounded-full bg-slate-900/90 text-white hover:bg-rose-600 cursor-pointer"
+                        title="Hapus foto"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
 
-                  <button
-                    type="submit"
-                    disabled={sendingMsg || (!msgInput.trim() && !msgPhotoBase64) || processingMsgPhoto}
-                    className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0 cursor-pointer"
-                    title="Kirim Pesan"
-                  >
-                    {sendingMsg ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                  </button>
-                </div>
-              </form>
+                  <div className="flex items-start gap-2">
+                    <textarea
+                      rows={2}
+                      value={msgInput}
+                      onChange={(e) => setMsgInput(e.target.value)}
+                      placeholder="Kirim pertanyaan atau klarifikasi ke pelapor anonim..."
+                      className="flex-1 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 leading-relaxed"
+                    />
+
+                    <button
+                      type="button"
+                      disabled={processingMsgPhoto}
+                      onClick={() => msgFileInputRef.current?.click()}
+                      className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-blue-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer touch-target"
+                      title="Lampirkan Foto Bukti"
+                    >
+                      <Camera className="w-5 h-5" />
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={sendingMsg || (!msgInput.trim() && !msgPhotoBase64) || processingMsgPhoto}
+                      className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0 cursor-pointer"
+                      title="Kirim Pesan"
+                    >
+                      {sendingMsg ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           )}
 

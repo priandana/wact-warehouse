@@ -22,6 +22,7 @@ import {
   type PublicAnnouncementDisplay,
   INTEGRITY_CATEGORIES,
   INTEGRITY_STATUSES,
+  isIntegrityReportClosed,
 } from './types';
 import { Capability } from '@/lib/permissions/capabilities';
 import { hasCapability } from '@/lib/permissions/resolveCapabilities';
@@ -378,6 +379,14 @@ export async function sendAnonymousReply(
       return { success: false, error: 'Akses tidak sah.' };
     }
 
+    // Reject message submission if investigation has been closed
+    if (isIntegrityReportClosed(report.status)) {
+      return {
+        success: false,
+        error: 'Percakapan laporan ini telah ditutup karena investigasi sudah selesai.',
+      };
+    }
+
     // 2. Fetch secret hash and verify
     const { data: secretRow } = await adminClient
       .from('integrity_report_secrets')
@@ -684,6 +693,24 @@ export async function sendInvestigatorMessage(
     }
 
     const adminClient = createAdminClient();
+
+    // Verify report exists and is not closed
+    const { data: report, error: reportErr } = await adminClient
+      .from('integrity_reports')
+      .select('id, status')
+      .eq('id', reportId)
+      .single();
+
+    if (reportErr || !report) {
+      return { success: false, error: 'Laporan tidak ditemukan.' };
+    }
+
+    if (isIntegrityReportClosed(report.status)) {
+      return {
+        success: false,
+        error: 'Percakapan laporan ini telah ditutup karena investigasi sudah selesai.',
+      };
+    }
 
     const { data: insertedMsg, error: insertErr } = await adminClient
       .from('integrity_messages')

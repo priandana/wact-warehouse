@@ -23,6 +23,17 @@ export type IntegrityStatus =
   | 'unsubstantiated'
   | 'duplicate';
 
+export const TERMINAL_INTEGRITY_STATUSES: readonly IntegrityStatus[] = [
+  'resolved',
+  'unsubstantiated',
+  'duplicate',
+] as const;
+
+export function isIntegrityReportClosed(status?: IntegrityStatus | string | null): boolean {
+  if (!status) return false;
+  return (TERMINAL_INTEGRITY_STATUSES as readonly string[]).includes(status);
+}
+
 export interface IntegrityCategoryMeta {
   value: IntegrityCategory;
   label: string;
