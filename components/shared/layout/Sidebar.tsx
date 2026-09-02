@@ -95,21 +95,21 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
         {/* Brand Header */}
         <div className="px-5 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs shadow-blue-500/20 shrink-0">
-              <Package className="w-4 h-4 stroke-[2.2]" />
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 via-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 shrink-0 ring-2 ring-blue-100/80">
+              <Package className="w-4.5 h-4.5 stroke-[2.3]" />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-black text-base tracking-tight text-slate-900">WACT</span>
-              <span className="text-[9.5px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100/80">PRO</span>
+              <span className="font-black text-base tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">WACT</span>
+              <span className="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200/80 shadow-2xs">PRO</span>
             </div>
           </div>
         </div>
 
         {/* Primary Action Button */}
-        <div className="px-3.5 pb-2">
+        <div className="px-3.5 pb-2.5">
           <Link
             href="/cases/new"
-            className="flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all"
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all duration-150"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Laporkan Kasus</span>
@@ -117,7 +117,7 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
         </div>
 
         {/* Navigation Items */}
-        <nav className="px-2.5 py-2 space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto no-scrollbar">
+        <nav className="px-2.5 py-2 space-y-3 max-h-[calc(100vh-230px)] overflow-y-auto no-scrollbar">
           {navGroups.map((group, gi) => {
             const visibleItems = group.items.filter((item) => {
               if (item.href === '/integrity') {
@@ -138,9 +138,9 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
             if (visibleItems.length === 0) return null;
 
             return (
-              <div key={gi} className="space-y-0.5">
+              <div key={gi} className="space-y-1">
                 {group.label && (
-                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                     {group.label}
                   </p>
                 )}
@@ -159,18 +159,18 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
                         }
                       }}
                       className={cn(
-                        'flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 active:scale-[0.97]',
+                        'flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-150 active:scale-[0.98]',
                         isActive
-                          ? 'bg-blue-50/80 text-blue-700 font-bold border border-blue-100/70 shadow-2xs'
-                          : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
+                          ? 'bg-gradient-to-r from-blue-50/90 to-indigo-50/70 text-blue-700 font-extrabold border border-blue-200/80 shadow-[0_2px_8px_-2px_rgba(37,99,235,0.12)]'
+                          : 'text-slate-600 hover:bg-slate-50/90 hover:text-slate-900'
                       )}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                        <Icon className={cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-blue-600' : 'text-slate-400')} />
                         <span className="truncate">{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
                           {item.badge}
                         </span>
                       )}
@@ -189,26 +189,26 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
           href="/integrity/report"
           target="_blank"
           referrerPolicy="no-referrer"
-          className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-blue-50/70 border border-slate-200/60 hover:border-blue-200 text-slate-500 hover:text-blue-700 text-[11px] font-semibold transition-all group"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-2xl bg-slate-50/80 hover:bg-blue-50/80 border border-slate-200/70 hover:border-blue-200/80 text-slate-600 hover:text-blue-700 text-[11px] font-bold transition-all group shadow-2xs"
         >
           <div className="flex items-center gap-2">
-            <Shield className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600" />
+            <Shield className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-colors" />
             <span>Lapor Anonim</span>
           </div>
-          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-200/60 group-hover:bg-blue-100 group-hover:text-blue-700 text-slate-500">
+          <span className="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-slate-200/70 group-hover:bg-blue-100 group-hover:text-blue-700 text-slate-600 transition-colors">
             Aman
           </span>
         </Link>
 
-        <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50/90 border border-slate-200/70 shadow-2xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-xl bg-slate-800 text-white font-bold text-[11px] flex items-center justify-center shrink-0 shadow-2xs">
+        <div className="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-700 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs ring-1 ring-slate-100">
               {getInitials(userName)}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-800 truncate leading-tight">{userName || 'Pengguna'}</p>
+              <p className="text-xs font-bold text-slate-900 truncate leading-tight">{userName || 'Pengguna'}</p>
               <p
-                className="text-[10px] text-slate-400 font-medium truncate"
+                className="text-[10px] text-slate-500 font-medium truncate"
                 title={formatMultiRoleString(userRoles || (userRole ? [userRole] : []), { isSuperAdmin, maxVisible: 5 })}
               >
                 {formatMultiRoleString(userRoles || (userRole ? [userRole] : []), { isSuperAdmin, maxVisible: 2 })}
@@ -218,11 +218,11 @@ export function Sidebar({ userName, userRole, userRoles, isSuperAdmin }: Sidebar
           <button
             type="button"
             onClick={() => setIsLogoutModalOpen(true)}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors touch-target flex items-center justify-center"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors touch-target flex items-center justify-center cursor-pointer"
             title="Keluar Akun"
             aria-label="Keluar Akun"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>

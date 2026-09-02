@@ -152,28 +152,28 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
         )}
       </div>
 
-      {/* ── 2. KPI Summary Grid (4 High-Clarity Cards) ────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* ── 2. KPI Summary Grid (4 High-Clarity Fintech Cards) ───────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
         {/* KPI 1: Perlu Dikerjakan */}
         <button
           type="button"
           onClick={() => setCurrentStatus('open')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
             currentStatus === 'open'
-              ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20'
-              : 'bg-white border-slate-200/80 hover:border-blue-300'
+              ? 'bg-blue-50/80 border-blue-300 ring-2 ring-blue-500/20 shadow-[0_4px_16px_-2px_rgba(37,99,235,0.15)]'
+              : 'bg-white border-slate-200/80 hover:border-blue-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-blue-700">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/70">
               Perlu Dikerjakan
             </span>
-            <div className="w-6 h-6 rounded-lg bg-blue-100/80 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Inbox className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 text-white shadow-xs shadow-blue-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Inbox className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
+          <div className="mt-2.5 flex items-baseline gap-1.5">
             <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {kpiStats.openCount}
             </span>
@@ -181,7 +181,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               Tugas Aktif
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+          <p className="text-[10px] text-slate-400 font-bold mt-1">
             Open & Reopened
           </p>
         </button>
@@ -191,21 +191,21 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('on_progress')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
             currentStatus === 'on_progress'
-              ? 'bg-amber-50/90 border-amber-400 ring-2 ring-amber-500/20'
-              : 'bg-white border-slate-200/80 hover:border-amber-300'
+              ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-500/20 shadow-[0_4px_16px_-2px_rgba(245,158,11,0.15)]'
+              : 'bg-white border-slate-200/80 hover:border-amber-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-amber-800">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/70">
               Sedang Dikerjakan
             </span>
-            <div className="w-6 h-6 rounded-lg bg-amber-100/80 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Wrench className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-600 text-white shadow-xs shadow-amber-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Wrench className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
+          <div className="mt-2.5 flex items-baseline gap-1.5">
             <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {kpiStats.inProgressCount}
             </span>
@@ -213,7 +213,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               Dalam Proses
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+          <p className="text-[10px] text-slate-400 font-bold mt-1">
             Tindakan Lapangan
           </p>
         </button>
@@ -223,21 +223,21 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('waiting_verification')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
             currentStatus === 'waiting_verification'
-              ? 'bg-purple-50/90 border-purple-400 ring-2 ring-purple-500/20'
-              : 'bg-white border-slate-200/80 hover:border-purple-300'
+              ? 'bg-purple-50/80 border-purple-300 ring-2 ring-purple-500/20 shadow-[0_4px_16px_-2px_rgba(168,85,247,0.15)]'
+              : 'bg-white border-slate-200/80 hover:border-purple-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-purple-700">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/70">
               Verifikasi QC
             </span>
-            <div className="w-6 h-6 rounded-lg bg-purple-100/80 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Clock className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white shadow-xs shadow-purple-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
+          <div className="mt-2.5 flex items-baseline gap-1.5">
             <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {kpiStats.waitingQcCount}
             </span>
@@ -245,7 +245,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               Menunggu Review
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+          <p className="text-[10px] text-slate-400 font-bold mt-1">
             Validasi Hasil Perbaikan
           </p>
         </button>
@@ -255,21 +255,21 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('closed')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
             currentStatus === 'closed'
-              ? 'bg-emerald-50/90 border-emerald-400 ring-2 ring-emerald-500/20'
-              : 'bg-white border-slate-200/80 hover:border-emerald-300'
+              ? 'bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-500/20 shadow-[0_4px_16px_-2px_rgba(16,185,129,0.15)]'
+              : 'bg-white border-slate-200/80 hover:border-emerald-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-emerald-800">
-              Selesai
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/70">
+              Selesai (Closed)
             </span>
-            <div className="w-6 h-6 rounded-lg bg-emerald-100/80 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-emerald-400 to-emerald-600 text-white shadow-xs shadow-emerald-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-1.5">
+          <div className="mt-2.5 flex items-baseline gap-1.5">
             <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {kpiStats.closedCount}
             </span>
@@ -277,14 +277,14 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               Terselesaikan
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+          <p className="text-[10px] text-slate-400 font-bold mt-1">
             Riwayat Tugas Selesai
           </p>
         </button>
       </div>
 
       {/* ── 3. Quick Status Filter Tabs (Scrollable on Mobile) ─────────────── */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar border-b border-slate-200/80">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
         {statusFilterTabs.map((tab) => {
           const isActive = currentStatus === tab.id;
           return (
@@ -293,10 +293,10 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               type="button"
               onClick={() => setCurrentStatus(tab.id)}
               className={cn(
-                'px-3 py-2 text-xs font-extrabold whitespace-nowrap rounded-t-xl transition-all border-b-2 -mb-[1px]',
+                'px-3.5 py-1.5 text-xs font-bold whitespace-nowrap rounded-full transition-all shrink-0 cursor-pointer active:scale-95',
                 isActive
-                  ? 'border-blue-600 text-blue-700 bg-blue-50/60'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                  : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs'
               )}
             >
               {tab.label}

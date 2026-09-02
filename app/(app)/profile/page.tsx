@@ -98,24 +98,24 @@ export default async function ProfilePage() {
       </div>
 
       {/* Profile Card */}
-      <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center justify-between gap-4">
+      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-base flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-base flex items-center justify-center shadow-md shadow-blue-500/25 shrink-0 ring-4 ring-blue-50">
             {getInitials(profile?.full_name)}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base font-bold text-slate-900 truncate">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                 {profile?.full_name || 'Pengguna'}
               </h2>
               {isSuperAdmin && (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 shadow-2xs">
                   <ShieldAlert className="w-3 h-3" />
                   Super Admin
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate font-mono">
+            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 truncate font-mono">
               <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>{user.email}</span>
             </p>
@@ -125,11 +125,13 @@ export default async function ProfilePage() {
         {/* Global Account Status */}
         <div className="shrink-0">
           {isProfileActive ? (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
               Aktif
             </span>
           ) : (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5" />
               Nonaktif
             </span>
           )}
@@ -137,7 +139,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Accessible Warehouses Grouped */}
-      <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
           Penugasan & Peran Gudang ({membershipsByWarehouse.size})
         </h3>

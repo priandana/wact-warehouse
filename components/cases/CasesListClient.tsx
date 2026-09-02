@@ -158,30 +158,30 @@ export function CasesListClient({
 
       {/* ── 2. Authoritative KPI Metric Overview Cards ─────────────────────── */}
       {kpiStats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
           {/* 1. Kasus Open & Reopened */}
           <button
             type="button"
             onClick={() => updateFilters({ status: currentStatus === 'open' ? 'all' : 'open' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all group active:scale-[0.98] cursor-pointer',
               currentStatus === 'open' || currentStatus === 'reopened'
-                ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-blue-200 hover:shadow-xs'
+                ? 'bg-blue-50/80 border-blue-300 ring-2 ring-blue-500/20 shadow-[0_4px_16px_-2px_rgba(37,99,235,0.15)]'
+                : 'bg-white border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] hover:border-blue-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 text-white shadow-xs shadow-blue-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <FolderOpen className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-extrabold text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded-full border border-blue-100/80">
+              <span className="text-[10px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/70">
                 Open &amp; Reopen
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {kpiStats.openCount}
             </p>
-            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+            <p className="text-[11px] text-slate-500 font-semibold mt-1 truncate">
               Kasus aktif butuh penanganan
             </p>
           </button>
@@ -191,24 +191,24 @@ export function CasesListClient({
             type="button"
             onClick={() => updateFilters({ status: currentStatus === 'on_progress' ? 'all' : 'on_progress' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all group active:scale-[0.98] cursor-pointer',
               currentStatus === 'on_progress' || currentStatus === 'waiting_repair'
-                ? 'bg-amber-50/70 border-amber-300 ring-2 ring-amber-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-amber-200 hover:shadow-xs'
+                ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-500/20 shadow-[0_4px_16px_-2px_rgba(245,158,11,0.15)]'
+                : 'bg-white border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] hover:border-amber-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-600 text-white shadow-xs shadow-amber-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Wrench className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-extrabold text-amber-800 bg-amber-50/80 px-2 py-0.5 rounded-full border border-amber-100/80">
+              <span className="text-[10px] font-black text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/70">
                 On Progress
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {kpiStats.inProgressCount}
             </p>
-            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+            <p className="text-[11px] text-slate-500 font-semibold mt-1 truncate">
               Sedang ditangani staf/PIC
             </p>
           </button>
@@ -218,24 +218,24 @@ export function CasesListClient({
             type="button"
             onClick={() => updateFilters({ status: currentStatus === 'waiting_verification' ? 'all' : 'waiting_verification' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all group active:scale-[0.98] cursor-pointer',
               currentStatus === 'waiting_verification'
-                ? 'bg-purple-50/70 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-purple-200 hover:shadow-xs'
+                ? 'bg-purple-50/80 border-purple-300 ring-2 ring-purple-500/20 shadow-[0_4px_16px_-2px_rgba(168,85,247,0.15)]'
+                : 'bg-white border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] hover:border-purple-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white shadow-xs shadow-purple-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Clock className="w-4 h-4" />
               </div>
-              <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50/80 px-2 py-0.5 rounded-full border border-purple-100/80">
+              <span className="text-[10px] font-black text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/70">
                 QC Verify
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {kpiStats.waitingQcCount}
             </p>
-            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+            <p className="text-[11px] text-slate-500 font-semibold mt-1 truncate">
               Verifikasi perbaikan
             </p>
           </button>
@@ -245,17 +245,17 @@ export function CasesListClient({
             type="button"
             onClick={() => updateFilters({ status: currentStatus === 'overdue' ? 'all' : 'overdue' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all group active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all group active:scale-[0.98] cursor-pointer',
               currentStatus === 'overdue'
-                ? 'bg-rose-50/70 border-rose-300 ring-2 ring-rose-500/20 shadow-xs'
-                : 'bg-white border-slate-200/80 shadow-2xs hover:border-rose-200 hover:shadow-xs'
+                ? 'bg-rose-50/80 border-rose-300 ring-2 ring-rose-500/20 shadow-[0_4px_16px_-2px_rgba(244,63,94,0.15)]'
+                : 'bg-white border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] hover:border-rose-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-rose-500 to-red-600 text-white shadow-xs shadow-rose-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <AlertCircle className="w-4 h-4" />
               </div>
-              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/80">
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-black text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/80">
                 {kpiStats.overdueCount > 0 && (
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
                 )}
@@ -265,7 +265,7 @@ export function CasesListClient({
             <p className={cn('text-xl sm:text-2xl font-black tracking-tight', kpiStats.overdueCount > 0 ? 'text-rose-600' : 'text-slate-900')}>
               {kpiStats.overdueCount}
             </p>
-            <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+            <p className="text-[11px] text-slate-500 font-semibold mt-1 truncate">
               Melebihi batas waktu SLA
             </p>
           </button>
@@ -328,10 +328,10 @@ export function CasesListClient({
                   key={opt.value}
                   onClick={() => updateFilters({ status: opt.value })}
                   className={cn(
-                    'px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none shrink-0',
+                    'px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all select-none shrink-0 cursor-pointer active:scale-95',
                     isSelected
-                      ? 'bg-slate-900 text-white shadow-2xs'
-                      : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                      : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs'
                   )}
                 >
                   {opt.label}

@@ -113,7 +113,7 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
     <Link
       href={`/cases/${item.id}`}
       className={cn(
-        'group block w-full p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-blue-300 active:scale-[0.99] transition-all duration-150',
+        'group block w-full p-4 sm:p-4.5 rounded-3xl bg-white border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] hover:shadow-[0_10px_24px_-4px_rgba(15,23,42,0.06)] hover:border-blue-300 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-150',
         isOverdue && 'border-rose-200/90 bg-rose-50/20 hover:border-rose-300',
         className,
       )}
@@ -121,11 +121,11 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
       {/* Top Header: Case Number & Priority */}
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] font-extrabold font-mono text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-100/80 shadow-2xs">
+          <span className="text-[11px] font-black font-mono text-blue-700 bg-blue-50/90 px-2.5 py-0.5 rounded-full border border-blue-100/80 shadow-2xs">
             {item.case_number}
           </span>
           {item.requires_maintenance && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50/90 text-amber-800 text-[10px] font-bold border border-amber-200/70 shadow-2xs" title="Maintenance Diperlukan">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50/90 text-amber-800 text-[10px] font-bold border border-amber-200/70 shadow-2xs" title="Maintenance Diperlukan">
               <Wrench className="w-3 h-3 text-amber-600" />
               <span>Maint</span>
             </span>
@@ -135,32 +135,32 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
       </div>
 
       {/* Case Title */}
-      <h3 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug mb-2 group-hover:text-blue-600 transition-colors">
+      <h3 className="text-sm font-bold text-slate-900 line-clamp-2 leading-snug mb-2.5 group-hover:text-blue-600 transition-colors">
         {item.title}
       </h3>
 
       {/* Location & Asset Metadata Tag */}
-      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 mb-3 font-medium">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 mb-3.5 font-medium">
         {locationText ? (
-          <span className="inline-flex items-center gap-1 bg-slate-50/90 px-2 py-0.5 rounded-md text-[11px] text-slate-600 border border-slate-200/60 shadow-2xs">
-            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="truncate max-w-[200px]">{locationText}</span>
+          <span className="inline-flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl text-[11px] text-slate-600 border border-slate-200/60 shadow-2xs">
+            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="truncate max-w-[200px] font-medium">{locationText}</span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 bg-slate-50/60 px-2 py-0.5 rounded-md text-[10.5px] text-slate-400 italic border border-slate-200/40">
-            <MapPin className="w-3 h-3 text-slate-300 shrink-0" />
+          <span className="inline-flex items-center gap-1.5 bg-slate-50/60 px-2.5 py-1 rounded-xl text-[10.5px] text-slate-400 italic border border-slate-200/40">
+            <MapPin className="w-3.5 h-3.5 text-slate-300 shrink-0" />
             <span>Lokasi belum ditentukan</span>
           </span>
         )}
         {item.assets && (
-          <span className="inline-flex items-center gap-1 bg-slate-50/90 px-2 py-0.5 rounded-md text-[10.5px] text-slate-600 font-mono border border-slate-200/60 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-xl text-[10.5px] text-slate-700 font-mono font-bold border border-slate-200/60 shadow-2xs">
             {item.assets.asset_code}
           </span>
         )}
       </div>
 
       {/* Bottom Footer: Status Badge, SLA countdown, and Assignee */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 gap-2">
+      <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
           <StatusBadge status={item.status} size="sm" />
           {getSlaDisplay()}
@@ -168,11 +168,11 @@ export function CaseCard({ item, className, showAssignee = true }: CaseCardProps
 
         <div className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
           {showAssignee && (
-            <div className="flex items-center gap-1 text-[11px] font-medium text-slate-600">
-              <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[9.5px] font-bold text-slate-700">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-slate-50/80 px-2 py-0.5 rounded-full border border-slate-200/50">
+              <div className="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center text-[9px] font-black shadow-2xs">
                 {item.assignee?.full_name ? item.assignee.full_name[0].toUpperCase() : '?'}
               </div>
-              <span className="truncate max-w-[80px] hidden sm:inline">
+              <span className="truncate max-w-[90px] hidden sm:inline">
                 {item.assignee?.full_name ? item.assignee.full_name.split(' ')[0] : 'Belum di-assign'}
               </span>
             </div>
