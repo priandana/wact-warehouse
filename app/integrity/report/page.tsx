@@ -175,6 +175,43 @@ export default function PublicIntegrityReportPage() {
     }
   };
 
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const timeInputRef = useRef<HTMLInputElement>(null);
+
+  const openDatePicker = () => {
+    const input = dateInputRef.current;
+    if (!input) return;
+
+    input.focus();
+
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker();
+      } catch {
+        input.click();
+      }
+    } else {
+      input.click();
+    }
+  };
+
+  const openTimePicker = () => {
+    const input = timeInputRef.current;
+    if (!input) return;
+
+    input.focus();
+
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker();
+      } catch {
+        input.click();
+      }
+    } else {
+      input.click();
+    }
+  };
+
   // Announcement state & Auto-Open Modal state
   const [announcement, setAnnouncement] = useState<PublicAnnouncementDisplay | null>(null);
   const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
@@ -726,7 +763,7 @@ export default function PublicIntegrityReportPage() {
             <span>3. Kronologi & Detail Kejadian</span>
           </label>
 
-          {/* Row 1: Tanggal & Waktu Kejadian (Custom WACT visual shell with native picker overlay) */}
+          {/* Row 1: Tanggal & Waktu Kejadian (Interactive cross-platform field shells triggering native pickers) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0 max-w-full box-border">
             {/* Tanggal Kejadian */}
             <div className="space-y-1.5 w-full min-w-0 max-w-full box-border">
@@ -736,8 +773,20 @@ export default function PublicIntegrityReportPage() {
               </label>
 
               <div className="relative w-full min-w-0 max-w-full">
-                {/* Visible WACT Field Shell */}
-                <div className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors">
+                {/* Visible Interactive WACT Field Shell */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={openDatePicker}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openDatePicker();
+                    }
+                  }}
+                  aria-label="Pilih tanggal kejadian"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
+                >
                   <span className={cn('truncate', incidentDate ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
                     {incidentDate ? formatIndonesianDate(incidentDate) : 'Pilih tanggal'}
                   </span>
@@ -753,6 +802,7 @@ export default function PublicIntegrityReportPage() {
                         }}
                         className="relative z-20 p-1 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
                         title="Hapus tanggal"
+                        aria-label="Hapus tanggal"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -761,13 +811,15 @@ export default function PublicIntegrityReportPage() {
                   </div>
                 </div>
 
-                {/* Invisible native interaction target covering the full button */}
+                {/* Native input element triggering native OS/Browser date picker */}
                 <input
+                  ref={dateInputRef}
                   type="date"
                   value={incidentDate}
                   onChange={(e) => handleDateChange(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  aria-label="Tanggal Kejadian"
+                  className="absolute inset-0 w-full h-full opacity-0 pointer-events-none -z-10"
+                  tabIndex={-1}
+                  aria-hidden="true"
                 />
               </div>
             </div>
@@ -780,8 +832,20 @@ export default function PublicIntegrityReportPage() {
               </label>
 
               <div className="relative w-full min-w-0 max-w-full">
-                {/* Visible WACT Field Shell */}
-                <div className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors">
+                {/* Visible Interactive WACT Field Shell */}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={openTimePicker}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openTimePicker();
+                    }
+                  }}
+                  aria-label="Pilih waktu kejadian"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
+                >
                   <span className={cn('truncate', incidentTime ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
                     {incidentTime ? `${incidentTime} WIB` : 'Pilih waktu'}
                   </span>
@@ -797,6 +861,7 @@ export default function PublicIntegrityReportPage() {
                         }}
                         className="relative z-20 p-1 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer"
                         title="Hapus waktu"
+                        aria-label="Hapus waktu"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -805,13 +870,15 @@ export default function PublicIntegrityReportPage() {
                   </div>
                 </div>
 
-                {/* Invisible native interaction target covering the full button */}
+                {/* Native input element triggering native OS/Browser time picker */}
                 <input
+                  ref={timeInputRef}
                   type="time"
                   value={incidentTime}
                   onChange={(e) => handleTimeChange(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  aria-label="Waktu Kejadian"
+                  className="absolute inset-0 w-full h-full opacity-0 pointer-events-none -z-10"
+                  tabIndex={-1}
+                  aria-hidden="true"
                 />
               </div>
             </div>
