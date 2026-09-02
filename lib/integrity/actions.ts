@@ -379,15 +379,7 @@ export async function sendAnonymousReply(
       return { success: false, error: 'Akses tidak sah.' };
     }
 
-    // Reject message submission if investigation has been closed
-    if (isIntegrityReportClosed(report.status)) {
-      return {
-        success: false,
-        error: 'Percakapan laporan ini telah ditutup karena investigasi sudah selesai.',
-      };
-    }
-
-    // 2. Fetch secret hash and verify
+    // 2. Fetch secret hash and verify (MUST happen BEFORE evaluating report.status)
     const { data: secretRow } = await adminClient
       .from('integrity_report_secrets')
       .select('access_secret_hash')
@@ -396,6 +388,14 @@ export async function sendAnonymousReply(
 
     if (!secretRow?.access_secret_hash || !verifyAccessSecret(accessSecret, secretRow.access_secret_hash)) {
       return { success: false, error: 'Akses tidak sah.' };
+    }
+
+    // 3. ONLY after successful secret authentication, evaluate terminal status
+    if (isIntegrityReportClosed(report.status)) {
+      return {
+        success: false,
+        error: 'Percakapan laporan ini telah ditutup karena investigasi sudah selesai.',
+      };
     }
 
     // 3. Insert message (sender_type: 'anonymous_reporter', sender_id: null)
@@ -694,15 +694,16 @@ export async function sendInvestigatorMessage(
 
     const adminClient = createAdminClient();
 
-    // Verify report exists and is not closed
+    // Verify report exists and belongs to the authorized warehouse
     const { data: report, error: reportErr } = await adminClient
       .from('integrity_reports')
-      .select('id, status')
+      .select('id, warehouse_id, status')
       .eq('id', reportId)
+      .eq('warehouse_id', warehouseId)
       .single();
 
     if (reportErr || !report) {
-      return { success: false, error: 'Laporan tidak ditemukan.' };
+      return { success: false, error: 'Akses tidak sah.' };
     }
 
     if (isIntegrityReportClosed(report.status)) {
