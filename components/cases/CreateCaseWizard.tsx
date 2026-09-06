@@ -107,6 +107,90 @@ export interface PhotoItem {
 
 const DRAFT_STORAGE_KEY = 'wact_case_draft_v1';
 
+interface SoftUIToggleCardProps {
+  id: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+function SoftUIToggleCard({
+  id,
+  label,
+  description,
+  checked,
+  onChange,
+}: SoftUIToggleCardProps) {
+  return (
+    <div
+      onClick={() => onChange(!checked)}
+      className={cn(
+        'p-3.5 sm:p-4 rounded-2xl neu-raised-sm flex items-center justify-between gap-3 transition-all duration-200 cursor-pointer select-none',
+        checked
+          ? 'bg-blue-50/40 dark:bg-blue-950/20 border-blue-200/70 dark:border-blue-900/40 ring-1 ring-blue-500/20'
+          : 'bg-surface-base border-white/60 dark:border-slate-800/80 hover:bg-surface-raised'
+      )}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{label}</p>
+        <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{description}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        id={id}
+        aria-checked={checked}
+        aria-label={label}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChange(!checked);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            onChange(!checked);
+          }
+        }}
+        className="relative inline-flex items-center justify-center min-h-[44px] min-w-[72px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded-full transition-all cursor-pointer shrink-0"
+      >
+        <div
+          className={cn(
+            'relative w-[72px] h-[34px] rounded-full p-1 flex items-center transition-all duration-200 ease-in-out motion-reduce:transition-none',
+            checked
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-400/40 shadow-[0_2px_10px_rgba(37,99,235,0.35)] ring-1 ring-blue-500/30'
+              : 'neu-inset bg-slate-200/90 dark:bg-slate-800/90 border border-slate-300/80 dark:border-slate-700/80 shadow-inner'
+          )}
+        >
+          {checked ? (
+            <span className="text-[10px] font-black uppercase tracking-wider text-white pl-2.5 select-none">
+              Ya
+            </span>
+          ) : (
+            <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 pr-2 ml-auto select-none">
+              Tidak
+            </span>
+          )}
+
+          <div
+            className={cn(
+              'absolute left-1 top-1 w-[26px] h-[26px] rounded-full bg-white dark:bg-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.25)] flex items-center justify-center transform transition-transform duration-200 ease-in-out motion-reduce:transition-none motion-reduce:transform-none',
+              checked ? 'translate-x-[38px]' : 'translate-x-0'
+            )}
+          >
+            {checked ? (
+              <Check className="w-3.5 h-3.5 text-blue-600 stroke-[3]" />
+            ) : (
+              <X className="w-3 h-3 text-slate-400 stroke-[2.5]" />
+            )}
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+}
+
 export function CreateCaseWizard({
   categories,
   subcategories,
@@ -1287,50 +1371,22 @@ export function CreateCaseWizard({
           </div>
 
           {/* Operational Impact Switch */}
-          <div className="p-3.5 rounded-2xl neu-raised-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Ada Dampak Operasional?</p>
-              <p className="text-[10.5px] text-slate-500 dark:text-slate-400">Menghambat picking, loading, atau aliran barang</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setHasOperationalImpact(!hasOperationalImpact)}
-              className={cn(
-                'w-12 h-7 rounded-full p-1 neu-inset-sm transition-colors duration-200 ease-in-out',
-                hasOperationalImpact ? 'bg-orange-500' : 'bg-slate-200 dark:bg-slate-800'
-              )}
-            >
-              <div
-                className={cn(
-                  'w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out',
-                  hasOperationalImpact ? 'translate-x-5' : 'translate-x-0'
-                )}
-              />
-            </button>
-          </div>
+          <SoftUIToggleCard
+            id="case-operational-impact"
+            label="Ada Dampak Operasional?"
+            description="Menghambat picking, loading, atau aliran barang"
+            checked={hasOperationalImpact}
+            onChange={setHasOperationalImpact}
+          />
 
           {/* Requires Maintenance Switch */}
-          <div className="p-3.5 rounded-2xl neu-raised-sm flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Perlu Tim Maintenance?</p>
-              <p className="text-[10.5px] text-slate-500 dark:text-slate-400">Memerlukan teknisi mesin, listrik, atau perbaikan fisik</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setRequiresMaintenance(!requiresMaintenance)}
-              className={cn(
-                'w-12 h-7 rounded-full p-1 neu-inset-sm transition-colors duration-200 ease-in-out',
-                requiresMaintenance ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
-              )}
-            >
-              <div
-                className={cn(
-                  'w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out',
-                  requiresMaintenance ? 'translate-x-5' : 'translate-x-0'
-                )}
-              />
-            </button>
-          </div>
+          <SoftUIToggleCard
+            id="case-requires-maintenance"
+            label="Perlu Tim Maintenance?"
+            description="Memerlukan teknisi mesin, listrik, atau perbaikan fisik"
+            checked={requiresMaintenance}
+            onChange={setRequiresMaintenance}
+          />
         </div>
       )}
 
