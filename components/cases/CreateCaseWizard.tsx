@@ -24,6 +24,7 @@ import {
   Camera,
   Image as ImageIcon,
   CheckCircle2,
+  Check,
   X,
   Loader2,
   AlertCircle,
@@ -1057,10 +1058,50 @@ export function CreateCaseWizard({
             </label>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { id: 'low', label: 'Rendah', sla: 'SLA 72 Jam', icon: AlertCircle, color: 'text-slate-600 dark:text-slate-400' },
-                { id: 'medium', label: 'Sedang', sla: 'SLA 24 Jam (Default)', icon: Sparkles, color: 'text-blue-600 dark:text-blue-400' },
-                { id: 'high', label: 'Tinggi', sla: 'SLA 4 Jam', icon: AlertTriangle, color: 'text-orange-600 dark:text-orange-400' },
-                { id: 'critical', label: 'Kritis', sla: 'SLA 1 Jam', icon: ShieldAlert, color: 'text-rose-600 dark:text-rose-400' },
+                {
+                  id: 'low',
+                  label: 'Rendah',
+                  sla: 'SLA 72 Jam',
+                  icon: AlertCircle,
+                  iconColor: 'text-slate-500 dark:text-slate-400',
+                  selectedContainer:
+                    'neu-inset bg-blue-50/80 dark:bg-blue-950/30 border-blue-500/80 ring-1 ring-blue-500/40 text-blue-900 dark:text-blue-200',
+                  selectedIconColor: 'text-blue-600 dark:text-blue-400',
+                  selectedCheckColor: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50',
+                },
+                {
+                  id: 'medium',
+                  label: 'Sedang',
+                  sla: 'SLA 24 Jam (Default)',
+                  icon: Sparkles,
+                  iconColor: 'text-blue-500/70 dark:text-blue-400/70',
+                  selectedContainer:
+                    'neu-inset bg-blue-50/80 dark:bg-blue-950/30 border-blue-500/80 ring-1 ring-blue-500/40 text-blue-900 dark:text-blue-200',
+                  selectedIconColor: 'text-blue-600 dark:text-blue-400',
+                  selectedCheckColor: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50',
+                },
+                {
+                  id: 'high',
+                  label: 'Tinggi',
+                  sla: 'SLA 4 Jam',
+                  icon: AlertTriangle,
+                  iconColor: 'text-orange-500/70 dark:text-orange-400/70',
+                  selectedContainer:
+                    'neu-inset bg-amber-50/80 dark:bg-amber-950/30 border-orange-500/80 ring-1 ring-orange-500/40 text-orange-950 dark:text-orange-200',
+                  selectedIconColor: 'text-orange-600 dark:text-orange-400',
+                  selectedCheckColor: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/50',
+                },
+                {
+                  id: 'critical',
+                  label: 'Kritis',
+                  sla: 'SLA 1 Jam',
+                  icon: ShieldAlert,
+                  iconColor: 'text-rose-500/70 dark:text-rose-400/70',
+                  selectedContainer:
+                    'neu-inset bg-rose-50/80 dark:bg-rose-950/30 border-rose-500/80 ring-1 ring-rose-500/40 text-rose-950 dark:text-rose-200',
+                  selectedIconColor: 'text-rose-600 dark:text-rose-400',
+                  selectedCheckColor: 'text-rose-600 dark:text-rose-400 bg-rose-100 dark:bg-rose-900/50',
+                },
               ].map((p) => {
                 const isSelected = priority === p.id;
                 const Icon = p.icon;
@@ -1070,17 +1111,36 @@ export function CreateCaseWizard({
                     type="button"
                     onClick={() => setPriority(p.id as Priority)}
                     className={cn(
-                      'p-3 rounded-2xl border text-left transition-all active:scale-95 flex items-start gap-2.5',
+                      'relative p-3 rounded-2xl border text-left transition-all active:scale-95 flex items-start justify-between gap-2',
                       isSelected
-                        ? 'neu-raised border-blue-500 ring-2 ring-blue-500/40 bg-blue-50/50 dark:bg-blue-950/20'
-                        : 'neu-raised-sm border-white/60 dark:border-slate-800'
+                        ? p.selectedContainer
+                        : 'neu-raised-sm bg-surface-base border-white/60 dark:border-slate-800/80 hover:bg-surface-raised'
                     )}
                   >
-                    <Icon className={cn('w-4 h-4 shrink-0 mt-0.5', p.color)} />
-                    <div>
-                      <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100">{p.label}</p>
-                      <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{p.sla}</p>
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <Icon className={cn('w-4 h-4 shrink-0 mt-0.5', isSelected ? p.selectedIconColor : p.iconColor)} />
+                      <div className="min-w-0">
+                        <p className={cn(
+                          'text-xs tracking-tight',
+                          isSelected ? 'font-extrabold' : 'font-semibold text-slate-800 dark:text-slate-200'
+                        )}>
+                          {p.label}
+                        </p>
+                        <p className={cn(
+                          'text-[10px] truncate',
+                          isSelected
+                            ? 'font-bold opacity-85'
+                            : 'font-medium text-slate-500 dark:text-slate-400'
+                        )}>
+                          {p.sla}
+                        </p>
+                      </div>
                     </div>
+                    {isSelected && (
+                      <div className={cn('w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm', p.selectedCheckColor)}>
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
