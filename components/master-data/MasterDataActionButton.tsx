@@ -23,22 +23,22 @@ const VARIANT_CONFIG: Record<
   { base: string; defaultIcon: LucideIcon; defaultLabel: string }
 > = {
   edit: {
-    base: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border-slate-200/90 bg-white shadow-2xs',
+    base: 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 neu-icon-well border-black/[0.04] dark:border-white/[0.05]',
     defaultIcon: Edit2,
     defaultLabel: 'Edit',
   },
   activate: {
-    base: 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 border-emerald-200/80 bg-emerald-50/40 shadow-2xs',
+    base: 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 bg-emerald-500/10 border-emerald-500/20 neu-icon-well',
     defaultIcon: Power,
     defaultLabel: 'Aktifkan',
   },
   deactivate: {
-    base: 'text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200/80 bg-amber-50/40 shadow-2xs',
+    base: 'text-amber-600 dark:text-amber-400 hover:text-amber-700 bg-amber-500/10 border-amber-500/20 neu-icon-well',
     defaultIcon: Power,
     defaultLabel: 'Nonaktifkan',
   },
   add: {
-    base: 'text-blue-700 hover:text-blue-800 hover:bg-blue-50 border-blue-200/80 bg-blue-50/40 shadow-2xs',
+    base: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 bg-blue-500/10 border-blue-500/20 neu-icon-well',
     defaultIcon: Plus,
     defaultLabel: 'Tambah',
   },

@@ -80,24 +80,26 @@ export function QRScannerModal({ isOpen, onClose, activeWarehouseId, onScanSucce
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-      <div className="w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 relative">
+    <div className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+      <div className="w-full max-w-sm bg-[#EEF2F7] dark:bg-[#131C31] text-slate-900 dark:text-slate-100 rounded-3xl p-5 sm:p-6 neu-raised-lg border border-black/[0.04] dark:border-white/[0.05] space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 relative">
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <Scan className="w-4 h-4 text-blue-600" />
-            <h3 className="text-sm font-extrabold text-slate-900">Scan QR Code Aset</h3>
+        <div className="flex items-center justify-between pb-3 border-b border-black/[0.04] dark:border-white/[0.05]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400">
+              <Scan className="w-4 h-4" />
+            </div>
+            <h3 className="text-sm font-extrabold tracking-tight">Scan QR Code Aset</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="neu-icon-well w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all active:scale-95"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Camera Scanner Viewport Mock / Scanner Box */}
-        <div className="relative aspect-square rounded-2xl bg-slate-950 overflow-hidden flex flex-col items-center justify-center text-white p-6 border-2 border-blue-500/40 shadow-inner">
+        <div className="relative aspect-square rounded-2xl bg-slate-950 overflow-hidden flex flex-col items-center justify-center text-white p-6 border border-blue-500/30 shadow-inner">
           {/* Laser Scan Animation Line */}
           <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse" />
 
@@ -118,7 +120,7 @@ export function QRScannerModal({ isOpen, onClose, activeWarehouseId, onScanSucce
 
         {/* Error Notification */}
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -126,23 +128,23 @@ export function QRScannerModal({ isOpen, onClose, activeWarehouseId, onScanSucce
 
         {/* Manual Input Search Fallback */}
         <form onSubmit={handleFormSubmit} className="space-y-2 pt-1">
-          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Atau Masukkan Kode Aset Manual
           </label>
-          <div className="flex gap-1.5">
+          <div className="flex gap-2">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
                 placeholder="Contoh: BDG-FL-001"
-                className="w-full pl-3.5 pr-8 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 uppercase"
+                className="w-full px-3.5 py-2.5 rounded-xl neu-inset bg-transparent border-0 text-xs font-bold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 uppercase"
               />
             </div>
             <button
               type="submit"
               disabled={loading || !manualCode.trim()}
-              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 flex items-center gap-1.5 transition-all"
+              className="px-4 py-2.5 rounded-xl fintech-btn-primary text-white font-bold text-xs disabled:opacity-50 flex items-center gap-1.5 active:scale-95 transition-all"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
               <span>Cari</span>

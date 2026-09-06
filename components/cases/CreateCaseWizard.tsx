@@ -783,24 +783,26 @@ export function CreateCaseWizard({
             type="button"
             disabled={submitting}
             onClick={handleBack}
-            className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all p-1"
+            className="neu-btn-secondary inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 disabled:opacity-40 disabled:pointer-events-none transition-all px-3 py-1.5 rounded-xl"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>{step === 1 ? 'Batal' : 'Kembali'}</span>
           </button>
-          <span className="text-xs font-extrabold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">
+          <span className="neu-pill-active text-xs font-extrabold px-3 py-1 rounded-full">
             Langkah {step} dari 4
           </span>
         </div>
 
         {/* 4-Segment Progress Bar */}
-        <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+        <div className="grid grid-cols-4 gap-2 h-2 w-full p-0.5 neu-inset-sm rounded-full">
           {[1, 2, 3, 4].map((s) => (
             <div
               key={s}
               className={cn(
                 'rounded-full transition-all duration-300',
-                s <= step ? 'bg-blue-600' : 'bg-slate-200'
+                s <= step
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xs shadow-blue-500/30'
+                  : 'bg-transparent'
               )}
             />
           ))}
@@ -809,15 +811,15 @@ export function CreateCaseWizard({
 
       {/* Warehouse Switch Notice Banner */}
       {warehouseSwitchNotice && (
-        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900 flex items-start justify-between gap-2 animate-in fade-in">
+        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-200 dark:border-amber-900/40 text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-start justify-between gap-2 animate-in fade-in">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <span>{warehouseSwitchNotice}</span>
           </div>
           <button
             type="button"
             onClick={() => setWarehouseSwitchNotice(null)}
-            className="text-amber-600 hover:text-amber-800 p-0.5 transition-colors"
+            className="text-amber-600 dark:text-amber-400 hover:text-amber-800 p-0.5 transition-colors"
             title="Tutup pemberitahuan"
           >
             <X className="w-4 h-4" />
@@ -827,17 +829,17 @@ export function CreateCaseWizard({
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start gap-2 animate-in fade-in">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-200 dark:border-rose-900/40 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-start gap-2 animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {/* Partial Success (Evidence retry banner) */}
       {partialEvidenceError && createdCaseId && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs space-y-2.5 animate-in fade-in">
-          <div className="flex items-start gap-2 text-amber-800 font-semibold">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-200 dark:border-amber-900/40 text-xs space-y-2.5 animate-in fade-in">
+          <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200 font-semibold">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <span>{partialEvidenceError}</span>
           </div>
           <div className="flex items-center gap-2 pt-1">
@@ -856,7 +858,7 @@ export function CreateCaseWizard({
                 clearDraft();
                 router.push(`/cases/${createdCaseId}`);
               }}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-100 transition-all"
+              className="neu-btn-secondary inline-flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all"
             >
               <span>Lanjut ke Kasus</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -869,35 +871,35 @@ export function CreateCaseWizard({
       {/* STEP 1: KEJADIAN                                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {step === 1 && (
-        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
+        <div className="p-5 rounded-3xl neu-raised space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
           <div>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
               Apa yang Terjadi?
             </h2>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               Jelaskan masalah atau temuan yang Anda temukan
             </p>
           </div>
 
           {/* Existing Case Notice (Duplicate Protection) */}
           {inspectionContext?.existingCase && (
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 flex items-start gap-3 shadow-2xs">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-300 dark:border-amber-900/40 flex items-start gap-3 shadow-2xs">
               <div className="p-2 rounded-xl bg-amber-500 text-white shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black text-amber-900">
+                  <span className="text-xs font-black text-amber-900 dark:text-amber-200">
                     Perhatian: Kasus Sudah Pernah Dibuat
                   </span>
-                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 bg-white border border-amber-300 text-amber-900 rounded-md">
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 neu-pill-active rounded-md">
                     {inspectionContext.existingCase.case_number}
                   </span>
-                  <span className="text-[10px] text-amber-800 uppercase font-semibold">
+                  <span className="text-[10px] text-amber-800 dark:text-amber-300 uppercase font-semibold">
                     ({inspectionContext.existingCase.status})
                   </span>
                 </div>
-                <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
+                <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed">
                   Inspeksi ini telah ditindaklanjuti dengan kasus #{inspectionContext.existingCase.case_number}. Anda dapat membuka kasus tersebut atau tetap membuat kasus baru.
                 </p>
                 <div className="pt-1">
@@ -915,33 +917,33 @@ export function CreateCaseWizard({
 
           {/* Inspection Reference Banner */}
           {(inspectionContext?.inspectionNumber || initialInspectionNumber) && (
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/90 flex items-start gap-3 shadow-2xs">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-200 dark:border-amber-900/40 flex items-start gap-3 shadow-2xs">
               <div className="p-2 rounded-xl bg-amber-500 text-white shrink-0">
                 <ShieldAlert className="w-5 h-5" />
               </div>
               <div className="space-y-1.5 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black text-amber-900">
+                  <span className="text-xs font-black text-amber-900 dark:text-amber-200">
                     Dibuat dari Temuan Inspeksi QC
                   </span>
-                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 bg-amber-100 border border-amber-300 text-amber-900 rounded-md">
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 neu-pill-active rounded-md">
                     {inspectionContext?.inspectionNumber || initialInspectionNumber}
                   </span>
                   {inspectionContext?.assetCode && (
-                    <span className="text-[11px] text-slate-700 font-bold">
+                    <span className="text-[11px] text-slate-700 dark:text-slate-300 font-bold">
                       &bull; {inspectionContext.assetCode} ({inspectionContext.assetName})
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
+                <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed">
                   Data aset, area gudang, dan rincian temuan checklist NG telah diverifikasi secara authoritative dari server.
                 </p>
                 {inspectionContext?.ngFindings && inspectionContext.ngFindings.length > 0 && (
-                  <div className="pt-1 border-t border-amber-200/60 space-y-1">
-                    <span className="block text-[10px] font-extrabold uppercase text-amber-900">
+                  <div className="pt-1 border-t border-amber-200/60 dark:border-amber-900/30 space-y-1">
+                    <span className="block text-[10px] font-extrabold uppercase text-amber-900 dark:text-amber-200">
                       Rincian Temuan NG:
                     </span>
-                    <ul className="text-[11px] text-amber-900 space-y-0.5 list-disc list-inside font-medium">
+                    <ul className="text-[11px] text-amber-900 dark:text-amber-200 space-y-0.5 list-disc list-inside font-medium">
                       {inspectionContext.ngFindings.map((ng, i) => (
                         <li key={i}>
                           <strong>{ng.label}</strong>
@@ -957,7 +959,7 @@ export function CreateCaseWizard({
 
           {/* Title Input */}
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Judul Kasus <span className="text-rose-500">*</span>
             </label>
             <input
@@ -965,7 +967,7 @@ export function CreateCaseWizard({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Conveyor belt macet di area sortir"
-              className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full px-3.5 py-3 rounded-2xl neu-inset text-xs font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
               autoFocus
             />
 
@@ -979,7 +981,7 @@ export function CreateCaseWizard({
                       key={i}
                       type="button"
                       onClick={() => setTitle(sug)}
-                      className="text-[10.5px] font-semibold text-slate-600 bg-slate-100/80 hover:bg-blue-50 hover:text-blue-700 px-2.5 py-1 rounded-full transition-colors text-left"
+                      className="neu-pill-inactive text-[10.5px] font-semibold px-2.5 py-1 rounded-full transition-all text-left hover:text-blue-600 dark:hover:text-blue-400"
                     >
                       {sug}
                     </button>
@@ -991,7 +993,7 @@ export function CreateCaseWizard({
 
           {/* Category Chips */}
           <div className="space-y-1.5 pt-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Kategori Kasus
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1008,8 +1010,8 @@ export function CreateCaseWizard({
                     className={cn(
                       'p-2.5 rounded-2xl border text-left transition-all active:scale-95',
                       isSelected
-                        ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
-                        : 'bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-slate-100'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 border-transparent text-white shadow-md shadow-blue-500/25'
+                        : 'neu-raised-sm border-white/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'
                     )}
                   >
                     <p className="text-xs font-bold leading-tight truncate">{cat.name}</p>
@@ -1022,7 +1024,7 @@ export function CreateCaseWizard({
           {/* Subcategory Chips (Conditional) */}
           {filteredSubcategories.length > 0 && (
             <div className="space-y-1.5 pt-1 animate-in fade-in">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Subkategori ({selectedCategoryName})
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -1036,8 +1038,8 @@ export function CreateCaseWizard({
                       className={cn(
                         'px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95',
                         isSelected
-                          ? 'bg-slate-900 text-white shadow-2xs'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          ? 'neu-pill-active bg-blue-600 text-white'
+                          : 'neu-pill-inactive text-slate-700 dark:text-slate-300'
                       )}
                     >
                       {sub.name}
@@ -1050,15 +1052,15 @@ export function CreateCaseWizard({
 
           {/* Priority Selection Cards */}
           <div className="space-y-1.5 pt-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Tingkat Prioritas
             </label>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { id: 'low', label: 'Rendah', sla: 'SLA 72 Jam', icon: AlertCircle, color: 'text-slate-700' },
-                { id: 'medium', label: 'Sedang', sla: 'SLA 24 Jam (Default)', icon: Sparkles, color: 'text-blue-600' },
-                { id: 'high', label: 'Tinggi', sla: 'SLA 4 Jam', icon: AlertTriangle, color: 'text-orange-600' },
-                { id: 'critical', label: 'Kritis', sla: 'SLA 1 Jam', icon: ShieldAlert, color: 'text-rose-600' },
+                { id: 'low', label: 'Rendah', sla: 'SLA 72 Jam', icon: AlertCircle, color: 'text-slate-600 dark:text-slate-400' },
+                { id: 'medium', label: 'Sedang', sla: 'SLA 24 Jam (Default)', icon: Sparkles, color: 'text-blue-600 dark:text-blue-400' },
+                { id: 'high', label: 'Tinggi', sla: 'SLA 4 Jam', icon: AlertTriangle, color: 'text-orange-600 dark:text-orange-400' },
+                { id: 'critical', label: 'Kritis', sla: 'SLA 1 Jam', icon: ShieldAlert, color: 'text-rose-600 dark:text-rose-400' },
               ].map((p) => {
                 const isSelected = priority === p.id;
                 const Icon = p.icon;
@@ -1070,14 +1072,14 @@ export function CreateCaseWizard({
                     className={cn(
                       'p-3 rounded-2xl border text-left transition-all active:scale-95 flex items-start gap-2.5',
                       isSelected
-                        ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500 shadow-2xs'
-                        : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100'
+                        ? 'neu-raised border-blue-500 ring-2 ring-blue-500/40 bg-blue-50/50 dark:bg-blue-950/20'
+                        : 'neu-raised-sm border-white/60 dark:border-slate-800'
                     )}
                   >
                     <Icon className={cn('w-4 h-4 shrink-0 mt-0.5', p.color)} />
                     <div>
-                      <p className="text-xs font-extrabold text-slate-900">{p.label}</p>
-                      <p className="text-[10px] font-medium text-slate-500">{p.sla}</p>
+                      <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100">{p.label}</p>
+                      <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{p.sla}</p>
                     </div>
                   </button>
                 );
@@ -1091,23 +1093,25 @@ export function CreateCaseWizard({
       {/* STEP 2: LOKASI                                                      */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {step === 2 && (
-        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
+        <div className="p-5 rounded-3xl neu-raised space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
           <div>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
               Di Mana Lokasi Kejadian?
             </h2>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               Pilih area dan lokasi spesifik di gudang
             </p>
           </div>
 
           {/* Active Warehouse Readonly Pill */}
-          <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-blue-600" />
+          <div className="p-3.5 rounded-2xl neu-inset-sm flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                <Building2 className="w-4 h-4" />
+              </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Gudang Aktif</p>
-                <p className="text-xs font-extrabold text-slate-900">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Gudang Aktif</p>
+                <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100">
                   {activeWarehouse ? `${activeWarehouse.warehouseCode} — ${activeWarehouse.warehouseName}` : 'Tidak Ada Gudang'}
                 </p>
               </div>
@@ -1116,11 +1120,11 @@ export function CreateCaseWizard({
 
           {/* Area Selection Chips */}
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Pilih Area Gudang
             </label>
             {filteredAreas.length === 0 ? (
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 font-medium text-center">
+              <div className="p-3.5 rounded-2xl neu-inset-sm text-xs text-slate-500 dark:text-slate-400 font-medium text-center">
                 Belum ada area terdaftar untuk gudang ini.
               </div>
             ) : (
@@ -1135,8 +1139,8 @@ export function CreateCaseWizard({
                       className={cn(
                         'p-2.5 rounded-2xl border text-left transition-all active:scale-95',
                         isSelected
-                          ? 'bg-blue-600 border-blue-600 text-white shadow-xs'
-                          : 'bg-slate-50 border-slate-200/80 text-slate-800 hover:bg-slate-100'
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 border-transparent text-white shadow-md shadow-blue-500/25'
+                          : 'neu-raised-sm border-white/60 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400'
                       )}
                     >
                       <p className="text-xs font-bold truncate">{area.name}</p>
@@ -1151,7 +1155,7 @@ export function CreateCaseWizard({
           {/* Location Specific Chips (Filtered by Area) */}
           {filteredLocations.length > 0 && (
             <div className="space-y-1.5 pt-1 animate-in fade-in">
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Lokasi Spesifik ({selectedAreaName})
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -1165,8 +1169,8 @@ export function CreateCaseWizard({
                       className={cn(
                         'px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95',
                         isSelected
-                          ? 'bg-slate-900 text-white shadow-2xs'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          ? 'neu-pill-active bg-blue-600 text-white'
+                          : 'neu-pill-inactive text-slate-700 dark:text-slate-300'
                       )}
                     >
                       {loc.name}
@@ -1198,19 +1202,19 @@ export function CreateCaseWizard({
       {/* STEP 3: DETAIL OPERASIONAL                                          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {step === 3 && (
-        <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
+        <div className="p-5 rounded-3xl neu-raised space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
           <div>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
               Detail & Dampak
             </h2>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               Informasikan deskripsi kronologi dan urgensi penanganan
             </p>
           </div>
 
           {/* Description Textarea */}
           <div className="space-y-1.5">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Deskripsi Kejadian (Opsional)
             </label>
             <textarea
@@ -1218,27 +1222,27 @@ export function CreateCaseWizard({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Ceritakan detail apa yang terlihat, perkiraan penyebab, atau tindakan darurat yang sudah dilakukan..."
-              className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all leading-relaxed"
+              className="w-full px-3.5 py-3 rounded-2xl neu-inset text-xs font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all leading-relaxed"
             />
           </div>
 
           {/* Operational Impact Switch */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl neu-raised-sm flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-900">Ada Dampak Operasional?</p>
-              <p className="text-[10.5px] text-slate-500">Menghambat picking, loading, atau aliran barang</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Ada Dampak Operasional?</p>
+              <p className="text-[10.5px] text-slate-500 dark:text-slate-400">Menghambat picking, loading, atau aliran barang</p>
             </div>
             <button
               type="button"
               onClick={() => setHasOperationalImpact(!hasOperationalImpact)}
               className={cn(
-                'w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out',
-                hasOperationalImpact ? 'bg-orange-500' : 'bg-slate-300'
+                'w-12 h-7 rounded-full p-1 neu-inset-sm transition-colors duration-200 ease-in-out',
+                hasOperationalImpact ? 'bg-orange-500' : 'bg-slate-200 dark:bg-slate-800'
               )}
             >
               <div
                 className={cn(
-                  'w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out',
+                  'w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out',
                   hasOperationalImpact ? 'translate-x-5' : 'translate-x-0'
                 )}
               />
@@ -1246,22 +1250,22 @@ export function CreateCaseWizard({
           </div>
 
           {/* Requires Maintenance Switch */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl neu-raised-sm flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-900">Perlu Tim Maintenance?</p>
-              <p className="text-[10.5px] text-slate-500">Memerlukan teknisi mesin, listrik, atau perbaikan fisik</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Perlu Tim Maintenance?</p>
+              <p className="text-[10.5px] text-slate-500 dark:text-slate-400">Memerlukan teknisi mesin, listrik, atau perbaikan fisik</p>
             </div>
             <button
               type="button"
               onClick={() => setRequiresMaintenance(!requiresMaintenance)}
               className={cn(
-                'w-12 h-7 rounded-full p-1 transition-colors duration-200 ease-in-out',
-                requiresMaintenance ? 'bg-blue-600' : 'bg-slate-300'
+                'w-12 h-7 rounded-full p-1 neu-inset-sm transition-colors duration-200 ease-in-out',
+                requiresMaintenance ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
               )}
             >
               <div
                 className={cn(
-                  'w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out',
+                  'w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ease-in-out',
                   requiresMaintenance ? 'translate-x-5' : 'translate-x-0'
                 )}
               />
@@ -1277,20 +1281,20 @@ export function CreateCaseWizard({
         <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-150">
           {/* ── BUKTI DARI INSPEKSI QC (READ-ONLY SOURCE EVIDENCE) ── */}
           {inspectionContext && (
-            <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+            <div className="p-5 rounded-3xl neu-raised space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-amber-600" />
-                    <h3 className="text-sm font-extrabold text-slate-900">
+                    <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-slate-100">
                       Bukti dari Inspeksi QC ({inspectionContext.inspectionNumber})
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     Dokumentasi hasil audit inspeksi (Otomatis terhubung &bull; Read-Only)
                   </p>
                 </div>
-                <span className="text-[10.5px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                <span className="text-[10.5px] font-extrabold px-2.5 py-1 rounded-full neu-pill-active text-amber-700 dark:text-amber-300">
                   {(inspectionContext.evidences || []).length} Foto
                 </span>
               </div>
@@ -1298,7 +1302,7 @@ export function CreateCaseWizard({
               {/* 1. Bukti Temuan NG */}
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                     Bukti Temuan NG
                   </span>
                 </div>
@@ -1317,7 +1321,7 @@ export function CreateCaseWizard({
                               );
                               setViewingSourceEvidenceIdx(globalIdx >= 0 ? globalIdx : idx);
                             }}
-                            className="relative aspect-square rounded-2xl overflow-hidden border border-rose-200 bg-slate-100 group cursor-pointer hover:ring-2 hover:ring-rose-500/50 transition-all shadow-2xs text-left"
+                            className="relative aspect-square rounded-2xl overflow-hidden border border-rose-200/80 dark:border-rose-900/50 bg-slate-100 dark:bg-slate-900 group cursor-pointer hover:ring-2 hover:ring-rose-500/50 transition-all neu-raised-sm text-left"
                           >
                             <img
                               src={ev.signed_url || ''}
@@ -1338,7 +1342,7 @@ export function CreateCaseWizard({
                     );
                   }
                   return (
-                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs text-slate-500 font-medium flex items-center gap-2">
+                    <div className="p-3.5 rounded-2xl neu-inset-sm text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
                       <AlertCircle className="w-4 h-4 text-slate-400 shrink-0" />
                       <span>Belum ada foto yang dilampirkan khusus pada poin NG.</span>
                     </div>
@@ -1353,7 +1357,7 @@ export function CreateCaseWizard({
                 return (
                   <div className="space-y-2 pt-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                      <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         Dokumentasi Inspeksi Lainnya ({otherEvidences.length})
                       </span>
                     </div>
@@ -1368,7 +1372,7 @@ export function CreateCaseWizard({
                             );
                             setViewingSourceEvidenceIdx(globalIdx >= 0 ? globalIdx : idx);
                           }}
-                          className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 group cursor-pointer hover:ring-2 hover:ring-amber-500/50 transition-all shadow-2xs text-left"
+                          className="relative aspect-square rounded-2xl overflow-hidden border border-white/60 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 group cursor-pointer hover:ring-2 hover:ring-blue-500/50 transition-all neu-raised-sm text-left"
                         >
                           <img
                             src={ev.signed_url || ''}
@@ -1393,12 +1397,12 @@ export function CreateCaseWizard({
           )}
 
           {/* Photo Capture Card (User-Added Case Evidence) */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+          <div className="p-5 rounded-3xl neu-raised space-y-4">
             <div>
-              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                 {inspectionContext ? 'Tambahkan Bukti Kasus (Opsional)' : 'Lampirkan Bukti Foto'}
               </h2>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 {inspectionContext
                   ? 'Lampirkan foto tambahan khusus untuk penanganan kasus ini jika diperlukan'
                   : 'Ambil foto langsung dengan kamera atau pilih dari galeri'}
@@ -1424,12 +1428,12 @@ export function CreateCaseWizard({
             />
 
             {/* Photo Action Buttons */}
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 disabled={submitting || isAnyPhotoProcessing}
                 onClick={handleCameraBtnClick}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200/80 active:scale-95 disabled:opacity-50 transition-all touch-target"
+                className="neu-btn-secondary flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-bold text-xs active:scale-95 disabled:opacity-50 transition-all touch-target text-blue-600 dark:text-blue-400"
               >
                 <Camera className="w-4 h-4" />
                 <span>Buka Kamera</span>
@@ -1439,7 +1443,7 @@ export function CreateCaseWizard({
                 type="button"
                 disabled={submitting || isAnyPhotoProcessing}
                 onClick={() => galleryInputRef.current?.click()}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 active:scale-95 disabled:opacity-50 transition-all touch-target"
+                className="neu-btn-secondary flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-bold text-xs active:scale-95 disabled:opacity-50 transition-all touch-target text-slate-700 dark:text-slate-300"
               >
                 <ImageIcon className="w-4 h-4" />
                 <span>Pilih Galeri</span>
@@ -1450,7 +1454,7 @@ export function CreateCaseWizard({
             {photos.length > 0 && (
               <div className="grid grid-cols-3 gap-2.5 pt-2">
                 {photos.map((p) => (
-                  <div key={p.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-2xs group">
+                  <div key={p.id} className="relative aspect-square rounded-2xl overflow-hidden neu-raised-sm bg-slate-100 dark:bg-slate-900 group">
                     <img
                       src={p.previewUrl}
                       alt="Preview bukti"
@@ -1499,30 +1503,30 @@ export function CreateCaseWizard({
           </div>
 
           {/* Review Summary Card */}
-          <div className="p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+          <div className="p-5 rounded-3xl neu-raised space-y-3">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Ringkasan Laporan
             </h3>
 
             <div className="space-y-2 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+              <div className="p-3.5 rounded-2xl neu-inset-sm space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10.5px] font-bold text-slate-400 uppercase">Judul</span>
                   <PriorityBadge priority={priority} size="sm" />
                 </div>
-                <p className="font-extrabold text-slate-900 text-sm leading-snug">{title}</p>
+                <p className="font-extrabold text-slate-900 dark:text-slate-100 text-sm leading-snug">{title}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-3 rounded-2xl neu-inset-sm">
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Kategori</p>
-                  <p className="font-bold text-slate-800 truncate">
+                  <p className="font-bold text-slate-800 dark:text-slate-200 truncate">
                     {selectedCategoryName || '-'} {selectedSubcategoryName ? `• ${selectedSubcategoryName}` : ''}
                   </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-3 rounded-2xl neu-inset-sm">
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Lokasi</p>
-                  <p className="font-bold text-slate-800 truncate">
+                  <p className="font-bold text-slate-800 dark:text-slate-200 truncate">
                     {selectedAreaName || '-'} {selectedLocationName ? `• ${selectedLocationName}` : ''}
                   </p>
                 </div>
@@ -1531,19 +1535,19 @@ export function CreateCaseWizard({
               {(hasOperationalImpact || requiresMaintenance || selectedAssetName) && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {hasOperationalImpact && (
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">
+                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-orange-700 dark:text-orange-300 bg-orange-500/10 px-2.5 py-0.5 rounded-full border border-orange-200 dark:border-orange-900/40">
                       <AlertTriangle className="w-3 h-3" />
                       Dampak Operasional
                     </span>
                   )}
                   {requiresMaintenance && (
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-700 dark:text-blue-300 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-900/40">
                       <Wrench className="w-3 h-3" />
                       Butuh Maintenance
                     </span>
                   )}
                   {selectedAssetName && (
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-slate-700 dark:text-slate-300 neu-pill-inactive px-2.5 py-0.5 rounded-full">
                       <Package className="w-3 h-3" />
                       {selectedAssetName}
                     </span>
@@ -1557,7 +1561,7 @@ export function CreateCaseWizard({
 
       {/* ── Sticky Bottom Action Bar (Focus Flow) ─────────────────────────── */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] px-4 py-3"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-[#EEF2F7]/95 dark:bg-[#0D1322]/95 backdrop-blur-md border-t border-white/80 dark:border-slate-800/80 shadow-[0_-8px_25px_rgba(163,177,198,0.35)] dark:shadow-[0_-8px_25px_rgba(0,0,0,0.5)] px-4 py-3"
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 12px))' }}
       >
         <div className="max-w-xl mx-auto">
@@ -1567,7 +1571,7 @@ export function CreateCaseWizard({
                 type="button"
                 disabled={submitting}
                 onClick={handleNext}
-                className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all touch-target"
+                className="fintech-btn-primary w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl text-white font-extrabold text-xs sm:text-sm active:scale-[0.98] transition-all touch-target"
               >
                 <span>Lanjut ke Langkah {step + 1}</span>
                 <ChevronRight className="w-4 h-4" />
@@ -1577,7 +1581,7 @@ export function CreateCaseWizard({
                 type="button"
                 disabled={submitting || isAnyPhotoProcessing}
                 onClick={handleSubmit}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-500/30 active:scale-[0.98] disabled:opacity-60 transition-all touch-target"
+                className="fintech-btn-primary w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl text-white font-extrabold text-xs sm:text-sm active:scale-[0.98] disabled:opacity-60 transition-all touch-target"
               >
                 {submitting ? (
                   <>

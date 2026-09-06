@@ -120,21 +120,21 @@ export function MaintenanceListClient({
       {/* ── 1. Header Command Area ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400">
               <Wrench className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
               Pusat Pemeliharaan & Maintenance
             </h1>
           </div>
-          <p className="text-xs sm:text-[13px] text-slate-500 font-semibold mt-1">
+          <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-semibold mt-1">
             Monitoring perbaikan mesin, log reparasi aset, dan tindak lanjut teknisi PIC
           </p>
         </div>
 
         {kpiStats && kpiStats.overdueCount > 0 && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs font-bold shadow-2xs self-start sm:self-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl neu-inset-sm bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold self-start sm:self-auto">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
             <span>{kpiStats.overdueCount} Perbaikan Melewati Batas SLA</span>
           </div>
@@ -149,29 +149,29 @@ export function MaintenanceListClient({
             type="button"
             onClick={() => updateFilters({ status: 'open' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group active:scale-[0.99]',
               currentStatus === 'open'
-                ? 'bg-blue-50/90 border-blue-400 ring-2 ring-blue-500/20'
-                : 'bg-white border-slate-200/80 hover:border-blue-300'
+                ? 'bg-[#EEF2F7] dark:bg-[#131C31] neu-inset-sm ring-2 ring-blue-500/30 border-blue-500/40'
+                : 'bg-[#EEF2F7] dark:bg-[#131C31] neu-raised neu-card-interactive border-black/[0.04] dark:border-white/[0.05]'
             )}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-blue-700">
+              <span className="text-[10.5px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
                 Perlu Ditangani
               </span>
-              <div className="w-6 h-6 rounded-lg bg-blue-100/80 text-blue-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <FolderOpen className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                <FolderOpen className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                 {kpiStats.openCount}
               </span>
-              <span className="text-[11px] font-bold text-slate-500">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Kasus Aktif
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">
               Open & Reopened
             </p>
           </button>
@@ -181,29 +181,29 @@ export function MaintenanceListClient({
             type="button"
             onClick={() => updateFilters({ status: 'on_progress' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group active:scale-[0.99]',
               currentStatus === 'on_progress'
-                ? 'bg-amber-50/90 border-amber-400 ring-2 ring-amber-500/20'
-                : 'bg-white border-slate-200/80 hover:border-amber-300'
+                ? 'bg-[#EEF2F7] dark:bg-[#131C31] neu-inset-sm ring-2 ring-amber-500/30 border-amber-500/40'
+                : 'bg-[#EEF2F7] dark:bg-[#131C31] neu-raised neu-card-interactive border-black/[0.04] dark:border-white/[0.05]'
             )}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-amber-800">
+              <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
                 Sedang Dikerjakan
               </span>
-              <div className="w-6 h-6 rounded-lg bg-amber-100/80 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Wrench className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+                <Wrench className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                 {kpiStats.inProgressCount}
               </span>
-              <span className="text-[11px] font-bold text-slate-500">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Dalam Proses
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">
               Teknisi di Lokasi
             </p>
           </button>
@@ -213,29 +213,29 @@ export function MaintenanceListClient({
             type="button"
             onClick={() => updateFilters({ status: 'waiting_verification' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group active:scale-[0.99]',
               currentStatus === 'waiting_verification'
-                ? 'bg-purple-50/90 border-purple-400 ring-2 ring-purple-500/20'
-                : 'bg-white border-slate-200/80 hover:border-purple-300'
+                ? 'bg-[#EEF2F7] dark:bg-[#131C31] neu-inset-sm ring-2 ring-purple-500/30 border-purple-500/40'
+                : 'bg-[#EEF2F7] dark:bg-[#131C31] neu-raised neu-card-interactive border-black/[0.04] dark:border-white/[0.05]'
             )}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-purple-700">
+              <span className="text-[10.5px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
                 Verifikasi QC
               </span>
-              <div className="w-6 h-6 rounded-lg bg-purple-100/80 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Clock className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                <Clock className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                 {kpiStats.waitingQcCount}
               </span>
-              <span className="text-[11px] font-bold text-slate-500">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Menunggu Review
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">
               Validasi Hasil Reparasi
             </p>
           </button>
@@ -245,29 +245,29 @@ export function MaintenanceListClient({
             type="button"
             onClick={() => updateFilters({ status: 'closed' })}
             className={cn(
-              'p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group shadow-2xs hover:shadow-xs active:scale-[0.99]',
+              'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group active:scale-[0.99]',
               currentStatus === 'closed'
-                ? 'bg-emerald-50/90 border-emerald-400 ring-2 ring-emerald-500/20'
-                : 'bg-white border-slate-200/80 hover:border-emerald-300'
+                ? 'bg-[#EEF2F7] dark:bg-[#131C31] neu-inset-sm ring-2 ring-emerald-500/30 border-emerald-500/40'
+                : 'bg-[#EEF2F7] dark:bg-[#131C31] neu-raised neu-card-interactive border-black/[0.04] dark:border-white/[0.05]'
             )}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-emerald-800">
+              <span className="text-[10.5px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 Selesai
               </span>
-              <div className="w-6 h-6 rounded-lg bg-emerald-100/80 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                <CheckCircle2 className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                 {kpiStats.closedCount}
               </span>
-              <span className="text-[11px] font-bold text-slate-500">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 Terselesaikan
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-0.5">
               Aset Operasional Normal
             </p>
           </button>
@@ -275,7 +275,7 @@ export function MaintenanceListClient({
       )}
 
       {/* ── 3. Quick Status Filter Tabs (Scrollable on Mobile) ─────────────── */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar border-b border-slate-200/80">
+      <div className="neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 p-1.5 rounded-2xl flex items-center gap-1.5 overflow-x-auto no-scrollbar border border-black/[0.04] dark:border-white/[0.05]">
         {statusFilterTabs.map((tab) => {
           const isActive = currentStatus === tab.id;
           return (
@@ -284,10 +284,10 @@ export function MaintenanceListClient({
               type="button"
               onClick={() => updateFilters({ status: tab.id })}
               className={cn(
-                'px-3 py-2 text-xs font-extrabold whitespace-nowrap rounded-t-xl transition-all border-b-2 -mb-[1px]',
+                'px-3.5 py-1.5 text-xs font-bold whitespace-nowrap rounded-xl transition-all',
                 isActive
-                  ? 'border-blue-600 text-blue-700 bg-blue-50/60'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               {tab.label}
@@ -297,7 +297,7 @@ export function MaintenanceListClient({
       </div>
 
       {/* ── 4. Search & Controls Filter Bar ───────────────────────────────── */}
-      <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="p-3.5 sm:p-4 rounded-3xl bg-[#EEF2F7] dark:bg-[#131C31] neu-raised border border-black/[0.04] dark:border-white/[0.05] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search Input Form */}
         <form onSubmit={handleSearchSubmit} className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -306,13 +306,13 @@ export function MaintenanceListClient({
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Cari nomor kasus, nama aset, kode aset, lokasi, teknisi..."
-            className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 placeholder:text-slate-400 font-medium"
+            className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm rounded-2xl neu-inset text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium focus:outline-none"
           />
           {searchInput && (
             <button
               type="button"
               onClick={handleClearSearch}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-slate-400 hover:text-slate-600"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -331,13 +331,13 @@ export function MaintenanceListClient({
           </div>
 
           {/* Desktop View Switcher */}
-          <div className="hidden lg:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200">
+          <div className="hidden lg:flex items-center p-1 rounded-2xl neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 border border-black/[0.04] dark:border-white/[0.05]">
             <button
               type="button"
               onClick={() => setViewMode('table')}
               className={cn(
-                'p-1.5 rounded-lg transition-all',
-                viewMode === 'table' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                'p-2 rounded-xl transition-all',
+                viewMode === 'table' ? 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               )}
               title="Tampilan Tabel"
             >
@@ -347,8 +347,8 @@ export function MaintenanceListClient({
               type="button"
               onClick={() => setViewMode('cards')}
               className={cn(
-                'p-1.5 rounded-lg transition-all',
-                viewMode === 'cards' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                'p-2 rounded-xl transition-all',
+                viewMode === 'cards' ? 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               )}
               title="Tampilan Kartu"
             >
@@ -397,21 +397,21 @@ export function MaintenanceListClient({
           </div>
 
           {/* Desktop High-Density Table (>= lg) */}
-          <div className={cn('hidden rounded-2xl bg-white border border-slate-200/80 shadow-2xs overflow-hidden', viewMode === 'table' ? 'lg:block' : 'hidden')}>
+          <div className={cn('hidden rounded-3xl bg-[#EEF2F7] dark:bg-[#131C31] neu-raised border border-black/[0.04] dark:border-white/[0.05] overflow-hidden', viewMode === 'table' ? 'lg:block' : 'hidden')}>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                    <th className="py-3 px-4">No. Kasus</th>
-                    <th className="py-3 px-4">Aset & Lokasi</th>
-                    <th className="py-3 px-4">Prioritas</th>
-                    <th className="py-3 px-4">Status Perbaikan</th>
-                    <th className="py-3 px-4">Teknisi PIC</th>
-                    <th className="py-3 px-4">Target SLA</th>
-                    <th className="py-3 px-4 text-right">Aksi</th>
+                  <tr className="bg-[#E5EBF3] dark:bg-[#101726] border-b border-black/[0.04] dark:border-white/[0.05] text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <th className="py-3.5 px-4">No. Kasus</th>
+                    <th className="py-3.5 px-4">Aset & Lokasi</th>
+                    <th className="py-3.5 px-4">Prioritas</th>
+                    <th className="py-3.5 px-4">Status Perbaikan</th>
+                    <th className="py-3.5 px-4">Teknisi PIC</th>
+                    <th className="py-3.5 px-4">Target SLA</th>
+                    <th className="py-3.5 px-4 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-xs text-slate-800">
+                <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03] text-xs text-slate-800 dark:text-slate-200">
                   {initialItems.map((item) => {
                     const slaInfo = getSlaStatus(item.due_date, item.status, (item as any).closed_at);
                     const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
@@ -419,34 +419,34 @@ export function MaintenanceListClient({
                     return (
                       <tr
                         key={item.id}
-                        className="hover:bg-blue-50/40 transition-colors group"
+                        className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors group"
                       >
                         {/* No. Kasus & Title */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           <Link href={`/cases/${item.id}`} className="block">
-                            <span className="font-mono font-bold text-xs text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60">
+                            <span className="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 neu-inset-sm px-2 py-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.05]">
                               {item.case_number}
                             </span>
-                            <p className="font-extrabold text-slate-900 mt-1 leading-snug group-hover:text-blue-600 transition-colors">
+                            <p className="font-extrabold text-slate-800 dark:text-slate-100 mt-1 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {item.title}
                             </p>
                           </Link>
                         </td>
 
                         {/* Aset & Lokasi */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           {item.assets ? (
                             <div>
-                              <span className="font-mono font-bold text-[10.5px] text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200/60">
+                              <span className="font-mono font-bold text-[10.5px] text-indigo-600 dark:text-indigo-400 neu-inset-sm px-2 py-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.05]">
                                 {item.assets.asset_code}
                               </span>
-                              <p className="font-semibold text-slate-800 text-[11.5px] mt-0.5">{item.assets.name}</p>
+                              <p className="font-semibold text-slate-800 dark:text-slate-200 text-[11.5px] mt-0.5">{item.assets.name}</p>
                             </div>
                           ) : (
                             <span className="text-slate-400 italic text-[11px]">Non-aset / Fasilitas</span>
                           )}
                           {locationText && (
-                            <p className="text-[11px] text-slate-500 font-medium mt-1 flex items-center gap-1">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1 flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                               <span className="truncate max-w-[150px]">{locationText}</span>
                             </p>
@@ -454,23 +454,23 @@ export function MaintenanceListClient({
                         </td>
 
                         {/* Prioritas */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           <PriorityBadge priority={item.priority} />
                         </td>
 
                         {/* Status Perbaikan */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           <StatusBadge status={item.status} />
                         </td>
 
                         {/* Teknisi PIC */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           {item.assignee?.full_name ? (
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-lg bg-slate-900 text-white font-black text-[10px] flex items-center justify-center shadow-2xs shrink-0">
+                              <div className="w-6 h-6 rounded-lg neu-icon-well font-black text-[10px] flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                                 {item.assignee.full_name[0].toUpperCase()}
                               </div>
-                              <span className="font-bold text-slate-800 truncate max-w-[130px]">
+                              <span className="font-bold text-slate-800 dark:text-slate-200 truncate max-w-[130px]">
                                 {item.assignee.full_name}
                               </span>
                             </div>
@@ -480,25 +480,25 @@ export function MaintenanceListClient({
                         </td>
 
                         {/* Target SLA */}
-                        <td className="py-3 px-4 align-top">
+                        <td className="py-3.5 px-4 align-top">
                           {slaInfo.type === 'no_sla' ? (
                             <span className="text-slate-400 italic text-[11px]">—</span>
                           ) : slaInfo.isClosed ? (
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border',
+                                'inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border neu-inset-sm',
                                 slaInfo.badgeBg,
                                 slaInfo.badgeText,
                                 slaInfo.badgeBorder
                               )}
                             >
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                               <span>{slaInfo.badgeLabel}</span>
                             </span>
                           ) : slaInfo.isOverdue ? (
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full border shadow-2xs',
+                                'inline-flex items-center gap-1 text-[10.5px] font-black px-2.5 py-0.5 rounded-full border neu-inset-sm',
                                 slaInfo.badgeBg,
                                 slaInfo.badgeText,
                                 slaInfo.badgeBorder
@@ -510,7 +510,7 @@ export function MaintenanceListClient({
                           ) : slaInfo.isApproaching ? (
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full border',
+                                'inline-flex items-center gap-1 text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border neu-inset-sm',
                                 slaInfo.badgeBg,
                                 slaInfo.badgeText,
                                 slaInfo.badgeBorder
@@ -521,10 +521,10 @@ export function MaintenanceListClient({
                             </span>
                           ) : item.due_date ? (
                             <div>
-                              <p className="font-semibold text-slate-800 text-[11px]">
+                              <p className="font-semibold text-slate-800 dark:text-slate-200 text-[11px]">
                                 {format(new Date(item.due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}
                               </p>
-                              <span className="text-[10px] text-slate-500 font-medium">
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                                 {slaInfo.badgeLabel}
                               </span>
                             </div>
@@ -534,10 +534,10 @@ export function MaintenanceListClient({
                         </td>
 
                         {/* Aksi Operasional */}
-                        <td className="py-3 px-4 align-top text-right">
+                        <td className="py-3.5 px-4 align-top text-right">
                           <Link
                             href={`/cases/${item.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-extrabold text-xs shadow-2xs transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl fintech-btn-primary font-bold text-xs transition-all active:scale-95"
                           >
                             <span>Tangani</span>
                             <ChevronRight className="w-3.5 h-3.5" />
@@ -553,9 +553,9 @@ export function MaintenanceListClient({
 
           {/* ── 6. Pagination Controls ─────────────────────────────────────── */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs text-xs">
-              <span className="text-slate-500 font-semibold">
-                Halaman <strong className="text-slate-800">{currentPage}</strong> dari <strong className="text-slate-800">{totalPages}</strong> ({totalCount} perbaikan)
+            <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#EEF2F7] dark:bg-[#131C31] neu-raised border border-black/[0.04] dark:border-white/[0.05] text-xs">
+              <span className="text-slate-500 dark:text-slate-400 font-semibold">
+                Halaman <strong className="text-slate-800 dark:text-slate-100">{currentPage}</strong> dari <strong className="text-slate-800 dark:text-slate-100">{totalPages}</strong> ({totalCount} perbaikan)
               </span>
 
               <div className="flex items-center gap-1.5">
@@ -563,7 +563,7 @@ export function MaintenanceListClient({
                   type="button"
                   disabled={currentPage <= 1}
                   onClick={() => updateFilters({ page: String(currentPage - 1) })}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="px-3 py-1.5 rounded-xl neu-btn-secondary font-bold disabled:opacity-40 disabled:pointer-events-none transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -571,7 +571,7 @@ export function MaintenanceListClient({
                   type="button"
                   disabled={currentPage >= totalPages}
                   onClick={() => updateFilters({ page: String(currentPage + 1) })}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                  className="px-3 py-1.5 rounded-xl neu-btn-secondary font-bold disabled:opacity-40 disabled:pointer-events-none transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

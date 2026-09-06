@@ -57,35 +57,35 @@ export function TaskCard({ item }: TaskCardProps) {
   if (item.status === 'open' || item.status === 'reopened') {
     ctaLabel = 'Mulai Kerjakan Kasus';
     ctaIcon = PlayCircle;
-    ctaButtonClass = 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs';
+    ctaButtonClass = 'fintech-btn-primary text-white shadow-md shadow-blue-500/25';
   } else if (item.status === 'on_progress' || item.status === 'waiting_repair') {
     ctaLabel = 'Update Progres & Hasil';
     ctaIcon = Wrench;
-    ctaButtonClass = 'bg-amber-600 hover:bg-amber-700 text-white shadow-xs';
+    ctaButtonClass = 'bg-amber-600 hover:bg-amber-700 text-white shadow-md shadow-amber-500/25';
   } else if (item.status === 'waiting_verification') {
     ctaLabel = 'Lihat Status Review QC';
     ctaIcon = Clock;
-    ctaButtonClass = 'bg-purple-600 hover:bg-purple-700 text-white shadow-xs';
+    ctaButtonClass = 'bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-500/25';
   } else if (isClosed) {
     ctaLabel = 'Lihat Riwayat Tugas';
     ctaIcon = CheckCircle2;
-    ctaButtonClass = 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200';
+    ctaButtonClass = 'neu-btn-secondary text-slate-700 dark:text-slate-300';
   }
 
   const CtaIconComponent = ctaIcon;
 
   return (
-    <div className="group block p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:border-blue-400/80 hover:shadow-xs transition-all">
+    <div className="group block p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive transition-all">
       {/* ── 1. Top Metadata Row: ID + Badges ─────────────────────────────── */}
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100/90">
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-200/40 dark:border-slate-800/60">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono font-black text-xs text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-md border border-blue-200/60 shadow-2xs">
+          <span className="font-mono font-black text-xs text-blue-700 dark:text-blue-400 neu-pill-active px-2.5 py-0.5 rounded-lg">
             {item.case_number}
           </span>
           <PriorityBadge priority={item.priority} />
           {item.requires_maintenance && (
-            <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">
-              <Wrench className="w-3 h-3 text-amber-600" />
+            <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/40">
+              <Wrench className="w-3 h-3 text-amber-600 dark:text-amber-400" />
               Maintenance
             </span>
           )}
@@ -96,42 +96,42 @@ export function TaskCard({ item }: TaskCardProps) {
       {/* ── 2. Task Title & Description Preview ──────────────────────────── */}
       <div className="mt-3 space-y-1.5">
         <Link href={`/cases/${item.id}`} className="block">
-          <h2 className="font-extrabold text-sm sm:text-[14.5px] text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
+          <h2 className="font-extrabold text-sm sm:text-[14.5px] text-slate-900 dark:text-slate-100 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {item.title}
           </h2>
         </Link>
         {item.description && (
-          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-medium">
+          <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed font-medium">
             {item.description}
           </p>
         )}
       </div>
 
       {/* ── 3. Asset & Location Chips ────────────────────────────────────── */}
-      <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-xs">
+      <div className="mt-3.5 pt-3 border-t border-slate-200/40 dark:border-slate-800/60 flex flex-wrap gap-2 text-xs">
         {item.assets ? (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/70 text-slate-800">
-            <Package className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-            <span className="font-mono font-bold text-[11px] text-indigo-700">{item.assets.asset_code}</span>
-            <span className="font-medium text-slate-600 truncate max-w-[150px]">{item.assets.name}</span>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl neu-inset-sm text-slate-800 dark:text-slate-200">
+            <Package className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <span className="font-mono font-bold text-[11px] text-indigo-600 dark:text-indigo-400">{item.assets.asset_code}</span>
+            <span className="font-medium text-slate-600 dark:text-slate-400 truncate max-w-[150px]">{item.assets.name}</span>
           </div>
         ) : (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100 text-slate-500">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl neu-inset-sm text-slate-500 dark:text-slate-400">
             <Package className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="text-[11px] italic">Non-aset / Fasilitas</span>
           </div>
         )}
 
         {locationText ? (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/70 text-slate-700">
-            <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl neu-inset-sm text-slate-700 dark:text-slate-300">
+            <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="font-semibold text-[11px] truncate max-w-[180px]">{locationText}</span>
           </div>
         ) : null}
       </div>
 
       {/* ── 4. Footer: SLA Urgency + Primary Next Action CTA ─────────────── */}
-      <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div className="mt-3.5 pt-3 border-t border-slate-200/40 dark:border-slate-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         {/* SLA Urgency Pill */}
         <div className="flex items-center gap-2">
           {slaInfo.type === 'no_sla' ? (
@@ -191,7 +191,7 @@ export function TaskCard({ item }: TaskCardProps) {
         <Link
           href={`/cases/${item.id}`}
           className={cn(
-            'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-150 active:scale-98',
+            'inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-150 active:scale-98',
             ctaButtonClass
           )}
         >

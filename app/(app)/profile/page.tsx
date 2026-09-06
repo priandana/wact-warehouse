@@ -89,33 +89,33 @@ export default async function ProfilePage() {
   return (
     <div className="page-padding py-5 max-w-xl mx-auto space-y-5">
       <div>
-        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
           Profil Saya
         </h1>
-        <p className="text-xs text-slate-500 font-medium mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
           Identitas akun dan penugasan peran per gudang
         </p>
       </div>
 
       {/* Profile Card */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] flex items-center justify-between gap-4">
+      <div className="p-5 sm:p-6 rounded-3xl neu-raised flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-base flex items-center justify-center shadow-md shadow-blue-500/25 shrink-0 ring-4 ring-blue-50">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-base flex items-center justify-center shadow-xs shadow-blue-500/25 shrink-0">
             {getInitials(profile?.full_name)}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 truncate">
                 {profile?.full_name || 'Pengguna'}
               </h2>
               {isSuperAdmin && (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200 shadow-2xs">
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20 shadow-2xs">
                   <ShieldAlert className="w-3 h-3" />
                   Super Admin
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 truncate font-mono">
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1 truncate font-mono">
               <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>{user.email}</span>
             </p>
@@ -125,12 +125,12 @@ export default async function ProfilePage() {
         {/* Global Account Status */}
         <div className="shrink-0">
           {isProfileActive ? (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
               Aktif
             </span>
           ) : (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-3 py-1 rounded-full bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 shadow-2xs">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5" />
               Nonaktif
             </span>
@@ -139,13 +139,13 @@ export default async function ProfilePage() {
       </div>
 
       {/* Accessible Warehouses Grouped */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+      <div className="p-5 sm:p-6 rounded-3xl neu-raised space-y-3.5">
+        <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
           Penugasan & Peran Gudang ({membershipsByWarehouse.size})
         </h3>
 
         {membershipsByWarehouse.size === 0 ? (
-          <p className="text-xs text-slate-400 italic py-2">Belum ada penugasan gudang aktif.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 italic py-2">Belum ada penugasan gudang aktif.</p>
         ) : (
           <div className="space-y-2.5">
             {Array.from(membershipsByWarehouse.values()).map(({ warehouse, roles }) => {
@@ -155,23 +155,23 @@ export default async function ProfilePage() {
               return (
                 <div
                   key={warehouse.id}
-                  className={`p-3.5 rounded-2xl border transition-all ${
+                  className={`p-3.5 rounded-2xl neu-inset-sm transition-all ${
                     isActiveWh
-                      ? 'bg-blue-50/50 border-blue-200/90 shadow-2xs'
-                      : 'bg-slate-50/70 border-slate-200/70'
+                      ? 'ring-1 ring-blue-500/30'
+                      : ''
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
-                        <Building2 className="w-3.5 h-3.5 text-slate-600" />
+                  <div className="flex items-center justify-between gap-2 mb-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl neu-icon-well text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0">
+                        <Building2 className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-bold text-slate-900 truncate">
+                          <span className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">
                             {warehouse.name}
                           </span>
-                          <span className="font-mono text-[10px] font-bold text-slate-500 bg-white px-1.5 py-0.2 rounded border border-slate-200">
+                          <span className="font-mono text-[10px] font-black text-slate-600 dark:text-slate-300 bg-slate-500/10 px-2 py-0.5 rounded-lg border border-slate-500/20">
                             {warehouse.code}
                           </span>
                         </div>
@@ -179,15 +179,15 @@ export default async function ProfilePage() {
                     </div>
 
                     {isActiveWh && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-white px-2 py-0.5 rounded-full border border-blue-200 shrink-0 shadow-2xs">
-                        <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black text-blue-700 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 shrink-0 shadow-2xs">
+                        <CheckCircle2 className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                         Gudang Aktif
                       </span>
                     )}
                   </div>
 
                   {/* Multi-role chips */}
-                  <div className="flex items-center gap-1.5 flex-wrap pl-9">
+                  <div className="flex items-center gap-1.5 flex-wrap pl-10.5">
                     {sortedRoles.map((r) => (
                       <RoleBadge key={r.id} roleName={r.name} displayName={r.display_name} size="sm" />
                     ))}

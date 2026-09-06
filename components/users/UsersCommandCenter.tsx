@@ -123,22 +123,22 @@ export function UsersCommandCenter({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               Manajemen Pengguna & Hak Akses
             </h1>
             {isSuperAdmin ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-700 dark:text-rose-400 bg-rose-500/10 px-3 py-0.5 rounded-full border border-rose-500/20">
                 <ShieldAlert className="w-3.5 h-3.5" />
                 Global Super Admin
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-700 dark:text-blue-400 bg-blue-500/10 px-3 py-0.5 rounded-full border border-blue-500/20">
                 <Building2 className="w-3.5 h-3.5" />
                 Gudang [{activeWarehouse.code}] {activeWarehouse.name}
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
             {isSuperAdmin
               ? 'Kelola direktori pengguna sistem, peran multi-warehouse, dan aktivasi akun global.'
               : `Kelola penugasan peran operasional dan staf untuk fasilitas ${activeWarehouse.name}.`}
@@ -150,16 +150,16 @@ export function UsersCommandCenter({
           <button
             type="button"
             onClick={() => setIsAssignOpen(true)}
-            className="py-2.5 px-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="neu-btn-secondary py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center gap-2 cursor-pointer"
           >
-            <Building2 className="w-4 h-4 text-blue-600" />
+            <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>+ Tambahkan Akses Gudang</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="fintech-btn-primary py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center gap-2 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>+ Buat Pengguna Baru</span>
@@ -169,49 +169,49 @@ export function UsersCommandCenter({
 
       {/* ── 2. Summary KPI Metrics ───────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="p-4 rounded-3xl neu-raised flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center font-bold text-sm shrink-0 text-blue-600 dark:text-blue-400">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Pengguna</span>
-            <p className="text-lg font-extrabold text-slate-900">{totalUsers}</p>
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Total Pengguna</span>
+            <p className="text-xl font-black text-slate-900 dark:text-slate-100">{totalUsers}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="p-4 rounded-3xl neu-raised flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center font-bold text-sm shrink-0 text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pengguna Aktif</span>
-            <p className="text-lg font-extrabold text-slate-900">{activeUsers}</p>
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Pengguna Aktif</span>
+            <p className="text-xl font-black text-slate-900 dark:text-slate-100">{activeUsers}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="p-4 rounded-3xl neu-raised flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center font-bold text-sm shrink-0 text-indigo-600 dark:text-indigo-400">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Staff Operasional</span>
-            <p className="text-lg font-extrabold text-slate-900">{operationalUsers}</p>
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Staff Operasional</span>
+            <p className="text-xl font-black text-slate-900 dark:text-slate-100">{operationalUsers}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm shrink-0">
+        <div className="p-4 rounded-3xl neu-raised flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center font-bold text-sm shrink-0 text-rose-600 dark:text-rose-400">
             <Ban className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Akun Nonaktif</span>
-            <p className="text-lg font-extrabold text-slate-900">{inactiveUsers}</p>
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Akun Nonaktif</span>
+            <p className="text-xl font-black text-slate-900 dark:text-slate-100">{inactiveUsers}</p>
           </div>
         </div>
       </div>
 
       {/* ── 3. Filters & Search Controls ─────────────────────────────────────── */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+      <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3.5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Box */}
           <div className="relative flex-1">
@@ -221,7 +221,7 @@ export function UsersCommandCenter({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama pengguna, email, atau ID karyawan..."
-              className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
             />
           </div>
 
@@ -232,7 +232,7 @@ export function UsersCommandCenter({
               <select
                 value={selectedWarehouseFilter}
                 onChange={(e) => setSelectedWarehouseFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className="px-3.5 py-2 rounded-2xl neu-inset-sm text-xs font-bold text-slate-700 dark:text-slate-200 outline-hidden"
               >
                 <option value="all">Semua Gudang</option>
                 {warehouses.map((w) => (
@@ -247,7 +247,7 @@ export function UsersCommandCenter({
             <select
               value={selectedStatusFilter}
               onChange={(e) => setSelectedStatusFilter(e.target.value as any)}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="px-3.5 py-2 rounded-2xl neu-inset-sm text-xs font-bold text-slate-700 dark:text-slate-200 outline-hidden"
             >
               <option value="all">Semua Status</option>
               <option value="active">Aktif Saja</option>
@@ -258,16 +258,16 @@ export function UsersCommandCenter({
 
         {/* Role Filter Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pt-1">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
+          <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1">
             Filter Role:
           </span>
           <button
             type="button"
             onClick={() => setSelectedRoleFilter('all')}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
               selectedRoleFilter === 'all'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'neu-pill-active'
+                : 'neu-pill-inactive'
             }`}
           >
             Semua Role
@@ -277,10 +277,10 @@ export function UsersCommandCenter({
               key={r.id}
               type="button"
               onClick={() => setSelectedRoleFilter(r.name)}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 selectedRoleFilter === r.name
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive'
               }`}
             >
               {r.display_name}
@@ -291,10 +291,10 @@ export function UsersCommandCenter({
 
       {/* ── 4. User Directory Grid ───────────────────────────────────────────── */}
       {filteredUsers.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-          <Users className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900">Tidak Ada Pengguna Ditemukan</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+        <div className="p-12 text-center neu-raised rounded-3xl space-y-3">
+          <Users className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto" />
+          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Tidak Ada Pengguna Ditemukan</h3>
+          <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
             Tidak ada pengguna yang cocok dengan kriteria pencarian dan filter aktif.
           </p>
         </div>

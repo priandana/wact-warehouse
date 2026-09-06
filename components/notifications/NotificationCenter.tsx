@@ -163,19 +163,19 @@ export function NotificationCenter({
   return (
     <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-150 pb-8">
       {/* ── 1. Header Banner & Action Bar ───────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 neu-raised p-4 sm:p-5 rounded-3xl">
         <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               Pusat Notifikasi
             </h1>
             {unreadCount > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">
                 {unreadCount} Baru
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             Monitoring penugasan kasus, pembaruan status verifikasi, dan penyelesaian
           </p>
         </div>
@@ -185,7 +185,7 @@ export function NotificationCenter({
             type="button"
             onClick={() => fetchLatestNotifications(page, activeFilter)}
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80 transition-all active:scale-95 disabled:opacity-60"
+            className="neu-btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all active:scale-95 disabled:opacity-60 cursor-pointer"
             title="Muat ulang notifikasi"
           >
             <RefreshCw className={cn('w-3.5 h-3.5', isPending && 'animate-spin text-blue-600')} />
@@ -197,7 +197,7 @@ export function NotificationCenter({
               type="button"
               onClick={handleMarkAllRead}
               disabled={isMarkingAll || isPending}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 transition-all active:scale-95 disabled:opacity-60 shadow-2xs"
+              className="fintech-btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold text-white transition-all active:scale-95 disabled:opacity-60 cursor-pointer"
             >
               {isMarkingAll ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -212,8 +212,8 @@ export function NotificationCenter({
 
       {/* Feedback Toast Banner */}
       {feedbackMsg && (
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>{feedbackMsg}</span>
         </div>
       )}
@@ -228,18 +228,18 @@ export function NotificationCenter({
               type="button"
               onClick={() => handleFilterChange(tab.id)}
               className={cn(
-                'px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all active:scale-95 flex items-center gap-1.5',
+                'px-4 py-2 rounded-2xl text-xs font-bold shrink-0 transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer',
                 isActive
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive'
               )}
             >
               <span>{tab.label}</span>
               {tab.id === 'unread' && unreadCount > 0 && (
                 <span
                   className={cn(
-                    'px-1.5 py-0.2 text-[10px] font-extrabold rounded-full',
-                    isActive ? 'bg-blue-500 text-white' : 'bg-blue-100 text-blue-700'
+                    'px-1.5 py-0.2 text-[10px] font-black rounded-full',
+                    isActive ? 'bg-white/20 text-white' : 'bg-blue-500/15 text-blue-700 dark:text-blue-300'
                   )}
                 >
                   {unreadCount}
@@ -253,7 +253,7 @@ export function NotificationCenter({
       {/* ── 3. Notification List Container ───────────────────────────────── */}
       <div className="space-y-2.5">
         {isPending && (
-          <div className="flex items-center justify-center py-4 text-xs font-bold text-slate-400 gap-2">
+          <div className="flex items-center justify-center py-4 text-xs font-bold text-slate-400 dark:text-slate-500 gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
             <span>Memperbarui notifikasi...</span>
           </div>
@@ -268,7 +268,7 @@ export function NotificationCenter({
             />
           ))
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-8 shadow-2xs">
+          <div className="neu-raised rounded-3xl p-8">
             {activeFilter === 'unread' ? (
               <EmptyState
                 icon={CheckCircle2}
@@ -288,18 +288,18 @@ export function NotificationCenter({
 
       {/* ── 4. Pagination Bar ───────────────────────────────────────────── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-2xs mt-4">
-          <p className="text-xs font-semibold text-slate-500">
-            Halaman <span className="font-extrabold text-slate-900">{page}</span> dari{' '}
-            <span className="font-extrabold text-slate-900">{totalPages}</span> ({totalCount} total)
+        <div className="flex items-center justify-between neu-raised px-4 py-3 rounded-3xl mt-4">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Halaman <span className="font-black text-slate-900 dark:text-slate-100">{page}</span> dari{' '}
+            <span className="font-black text-slate-900 dark:text-slate-100">{totalPages}</span> ({totalCount} total)
           </p>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => handlePageChange(page - 1)}
               disabled={page <= 1 || isPending}
-              className="p-1.5 rounded-lg border border-slate-200/80 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+              className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-600 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
               title="Halaman Sebelumnya"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -309,7 +309,7 @@ export function NotificationCenter({
               type="button"
               onClick={() => handlePageChange(page + 1)}
               disabled={page >= totalPages || isPending}
-              className="p-1.5 rounded-lg border border-slate-200/80 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95"
+              className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-600 dark:text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
               title="Halaman Selanjutnya"
             >
               <ChevronRight className="w-4 h-4" />

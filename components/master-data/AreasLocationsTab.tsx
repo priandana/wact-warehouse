@@ -127,15 +127,15 @@ export function AreasLocationsTab({
   return (
     <div className="space-y-4">
       {/* Tab Header & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-200/80 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised border border-black/[0.04] dark:border-white/[0.05]">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-extrabold text-[11px] border border-blue-200/60">
+          <div className="flex items-center gap-2.5">
+            <span className="px-2.5 py-0.5 rounded-full neu-inset-sm bg-blue-500/10 text-blue-600 dark:text-blue-400 font-black text-[11px] border border-blue-500/20">
               {warehouseCode}
             </span>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Area & Lokasi Operasional</h2>
+            <h2 className="text-base font-black text-slate-800 dark:text-slate-100 tracking-tight">Area & Lokasi Operasional</h2>
           </div>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             {activeAreasCount} Area Aktif • {activeLocationsCount} Lokasi Terdaftar di {warehouseName}
           </p>
         </div>
@@ -144,7 +144,7 @@ export function AreasLocationsTab({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCreateAreaOpen(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-xs transition-all touch-target"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl fintech-btn-primary font-bold text-xs active:scale-95 transition-all touch-target"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Tambah Area</span>
@@ -162,20 +162,20 @@ export function AreasLocationsTab({
             placeholder="Cari kode atau nama area/lokasi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9.5 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-2xs"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#EEF2F7] dark:bg-[#131C31] neu-inset rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl shrink-0 self-start sm:self-auto">
+        <div className="flex items-center gap-1 p-1.5 neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 rounded-2xl border border-black/[0.04] dark:border-white/[0.05] shrink-0 self-start sm:self-auto">
           {(['all', 'active', 'inactive'] as const).map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-bold transition-all',
+                'px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all',
                 statusFilter === st
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               {st === 'all' ? 'Semua' : st === 'active' ? 'Aktif' : 'Nonaktif'}
@@ -186,15 +186,15 @@ export function AreasLocationsTab({
 
       {/* Areas List */}
       {filteredAreas.length === 0 ? (
-        <div className="p-8 text-center bg-white rounded-2xl border border-slate-200/80 space-y-2">
-          <Building2 className="w-8 h-8 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-900">Tidak ada area yang cocok</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+        <div className="p-8 text-center bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-2">
+          <Building2 className="w-8 h-8 text-slate-400 mx-auto" />
+          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Tidak ada area yang cocok</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
             Coba ubah kata kunci pencarian atau filter status untuk menemukan area operasional.
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {filteredAreas.map((area) => {
             const areaLocs = locationsByArea.get(area.id) || [];
             const isExpanded = expandedAreas[area.id] !== false; // Default expanded
@@ -203,49 +203,49 @@ export function AreasLocationsTab({
               <div
                 key={area.id}
                 className={cn(
-                  'bg-white rounded-2xl border transition-all shadow-2xs overflow-hidden',
-                  area.is_active ? 'border-slate-200/80' : 'border-slate-200 bg-slate-50/50 opacity-80'
+                  'bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl border transition-all neu-raised overflow-hidden',
+                  area.is_active ? 'border-black/[0.04] dark:border-white/[0.05]' : 'border-black/[0.04] dark:border-white/[0.05] opacity-75'
                 )}
               >
                 {/* Area Header Row */}
-                <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/60 border-b border-slate-100">
+                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#E5EBF3]/60 dark:bg-[#101726]/60 border-b border-black/[0.04] dark:border-white/[0.05]">
                   <div className="flex items-start sm:items-center gap-3 min-w-0">
                     <button
                       onClick={() => toggleExpand(area.id)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-all mt-0.5 sm:mt-0"
+                      className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-all mt-0.5 sm:mt-0"
                       aria-label="Toggle expand"
                     >
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
 
-                    <div className="min-w-0 space-y-0.5">
+                    <div className="min-w-0 space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-xs font-black text-slate-900 px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs">
+                        <span className="font-mono text-xs font-black text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-xl neu-inset-sm border border-black/[0.04] dark:border-white/[0.05]">
                           {area.code}
                         </span>
-                        <span className="text-sm font-extrabold text-slate-900 tracking-tight truncate">
+                        <span className="text-sm font-black text-slate-800 dark:text-slate-100 tracking-tight truncate">
                           {area.name}
                         </span>
                         <span
                           className={cn(
-                            'text-[10px] font-bold px-2 py-0.5 rounded-full',
+                            'text-[10px] font-bold px-2.5 py-0.5 rounded-full neu-inset-sm',
                             area.is_active
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
-                              : 'bg-slate-100 text-slate-500 border border-slate-200'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                              : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
                           )}
                         >
                           {area.is_active ? 'Aktif' : 'Nonaktif'}
                         </span>
                       </div>
                       {area.description && (
-                        <p className="text-xs text-slate-500 font-medium truncate">{area.description}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate">{area.description}</p>
                       )}
                     </div>
                   </div>
 
                   {/* Area Actions */}
-                  <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
-                    <span className="text-xs font-semibold text-slate-500 px-2.5 py-1 bg-white rounded-lg border border-slate-200/60 shadow-2xs mr-1">
+                  <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 px-3 py-1.5 neu-inset-sm rounded-xl border border-black/[0.04] dark:border-white/[0.05] mr-1">
                       {areaLocs.length} Lokasi
                     </span>
 
@@ -283,40 +283,40 @@ export function AreasLocationsTab({
 
                 {/* Locations Under this Area */}
                 {isExpanded && (
-                  <div className="p-3 sm:p-4">
+                  <div className="p-3.5 sm:p-5">
                     {areaLocs.length === 0 ? (
-                      <div className="py-4 text-center text-xs text-slate-400 font-medium">
+                      <div className="py-5 text-center text-xs text-slate-400 font-medium italic">
                         Belum ada lokasi yang didaftarkan di area ini.
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {areaLocs.map((loc) => (
                           <div
                             key={loc.id}
                             className={cn(
-                              'p-3 rounded-xl border transition-all flex items-start justify-between gap-2 shadow-2xs',
+                              'p-3.5 rounded-2xl border transition-all flex items-start justify-between gap-2.5 neu-raised-sm',
                               loc.is_active
-                                ? 'bg-white border-slate-200/80 hover:border-slate-300'
-                                : 'bg-slate-50 border-slate-200/50 opacity-70'
+                                ? 'bg-[#EEF2F7] dark:bg-[#131C31] border-black/[0.04] dark:border-white/[0.05]'
+                                : 'bg-[#EEF2F7]/50 dark:bg-[#131C31]/50 border-black/[0.04] dark:border-white/[0.05] opacity-70'
                             )}
                           >
                             <div className="min-w-0 space-y-1">
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-mono text-[11px] font-bold text-blue-700 bg-blue-50/80 px-1.5 py-0.5 rounded border border-blue-200/50">
+                                <span className="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20 neu-inset-sm">
                                   {loc.code}
                                 </span>
                                 <span
                                   className={cn(
                                     'w-1.5 h-1.5 rounded-full shrink-0',
-                                    loc.is_active ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-slate-300'
+                                    loc.is_active ? 'bg-emerald-500 ring-2 ring-emerald-500/20' : 'bg-slate-400'
                                   )}
                                 />
                               </div>
-                              <p className="text-xs font-bold text-slate-900 tracking-tight truncate">
+                              <p className="text-xs font-black text-slate-800 dark:text-slate-100 tracking-tight truncate">
                                 {loc.name}
                               </p>
                               {loc.description && (
-                                <p className="text-[11px] text-slate-400 truncate">{loc.description}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{loc.description}</p>
                               )}
                             </div>
 
@@ -478,13 +478,13 @@ function CreateAreaModalForm({
     <BaseModal open={open} onClose={onClose} title="Tambah Area Baru" icon={Building2}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-600 dark:text-rose-400">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Kode Area <span className="text-rose-500">*</span>
           </label>
           <input
@@ -493,13 +493,13 @@ function CreateAreaModalForm({
             placeholder="Contoh: STORAGE_CHILLER"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase().replace(/\s+/g, '_'))}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-mono font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none uppercase"
           />
-          <p className="text-[11px] text-slate-400 mt-1">Gunakan huruf kapital dan garis bawah (A-Z, 0-9, _).</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Gunakan huruf kapital dan garis bawah (A-Z, 0-9, _).</p>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Nama Area <span className="text-rose-500">*</span>
           </label>
           <input
@@ -508,33 +508,33 @@ function CreateAreaModalForm({
             placeholder="Contoh: Storage Chiller"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi (Opsional)</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi (Opsional)</label>
           <textarea
             rows={2}
             placeholder="Keterangan fungsi atau zona area..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+            className="w-full px-3.5 py-2 neu-inset rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none resize-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold disabled:opacity-50 transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Simpan Area'}
           </button>
@@ -579,24 +579,24 @@ function EditAreaModalForm({
     <BaseModal open={open} onClose={onClose} title={`Edit Area: ${area.code}`} icon={Building2}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-600 dark:text-rose-400">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Kode Area</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Kode Area</label>
           <input
             type="text"
             disabled
             value={area.code}
-            className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-500 cursor-not-allowed"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-mono font-bold text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-70"
           />
-          <p className="text-[11px] text-slate-400 mt-1">Kode area terikat dengan integritas referensi dan tidak dapat diubah.</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Kode area terikat dengan integritas referensi dan tidak dapat diubah.</p>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Nama Area <span className="text-rose-500">*</span>
           </label>
           <input
@@ -604,32 +604,32 @@ function EditAreaModalForm({
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi</label>
           <textarea
             rows={2}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+            className="w-full px-3.5 py-2 neu-inset rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none resize-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold disabled:opacity-50 transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Perbarui Area'}
           </button>
@@ -683,13 +683,13 @@ function CreateLocationModalForm({
     <BaseModal open={open} onClose={onClose} title="Tambah Lokasi Baru" subtitle={`Area: ${area.name}`} icon={MapPin}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-600 dark:text-rose-400">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Kode Lokasi <span className="text-rose-500">*</span>
           </label>
           <input
@@ -698,12 +698,12 @@ function CreateLocationModalForm({
             placeholder="Contoh: CHILLER_ZONE_A"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase().replace(/\s+/g, '_'))}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-mono font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none uppercase"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Nama Lokasi <span className="text-rose-500">*</span>
           </label>
           <input
@@ -712,33 +712,33 @@ function CreateLocationModalForm({
             placeholder="Contoh: Chiller Zone A"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi</label>
           <textarea
             rows={2}
             placeholder="Keterangan spesifik letak rak / lorong..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+            className="w-full px-3.5 py-2 neu-inset rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none resize-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold disabled:opacity-50 transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Simpan Lokasi'}
           </button>
@@ -783,23 +783,23 @@ function EditLocationModalForm({
     <BaseModal open={open} onClose={onClose} title={`Edit Lokasi: ${location.code}`} icon={MapPin}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-600 dark:text-rose-400">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Kode Lokasi</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Kode Lokasi</label>
           <input
             type="text"
             disabled
             value={location.code}
-            className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-500 cursor-not-allowed"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-mono font-bold text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-70"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
             Nama Lokasi <span className="text-rose-500">*</span>
           </label>
           <input
@@ -807,32 +807,32 @@ function EditLocationModalForm({
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 neu-inset rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">Deskripsi</label>
+          <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi</label>
           <textarea
             rows={2}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+            className="w-full px-3.5 py-2 neu-inset rounded-2xl text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none resize-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold disabled:opacity-50 transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Perbarui Lokasi'}
           </button>

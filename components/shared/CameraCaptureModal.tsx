@@ -180,14 +180,16 @@ export function CameraCaptureModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
-      <div className="w-full max-w-lg bg-slate-900 rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden border border-slate-800 animate-in zoom-in-95">
+    <div className="fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
+      <div className="w-full max-w-lg bg-[#131C31] text-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-hidden border border-white/10 animate-in zoom-in-95">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0 bg-slate-900 text-white">
-          <div className="flex items-center gap-2">
-            <Camera className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-extrabold">Kamera Bukti</h3>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08] shrink-0 bg-[#131C31] text-white">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-blue-400">
+              <Camera className="w-4 h-4" />
+            </div>
+            <h3 className="text-sm font-extrabold tracking-tight">Kamera Bukti</h3>
           </div>
           <button
             type="button"
@@ -195,7 +197,7 @@ export function CameraCaptureModal({
               stopStream();
               onClose();
             }}
-            className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="neu-icon-well w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all active:scale-95"
           >
             <X className="w-4 h-4" />
           </button>

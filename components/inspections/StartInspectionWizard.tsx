@@ -202,25 +202,23 @@ export function StartInspectionWizard({
       {/* ── 1. Top Back Navigation ──────────────────────────────────────── */}
       <Link
         href="/inspections"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn-secondary text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Kembali ke Daftar Inspeksi</span>
       </Link>
 
       {/* ── 2. Header Banner Card ───────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-1 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised p-4 sm:p-6 space-y-1 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/70 shadow-2xs shrink-0">
+          <div className="w-10 h-10 rounded-xl neu-icon-well bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               Mulai Sesi Inspeksi QC
             </h1>
-            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Pilih aset gudang dan template checklist standar untuk memulai audit fisik
             </p>
           </div>
@@ -228,20 +226,20 @@ export function StartInspectionWizard({
       </div>
 
       {serverError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-start gap-2.5 shadow-2xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-800 dark:text-rose-200 text-xs font-bold flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">{serverError}</div>
         </div>
       )}
 
       {/* ── 3. Step 1: Warehouse & Asset Selection ──────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised p-4 sm:p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
           <div className="flex items-center gap-2.5">
-            <span className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
               1
             </span>
-            <h2 className="text-sm font-black text-slate-900">
+            <h2 className="text-sm font-black text-slate-900 dark:text-white">
               Pilih Aset yang Akan Diinspeksi
             </h2>
           </div>
@@ -249,9 +247,9 @@ export function StartInspectionWizard({
           <button
             type="button"
             onClick={() => setIsQRScannerOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn-secondary text-slate-800 dark:text-slate-200 font-bold text-xs transition-colors"
           >
-            <QrCode className="w-3.5 h-3.5 text-blue-600" />
+            <QrCode className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Scan QR Aset</span>
           </button>
         </div>
@@ -272,18 +270,18 @@ export function StartInspectionWizard({
         {/* Asset Search & Selector */}
         <div className="space-y-2.5">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={assetSearchQuery}
               onChange={(e) => setAssetSearchQuery(e.target.value)}
               placeholder="Ketik kode aset (contoh: BDG-LS-01) atau nama alat..."
-              className="w-full text-xs rounded-xl bg-slate-50 border border-slate-200 pl-9 pr-4 py-2.5 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full text-xs rounded-xl neu-inset pl-9 pr-4 py-2.5 font-medium placeholder:text-slate-400 focus:outline-hidden min-h-[42px]"
             />
           </div>
 
           {/* Asset Choice Cards */}
-          <div className="max-h-60 overflow-y-auto space-y-2 pr-1 rounded-2xl p-2 bg-slate-50/70 border border-slate-200/80">
+          <div className="max-h-60 overflow-y-auto space-y-2 pr-1 rounded-2xl p-2 neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.03] dark:border-white/[0.03]">
             {filteredAssets.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-400">
                 Tidak ada aset yang sesuai di gudang ini.
@@ -301,22 +299,22 @@ export function StartInspectionWizard({
                     }}
                     className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-blue-50/90 border border-blue-300 shadow-2xs ring-1 ring-blue-500/30'
-                        : 'bg-white border border-slate-200/80 hover:border-slate-300'
+                        ? 'neu-inset-sm bg-blue-500/10 border border-blue-500/30'
+                        : 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] hover:border-black/10 dark:hover:border-white/10'
                     }`}
                   >
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-xs font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 shadow-2xs">
+                        <span className="font-mono text-xs font-black text-blue-700 dark:text-blue-300 neu-inset-sm bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
                           {asset.asset_code}
                         </span>
-                        <span className="text-xs font-black text-slate-900 truncate">
+                        <span className="text-xs font-black text-slate-900 dark:text-white truncate">
                           {asset.name}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                         {asset.category?.name && (
-                          <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10.5px]">
+                          <span className="neu-inset-sm bg-[#EEF2F7] dark:bg-[#131C31] text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded text-[10.5px]">
                             {asset.category.name}
                           </span>
                         )}
@@ -326,7 +324,7 @@ export function StartInspectionWizard({
                     </div>
 
                     {isSelected && (
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
                     )}
                   </button>
                 );
@@ -338,16 +336,18 @@ export function StartInspectionWizard({
 
       {/* Draft Conflict Notice (if active draft exists) */}
       {activeDraft && (
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-amber-50 border border-amber-200/90 shadow-2xs space-y-3">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl neu-raised-sm bg-amber-500/10 border border-amber-500/25 space-y-3">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="p-2 rounded-xl neu-icon-well bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0">
+              <AlertCircle className="w-5 h-5" />
+            </div>
             <div className="space-y-1 flex-1">
-              <h3 className="text-xs font-black text-amber-900">
+              <h3 className="text-xs font-black text-amber-900 dark:text-amber-200">
                 Aset Memiliki Sesi Draft yang Sedang Berjalan
               </h3>
-              <p className="text-xs text-amber-800 leading-relaxed">
+              <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
                 Aset ini telah dimulai inspeksinya pada nomor{' '}
-                <span className="font-mono font-bold text-amber-950">
+                <span className="font-mono font-bold text-amber-950 dark:text-amber-100">
                   {activeDraft.inspection_number}
                 </span>{' '}
                 dan belum diselesaikan. Untuk menjaga integritas data, Anda dapat langsung melanjutkan draft ini.
@@ -358,7 +358,7 @@ export function StartInspectionWizard({
           <div className="flex items-center justify-end gap-2 pt-1">
             <Link
               href={`/inspections/${activeDraft.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs shadow-xs active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl fintech-btn-primary font-black text-xs transition-all"
             >
               <FileEdit className="w-4 h-4" />
               <span>Lanjutkan Sesi Draft Sekarang</span>
@@ -369,29 +369,29 @@ export function StartInspectionWizard({
 
       {/* ── 4. Step 2: Template Selection (Category-Matched) ─────────────── */}
       {selectedAsset && !activeDraft && (
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised p-4 sm:p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
+          <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
             <div className="flex items-center gap-2.5">
-              <span className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
+              <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
                 2
               </span>
-              <h2 className="text-sm font-black text-slate-900">
+              <h2 className="text-sm font-black text-slate-900 dark:text-white">
                 Pilih Template Checklist QC
               </h2>
             </div>
 
-            <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg">
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 neu-inset-sm bg-[#EEF2F7] dark:bg-[#131C31] px-2.5 py-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.05]">
               Kategori: {selectedAsset.category?.name || 'Semua'}
             </span>
           </div>
 
           {matchingTemplates.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
-              <Package className="w-8 h-8 text-slate-300 mx-auto" />
-              <h4 className="text-xs font-extrabold text-slate-800">
+            <div className="p-6 rounded-2xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.04] dark:border-white/[0.05] text-center space-y-2">
+              <Package className="w-8 h-8 text-slate-400 mx-auto" />
+              <h4 className="text-xs font-extrabold text-slate-800 dark:text-white">
                 Belum Ada Template untuk Kategori Ini
               </h4>
-              <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                 Kategori "{selectedAsset.category?.name || 'Aset Ini'}" belum memiliki template checklist aktif.
                 Silakan hubungi Administrator untuk membuat template baru.
               </p>
@@ -409,19 +409,19 @@ export function StartInspectionWizard({
                     key={tpl.id}
                     type="button"
                     onClick={() => setSelectedTemplateId(tpl.id)}
-                    className={`text-left p-4 rounded-xl border transition-all space-y-2 ${
+                    className={`text-left p-4 rounded-2xl border transition-all space-y-2 ${
                       isSelected
-                        ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-2xs'
-                        : 'bg-white border-slate-200/80 hover:border-slate-300'
+                        ? 'neu-inset-sm bg-blue-500/10 border-blue-500/30'
+                        : 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border-black/[0.04] dark:border-white/[0.05] hover:border-black/10 dark:hover:border-white/10'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="space-y-0.5">
-                        <h4 className="text-xs sm:text-sm font-black text-slate-900">
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                           {tpl.name}
                         </h4>
                         {tpl.description && (
-                          <p className="text-[11px] text-slate-500 line-clamp-2">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
                             {tpl.description}
                           </p>
                         )}
@@ -429,12 +429,12 @@ export function StartInspectionWizard({
 
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isSelected && (
-                          <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                          <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-[10.5px] font-bold text-slate-400 pt-1.5 border-t border-slate-100/80 flex-wrap">
+                    <div className="flex items-center gap-2.5 text-[10.5px] font-bold text-slate-400 pt-1.5 border-t border-black/[0.03] dark:border-white/[0.03] flex-wrap">
                       <span>{sectionCount} Bagian / Section</span>
                       <span>&bull;</span>
                       <span>{itemCount} Poin Checklist</span>
@@ -454,12 +454,12 @@ export function StartInspectionWizard({
 
           {/* Action Button */}
           {matchingTemplates.length > 0 && (
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
+            <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.05] flex items-center justify-end">
               <button
                 type="button"
                 onClick={handleStartInspection}
                 disabled={isSubmitting || !selectedTemplateId}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all disabled:opacity-50"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl fintech-btn-primary font-bold text-xs transition-all disabled:opacity-50 min-h-[44px]"
               >
                 {isSubmitting ? (
                   <>

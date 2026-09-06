@@ -14,7 +14,7 @@ export function ProfileSignOutButton() {
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
-        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/70 text-rose-700 font-bold text-xs transition-colors shadow-2xs active:scale-[0.99] touch-target"
+        className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl neu-raised hover:bg-rose-500/10 dark:hover:bg-rose-500/20 border border-rose-500/20 text-rose-700 dark:text-rose-400 font-bold text-xs transition-all active:scale-[0.99] touch-target cursor-pointer"
       >
         <LogOut className="w-4 h-4" />
         <span>Keluar dari Akun</span>

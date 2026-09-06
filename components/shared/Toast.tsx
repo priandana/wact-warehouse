@@ -131,7 +131,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: () => void
     <div
       role="status"
       className={cn(
-        'pointer-events-auto w-full rounded-2xl bg-white dark:bg-slate-900 border shadow-lg dark:shadow-2xl shadow-slate-900/10 p-3.5 sm:p-4 flex items-center justify-between gap-3 transition-all duration-200 backdrop-blur-md',
+        'pointer-events-auto w-full rounded-3xl bg-[#EEF2F7] dark:bg-[#131C31] border border-white/80 dark:border-white/5 shadow-[8px_8px_24px_rgba(163,177,198,0.38),-8px_-8px_24px_rgba(255,255,255,0.95)] dark:shadow-[8px_8px_24px_rgba(0,0,0,0.7),-4px_-4px_14px_rgba(255,255,255,0.03)] p-3.5 sm:p-4 flex items-center justify-between gap-3.5 transition-all duration-200 backdrop-blur-md',
         border,
         isExiting
           ? 'opacity-0 -translate-y-2 scale-95 duration-180'
@@ -139,11 +139,11 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: () => void
       )}
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs', iconBg)}>
+        <div className={cn('w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-[2.5px_2.5px_6px_rgba(163,177,198,0.25),-2.5px_-2.5px_6px_rgba(255,255,255,0.9)] dark:shadow-[2.5px_2.5px_6px_rgba(0,0,0,0.45),-1px_-1px_3px_rgba(255,255,255,0.02)] border border-white/70 dark:border-white/5', iconBg)}>
           <IconComp className="w-5 h-5 stroke-[2.2]" />
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
+          <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight tracking-tight">
             {item.title}
           </h4>
           {item.description && (
@@ -157,7 +157,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: () => void
       <button
         type="button"
         onClick={handleDismiss}
-        className="p-1.5 -mr-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+        className="p-1.5 -mr-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
         aria-label="Tutup notifikasi"
       >
         <X className="w-4 h-4" />

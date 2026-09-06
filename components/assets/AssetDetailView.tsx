@@ -26,6 +26,7 @@ import { AssetStatusBadge, AssetConditionBadge } from './AssetStatusBadge';
 import { AssetQRModal } from './AssetQRModal';
 import { EditAssetModal } from './EditAssetModal';
 import { deleteAssetAction } from '@/app/actions/assets';
+import { cn } from '@/lib/utils/cn';
 
 interface CategoryItem {
   id: string;
@@ -152,7 +153,7 @@ export function AssetDetailView({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <Link
           href="/assets"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="neu-btn-secondary inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Daftar Aset</span>
@@ -163,16 +164,16 @@ export function AssetDetailView({
             <button
               type="button"
               onClick={() => setIsEditOpen(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
+              className="neu-btn-secondary flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95"
             >
-              <Edit3 className="w-3.5 h-3.5" />
+              <Edit3 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>Ubah Data</span>
             </button>
             <button
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/60 font-bold text-xs transition-colors disabled:opacity-50 active:scale-95"
+              className="neu-btn-secondary flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-bold transition-all disabled:opacity-50 active:scale-95"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Hapus / Retire</span>
@@ -182,27 +183,27 @@ export function AssetDetailView({
       </div>
 
       {/* ── 2. Main Executive Identity Banner Card ───────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 relative overflow-hidden">
+      <div className="neu-raised rounded-3xl p-4 sm:p-6 space-y-4 relative overflow-hidden">
         {/* Subtle ambient gradient */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-500/10 via-indigo-500/5 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-              <span className="font-mono text-xs sm:text-sm font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200/70 shadow-2xs">
+              <span className="font-mono text-xs sm:text-sm font-black text-blue-700 dark:text-blue-400 neu-pill-active px-2.5 py-0.5 rounded-lg">
                 {asset.asset_code}
               </span>
               <AssetStatusBadge status={asset.status} size="md" />
               <AssetConditionBadge condition={condition} size="md" />
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-snug">
               {asset.name}
             </h1>
 
-            <div className="flex items-center gap-2.5 text-xs text-slate-500 font-semibold flex-wrap">
+            <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400 font-semibold flex-wrap">
               {asset.category?.name && (
-                <span className="flex items-center gap-1 text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                <span className="neu-pill-inactive flex items-center gap-1 text-slate-700 dark:text-slate-300 px-2.5 py-0.5 rounded-lg text-[11px]">
                   <Layers className="w-3.5 h-3.5 text-slate-500" />
                   <span>{asset.category.name}</span>
                 </span>
@@ -218,28 +219,28 @@ export function AssetDetailView({
           </div>
 
           {/* Primary Action Buttons */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap pt-2 lg:pt-0">
+          <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap pt-2 lg:pt-0">
             <button
               type="button"
               onClick={() => setIsQROpen(true)}
-              className="p-2.5 sm:p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors shrink-0 active:scale-95"
+              className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all shrink-0 active:scale-95"
               title="Tampilkan Label QR Code"
               aria-label="Tampilkan Label QR Code"
             >
-              <QrCode className="w-5 h-5 text-blue-600" />
+              <QrCode className="w-5 h-5" />
             </button>
 
             <Link
               href={`/inspections/new?asset_id=${asset.id}`}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs shadow-2xs active:scale-95 transition-all"
+              className="neu-btn-secondary flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-xs transition-all active:scale-95 text-slate-800 dark:text-slate-200"
             >
-              <ClipboardCheck className="w-4 h-4 text-emerald-600" />
+              <ClipboardCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Mulai Inspeksi</span>
             </Link>
 
             <Link
               href={reportProblemUrl}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-xs shadow-rose-500/20 active:scale-95 transition-all"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-md shadow-rose-500/25 active:scale-95 transition-all"
             >
               <AlertTriangle className="w-4 h-4" />
               <span>Laporkan Masalah</span>
@@ -248,30 +249,30 @@ export function AssetDetailView({
         </div>
 
         {/* 4 Summary Stat Tiles (2x2 on mobile, 4-col on desktop) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
-          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-            <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-3 border-t border-slate-200/40 dark:border-slate-800/60">
+          <div className="p-3.5 rounded-2xl neu-inset-sm">
+            <span className="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500">
               Kendala Aktif
             </span>
-            <span className={`text-lg font-black mt-0.5 block ${openCasesCount > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+            <span className={`text-lg font-black mt-0.5 block ${openCasesCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100'}`}>
               {openCasesCount}
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-            <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+          <div className="p-3.5 rounded-2xl neu-inset-sm">
+            <span className="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500">
               Total Riwayat Kasus
             </span>
-            <span className="text-lg font-black text-slate-900 mt-0.5 block">
+            <span className="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5 block">
               {cases.length}
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-            <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+          <div className="p-3.5 rounded-2xl neu-inset-sm">
+            <span className="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500">
               QC Terakhir
             </span>
-            <span className="text-xs font-bold text-slate-800 mt-1 block truncate">
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1 block truncate">
               {asset.last_inspection_at
                 ? new Date(asset.last_inspection_at).toLocaleDateString('id-ID', {
                     day: 'numeric',
@@ -282,11 +283,11 @@ export function AssetDetailView({
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
-            <span className="block text-[10px] font-extrabold uppercase text-slate-400">
+          <div className="p-3.5 rounded-2xl neu-inset-sm">
+            <span className="block text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500">
               Jadwal QC Berikutnya
             </span>
-            <span className="text-xs font-bold text-slate-700 mt-1 block truncate">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1 block truncate">
               {asset.next_inspection_at
                 ? new Date(asset.next_inspection_at).toLocaleDateString('id-ID', {
                     day: 'numeric',
@@ -304,12 +305,12 @@ export function AssetDetailView({
         {/* Left Column: Photo & Specifications */}
         <div className="lg:col-span-1 space-y-4">
           {/* Photo Card */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+          <div className="neu-raised rounded-3xl p-4 sm:p-5 space-y-3">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Dokumentasi Fisik Aset
             </h3>
             {asset.photo_signed_url ? (
-              <div className="aspect-4/3 rounded-xl overflow-hidden border border-slate-200">
+              <div className="aspect-4/3 rounded-2xl overflow-hidden neu-inset-sm">
                 <img
                   src={asset.photo_signed_url}
                   alt={asset.name}
@@ -317,10 +318,12 @@ export function AssetDetailView({
                 />
               </div>
             ) : (
-              <div className="aspect-4/3 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200/80 flex flex-col items-center justify-center text-slate-400 p-4 text-center">
-                <Package className="w-8 h-8 mb-1 text-slate-300" />
-                <span className="text-xs font-bold text-slate-600">Belum Ada Foto Fisik</span>
-                <span className="text-[10px] text-slate-400 mt-0.5">
+              <div className="aspect-4/3 rounded-2xl neu-inset-sm flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                <div className="w-10 h-10 rounded-2xl neu-icon-well flex items-center justify-center text-slate-400 mb-2">
+                  <Package className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Belum Ada Foto Fisik</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                   Foto fisik dapat diunggah melalui menu Ubah Data
                 </span>
               </div>
@@ -328,27 +331,27 @@ export function AssetDetailView({
           </div>
 
           {/* Specifications Card */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-3">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+          <div className="neu-raised rounded-3xl p-4 sm:p-5 space-y-3">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Spesifikasi & Identitas
             </h3>
 
-            <div className="divide-y divide-slate-100 text-xs">
-              <div className="py-2 flex justify-between">
-                <span className="text-slate-500 font-medium">Merek (Brand)</span>
-                <span className="font-bold text-slate-900">{brand || '-'}</span>
+            <div className="divide-y divide-slate-200/40 dark:divide-slate-800/60 text-xs">
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Merek (Brand)</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{brand || '-'}</span>
               </div>
-              <div className="py-2 flex justify-between">
-                <span className="text-slate-500 font-medium">Model / Tipe</span>
-                <span className="font-bold text-slate-900">{model || '-'}</span>
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Model / Tipe</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{model || '-'}</span>
               </div>
-              <div className="py-2 flex justify-between">
-                <span className="text-slate-500 font-medium">Nomor Seri</span>
-                <span className="font-mono font-bold text-slate-900">{serialNumber || '-'}</span>
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Nomor Seri</span>
+                <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{serialNumber || '-'}</span>
               </div>
-              <div className="py-2 flex justify-between">
-                <span className="text-slate-500 font-medium">Tanggal Pengadaan</span>
-                <span className="font-bold text-slate-900">
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Tanggal Pengadaan</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">
                   {asset.installed_date
                     ? new Date(asset.installed_date).toLocaleDateString('id-ID', {
                         day: 'numeric',
@@ -358,18 +361,18 @@ export function AssetDetailView({
                     : '-'}
                 </span>
               </div>
-              <div className="py-2 flex justify-between">
-                <span className="text-slate-500 font-medium">Token QR Code</span>
-                <span className="font-mono font-bold text-blue-700">{asset.qr_code_url || `WACT-${asset.asset_code}`}</span>
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Token QR Code</span>
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{asset.qr_code_url || `WACT-${asset.asset_code}`}</span>
               </div>
             </div>
 
             {notes && (
-              <div className="pt-2 border-t border-slate-100">
-                <span className="block text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+              <div className="pt-2.5 border-t border-slate-200/40 dark:border-slate-800/60">
+                <span className="block text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
                   Catatan Khusus
                 </span>
-                <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed neu-inset-sm p-3.5 rounded-2xl">
                   {notes}
                 </p>
               </div>
@@ -380,16 +383,17 @@ export function AssetDetailView({
         {/* Right Column: Case & Inspection History */}
         <div className="lg:col-span-2 space-y-4">
           {/* Tabs Container */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-4">
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl">
+          <div className="neu-raised rounded-3xl p-4 sm:p-5 space-y-4">
+            <div className="flex items-center gap-1.5 p-1 neu-inset-sm rounded-2xl">
               <button
                 type="button"
                 onClick={() => setActiveTab('cases')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all',
                   activeTab === 'cases'
-                    ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                    ? 'neu-raised text-blue-600 dark:text-blue-400 font-extrabold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                )}
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
                 <span>Riwayat Kendala ({cases.length})</span>
@@ -398,11 +402,12 @@ export function AssetDetailView({
               <button
                 type="button"
                 onClick={() => setActiveTab('inspections')}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all',
                   activeTab === 'inspections'
-                    ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                    ? 'neu-raised text-blue-600 dark:text-blue-400 font-extrabold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                )}
               >
                 <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Riwayat QC ({inspections.length})</span>
@@ -414,38 +419,40 @@ export function AssetDetailView({
               <div className="space-y-2">
                 {cases.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
-                    <h4 className="text-xs font-extrabold text-slate-800">
+                    <div className="w-12 h-12 rounded-2xl neu-icon-well flex items-center justify-center text-emerald-500 mx-auto">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
                       Tidak Ada Riwayat Kendala
                     </h4>
-                    <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
                       Aset ini belum pernah dilaporkan mengalami kerusakan atau gangguan operasional.
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-slate-100">
+                  <div className="divide-y divide-slate-200/40 dark:divide-slate-800/60">
                     {cases.map((c) => (
                       <Link
                         key={c.id}
                         href={`/cases/${c.id}`}
-                        className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2 rounded-xl transition-colors group block"
+                        className="py-3 flex items-center justify-between gap-3 hover:bg-blue-500/5 dark:hover:bg-blue-500/10 px-3 rounded-2xl transition-colors group block"
                       >
                         <div className="space-y-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-mono text-xs font-black text-blue-700">
+                            <span className="font-mono text-xs font-black text-blue-700 dark:text-blue-400 neu-pill-active px-2 py-0.5 rounded-lg">
                               {c.case_number}
                             </span>
-                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full neu-pill-inactive">
                               {c.status.replace('_', ' ')}
                             </span>
-                            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
+                            <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-900/40">
                               {c.priority}
                             </span>
                           </div>
-                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                             {c.title}
                           </p>
-                          <p className="text-[11px] text-slate-400">
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500">
                             Dilaporkan oleh {c.reporter?.full_name || 'Pelapor'} &bull;{' '}
                             {new Date(c.created_at).toLocaleDateString('id-ID', {
                               day: 'numeric',
@@ -455,7 +462,7 @@ export function AssetDetailView({
                           </p>
                         </div>
 
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0" />
                       </Link>
                     ))}
                   </div>
@@ -468,47 +475,49 @@ export function AssetDetailView({
               <div className="space-y-2">
                 {inspections.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
-                    <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto" />
-                    <h4 className="text-xs font-extrabold text-slate-800">
+                    <div className="w-12 h-12 rounded-2xl neu-icon-well flex items-center justify-center text-slate-400 mx-auto">
+                      <ClipboardCheck className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
                       Belum Ada Catatan QC
                     </h4>
-                    <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
                       Lakukan inspeksi pertama untuk mencatat riwayat pemeliharaan berkala aset ini.
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-slate-100">
+                  <div className="divide-y divide-slate-200/40 dark:divide-slate-800/60">
                     {inspections.map((insp) => (
                       <Link
                         key={insp.id}
                         href={`/inspections/${insp.id}`}
-                        className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2 rounded-xl transition-colors group block"
+                        className="py-3 flex items-center justify-between gap-3 hover:bg-blue-500/5 dark:hover:bg-blue-500/10 px-3 rounded-2xl transition-colors group block"
                       >
                         <div className="space-y-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-mono text-xs font-black text-blue-700">
+                            <span className="font-mono text-xs font-black text-blue-700 dark:text-blue-400 neu-pill-active px-2 py-0.5 rounded-lg">
                               {insp.inspection_number || 'INSP-QC'}
                             </span>
                             <span
                               className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
                                 insp.status === 'completed'
                                   ? insp.overall_result === 'ng'
-                                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    ? 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40'
+                                    : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40'
+                                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/40'
                               }`}
                             >
                               {insp.status === 'completed'
                                 ? insp.overall_result === 'ng'
-                                  ? 'SELESAI (NG)'
-                                  : 'SELESAI (OK)'
+                                ? 'SELESAI (NG)'
+                                : 'SELESAI (OK)'
                                 : 'DRAFT'}
                             </span>
                           </div>
-                          <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             Inspeksi QC Rutin
                           </p>
-                          <p className="text-[11px] text-slate-400">
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500">
                             Oleh {insp.inspector?.full_name || 'Inspector'} &bull;{' '}
                             {new Date(insp.created_at).toLocaleDateString('id-ID', {
                               day: 'numeric',
@@ -520,7 +529,7 @@ export function AssetDetailView({
                           </p>
                         </div>
 
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0" />
                       </Link>
                     ))}
                   </div>

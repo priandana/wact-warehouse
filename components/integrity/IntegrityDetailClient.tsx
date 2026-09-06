@@ -276,26 +276,26 @@ export function IntegrityDetailClient({
         <div className="flex items-center gap-3">
           <Link
             href="/integrity"
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-2xs"
+            className="neu-icon-well w-10 h-10 rounded-2xl text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xs"
             title="Kembali ke Daftar Laporan Integritas"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
           </Link>
 
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-black text-slate-900 font-mono">
+              <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 font-mono tracking-wide">
                 {report.report_code}
               </h1>
-              <span className={cn('text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border', statusMeta.badgeClass)}>
+              <span className={cn('text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border shadow-xs', statusMeta.badgeClass)}>
                 {statusMeta.label}
               </span>
-              <span className={cn('text-[10px] font-extrabold px-2 py-0.5 rounded-full border flex items-center gap-1', severityMeta.badgeClass)}>
+              <span className={cn('text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border flex items-center gap-1 shadow-xs', severityMeta.badgeClass)}>
                 <span className={cn('w-1.5 h-1.5 rounded-full', severityMeta.dotColor)} />
                 <span>{severityMeta.label}</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
               {categoryMeta?.label || report.category} &bull; {report.warehouse_name || 'Gudang'}
             </p>
           </div>
@@ -311,9 +311,9 @@ export function IntegrityDetailClient({
               setModalError(null);
               setActiveModal('severity');
             }}
-            className="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5"
+            className="neu-btn-secondary px-3.5 py-2 rounded-2xl text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95"
           >
-            <Tag className="w-3.5 h-3.5 text-slate-500" />
+            <Tag className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             <span>Ubah Severity</span>
           </button>
 
@@ -325,9 +325,9 @@ export function IntegrityDetailClient({
               setModalError(null);
               setActiveModal('assign');
             }}
-            className="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5"
+            className="neu-btn-secondary px-3.5 py-2 rounded-2xl text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95"
           >
-            <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+            <UserCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>{report.assigned_investigator_name ? 'Reassign' : 'Tugaskan Penyelidik'}</span>
           </button>
 
@@ -340,7 +340,7 @@ export function IntegrityDetailClient({
                 setModalError(null);
                 setActiveModal('resolve');
               }}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5"
+              className="fintech-btn-primary px-4 py-2 rounded-2xl text-white text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Selesaikan Investigasi</span>
@@ -353,7 +353,7 @@ export function IntegrityDetailClient({
                 setModalError(null);
                 setActiveModal('status');
               }}
-              className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 active:scale-95"
             >
               <Clock className="w-3.5 h-3.5" />
               <span>Buka Investigasi Ulang</span>
@@ -367,38 +367,38 @@ export function IntegrityDetailClient({
         {/* LEFT COLUMN: Case Overview, Parties, Evidences (5 Cols) */}
         <div className="lg:col-span-5 space-y-5">
           {/* Incident Summary Card */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 shadow-2xs">
-            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+          <div className="neu-raised rounded-3xl p-5 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Informasi Kejadian
             </h2>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <div className="p-3.5 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] space-y-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Kronologi Dilaporkan
                 </span>
-                <p className="text-slate-800 leading-relaxed whitespace-pre-wrap font-medium">
+                <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
                   {report.description}
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-0.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="p-3 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] space-y-0.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Waktu Kejadian
                   </span>
-                  <p className="font-bold text-slate-800">
+                  <p className="font-bold text-slate-800 dark:text-slate-200">
                     {report.incident_datetime
                       ? formatWib(report.incident_datetime, 'dd MMM yyyy, HH:mm')
                       : 'Tidak disebutkan'}
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-0.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                <div className="p-3 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] space-y-0.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Estimasi Kerugian
                   </span>
-                  <p className="font-bold text-emerald-600">
+                  <p className="font-bold text-emerald-600 dark:text-emerald-400">
                     {report.estimated_loss
                       ? `Rp ${report.estimated_loss.toLocaleString('id-ID')}`
                       : 'Tidak disebutkan'}
@@ -407,8 +407,8 @@ export function IntegrityDetailClient({
               </div>
 
               {report.involved_party_description && (
-                <div className="p-3 rounded-2xl bg-purple-50/60 border border-purple-200/70 space-y-1 text-purple-950">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 flex items-center gap-1">
+                <div className="p-3.5 rounded-2xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/70 dark:border-purple-800/40 space-y-1 text-purple-950 dark:text-purple-200">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 flex items-center gap-1">
                     <Users className="w-3 h-3" />
                     <span>Informasi Dugaan Pihak Terkait</span>
                   </span>
@@ -419,16 +419,16 @@ export function IntegrityDetailClient({
               )}
 
               {/* Investigator Assigned Box */}
-              <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-200/70 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-xl bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                    <Shield className="w-3.5 h-3.5" />
+              <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/70 dark:border-blue-800/40 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl neu-icon-well text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center">
+                    <Shield className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-300">
                       Penyelidik Utama
                     </span>
-                    <p className="text-xs font-bold text-blue-950">
+                    <p className="text-xs font-bold text-blue-950 dark:text-blue-200">
                       {report.assigned_investigator_name || 'Belum ditugaskan'}
                     </p>
                   </div>
@@ -438,9 +438,9 @@ export function IntegrityDetailClient({
           </div>
 
           {/* Evidence Photos Gallery Card */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 shadow-2xs">
+          <div className="neu-raised rounded-3xl p-5 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Foto Bukti Pendukung ({report.evidences?.length || 0})
               </h2>
 
@@ -456,7 +456,7 @@ export function IntegrityDetailClient({
                 type="button"
                 disabled={uploadingPhoto}
                 onClick={() => fileInputRef.current?.click()}
-                className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-colors flex items-center gap-1 touch-target"
+                className="neu-btn-secondary px-3 py-1.5 rounded-2xl text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all flex items-center gap-1 active:scale-95"
               >
                 {uploadingPhoto ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -468,18 +468,18 @@ export function IntegrityDetailClient({
             </div>
 
             {(!report.evidences || report.evidences.length === 0) ? (
-              <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/60 text-center text-xs text-slate-400 space-y-1">
-                <Camera className="w-5 h-5 mx-auto text-slate-300" />
+              <div className="p-6 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] text-center text-xs text-slate-400 space-y-1">
+                <Camera className="w-5 h-5 mx-auto text-slate-400" />
                 <p>Belum ada foto bukti terlampir.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2.5">
                 {report.evidences.map((ev) => (
                   <button
                     key={ev.id}
                     type="button"
                     onClick={() => setSelectedPhotoUrl(ev.signedUrl || null)}
-                    className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group"
+                    className="relative aspect-square rounded-2xl overflow-hidden neu-raised-sm border border-black/[0.04] dark:border-white/[0.05] bg-slate-900 group"
                   >
                     <img src={ev.signedUrl} alt={ev.file_name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
@@ -495,15 +495,15 @@ export function IntegrityDetailClient({
         {/* RIGHT COLUMN: Interactive Tabs (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
           {/* Tab Switcher */}
-          <div className="flex items-center p-1 bg-slate-100 border border-slate-200/80 rounded-2xl">
+          <div className="flex items-center p-1.5 neu-inset-sm bg-[#E5EBF3] dark:bg-[#101726] rounded-2xl">
             <button
               type="button"
               onClick={() => setActiveTab('messages')}
               className={cn(
-                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target',
+                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target active:scale-98',
                 activeTab === 'messages'
-                  ? 'bg-white text-blue-700 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-active shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -514,10 +514,10 @@ export function IntegrityDetailClient({
               type="button"
               onClick={() => setActiveTab('notes')}
               className={cn(
-                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target',
+                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target active:scale-98',
                 activeTab === 'notes'
-                  ? 'bg-white text-indigo-700 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-active shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -528,10 +528,10 @@ export function IntegrityDetailClient({
               type="button"
               onClick={() => setActiveTab('activities')}
               className={cn(
-                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target',
+                'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-target active:scale-98',
                 activeTab === 'activities'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-active shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               <History className="w-3.5 h-3.5" />
@@ -541,13 +541,13 @@ export function IntegrityDetailClient({
 
           {/* TAB 1: Anonymous Two-Way Messages */}
           {activeTab === 'messages' && (
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 shadow-2xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="neu-raised rounded-3xl p-5 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+              <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
                 <div className="space-y-0.5">
-                  <h3 className="text-xs font-black text-slate-900">
+                  <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 tracking-tight">
                     Percakapan Langsung dengan Pelapor Anonim
                   </h3>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Pesan yang Anda kirimkan di sini dapat dibaca pelapor melalui portal pelacakan anonim.
                   </p>
                 </div>
@@ -556,10 +556,10 @@ export function IntegrityDetailClient({
               {/* Message List */}
               <div className="space-y-3 max-h-96 overflow-y-auto pr-1 no-scrollbar">
                 {(!report.messages || report.messages.length === 0) ? (
-                  <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200/60 text-center text-xs text-slate-400 space-y-1">
-                    <MessageSquare className="w-6 h-6 mx-auto text-slate-300" />
+                  <div className="p-8 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] text-center text-xs text-slate-400 space-y-1">
+                    <MessageSquare className="w-6 h-6 mx-auto text-slate-400" />
                     <p>Belum ada pesan dalam laporan ini.</p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       Gunakan kotak input di bawah untuk mengajukan pertanyaan klarifikasi ke pelapor.
                     </p>
                   </div>
@@ -570,23 +570,23 @@ export function IntegrityDetailClient({
                       <div
                         key={msg.id}
                         className={cn(
-                          'p-4 rounded-2xl space-y-2 text-xs transition-all',
+                          'p-4 rounded-2xl space-y-2 text-xs transition-all shadow-xs',
                           isInvestigator
-                            ? 'bg-blue-50/80 border border-blue-200/80 text-blue-950 ml-4 sm:ml-8'
-                            : 'bg-slate-50 border border-slate-200 text-slate-800 mr-4 sm:mr-8'
+                            ? 'bg-blue-500/10 dark:bg-blue-900/20 border border-blue-500/30 text-blue-950 dark:text-blue-100 ml-4 sm:ml-8'
+                            : 'neu-inset-sm bg-[#E5EBF3]/80 dark:bg-[#101726]/80 border border-black/[0.04] dark:border-white/[0.05] text-slate-800 dark:text-slate-200 mr-4 sm:mr-8'
                         )}
                       >
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="font-extrabold flex items-center gap-1.5">
                             {isInvestigator ? (
                               <>
-                                <Shield className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                                <span className="text-blue-700">Penyelidik Integritas</span>
+                                <Shield className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                                <span className="text-blue-700 dark:text-blue-300">Penyelidik Integritas</span>
                               </>
                             ) : (
                               <>
-                                <Users className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                                <span className="text-slate-700 font-bold">Pelapor Anonim</span>
+                                <Users className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
+                                <span className="text-slate-700 dark:text-slate-300 font-bold">Pelapor Anonim</span>
                               </>
                             )}
                           </span>
@@ -607,7 +607,7 @@ export function IntegrityDetailClient({
                                 key={ev.id}
                                 type="button"
                                 onClick={() => setSelectedPhotoUrl(ev.signedUrl || null)}
-                                className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 shadow-2xs cursor-pointer max-w-[240px] w-full aspect-[4/3] flex flex-col items-center justify-center transition-all active:scale-[0.98] hover:ring-2 hover:ring-blue-500/40"
+                                className="group relative rounded-2xl overflow-hidden neu-raised-sm border border-black/[0.04] dark:border-white/[0.05] bg-slate-900 shadow-2xs cursor-pointer max-w-[240px] w-full aspect-[4/3] flex flex-col items-center justify-center transition-all active:scale-[0.98] hover:ring-2 hover:ring-blue-500/40"
                                 title="Klik untuk memperbesar foto bukti"
                               >
                                 <img
@@ -639,17 +639,17 @@ export function IntegrityDetailClient({
 
               {/* Conditional Send Message Form or Read-Only Notice */}
               {isIntegrityReportClosed(report.status) ? (
-                <div className="pt-3 border-t border-slate-100">
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-slate-200/80 text-slate-600 flex items-center justify-center shrink-0">
+                <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.05]">
+                  <div className="p-4 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl neu-icon-well text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
                       <Lock className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">
                         Investigasi Telah Selesai — Percakapan Ditutup
                       </h4>
-                      <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
-                        Laporan ini berstatus <span className="font-semibold text-slate-700">{statusMeta?.label || report.status}</span>. Percakapan dua arah dengan pelapor anonim telah dinonaktifkan.
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+                        Laporan ini berstatus <span className="font-semibold text-slate-700 dark:text-slate-300">{statusMeta?.label || report.status}</span>. Percakapan dua arah dengan pelapor anonim telah dinonaktifkan.
                       </p>
                     </div>
                   </div>
@@ -666,7 +666,7 @@ export function IntegrityDetailClient({
                   />
 
                   {msgPhotoPreview && (
-                    <div className="relative inline-block rounded-xl overflow-hidden border border-slate-300 bg-slate-100">
+                    <div className="relative inline-block rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
                       <img src={msgPhotoPreview} alt="Preview" className="w-20 h-20 object-cover" />
                       <button
                         type="button"
@@ -683,20 +683,20 @@ export function IntegrityDetailClient({
                     </div>
                   )}
 
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-2.5">
                     <textarea
                       rows={2}
                       value={msgInput}
                       onChange={(e) => setMsgInput(e.target.value)}
                       placeholder="Kirim pertanyaan atau klarifikasi ke pelapor anonim..."
-                      className="flex-1 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 leading-relaxed"
+                      className="flex-1 p-3 rounded-2xl neu-inset bg-transparent border-0 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 leading-relaxed"
                     />
 
                     <button
                       type="button"
                       disabled={processingMsgPhoto}
                       onClick={() => msgFileInputRef.current?.click()}
-                      className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-blue-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer touch-target"
+                      className="p-3 rounded-2xl neu-icon-well text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center justify-center shrink-0 cursor-pointer touch-target active:scale-95"
                       title="Lampirkan Foto Bukti"
                     >
                       <Camera className="w-5 h-5" />
@@ -705,7 +705,7 @@ export function IntegrityDetailClient({
                     <button
                       type="submit"
                       disabled={sendingMsg || (!msgInput.trim() && !msgPhotoBase64) || processingMsgPhoto}
-                      className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0 cursor-pointer"
+                      className="p-3 rounded-2xl fintech-btn-primary text-white font-bold text-xs disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0 cursor-pointer active:scale-95"
                       title="Kirim Pesan"
                     >
                       {sendingMsg ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
@@ -718,14 +718,14 @@ export function IntegrityDetailClient({
 
           {/* TAB 2: Internal Investigator Notes */}
           {activeTab === 'notes' && (
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="neu-raised rounded-3xl p-5 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+              <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
                 <div className="space-y-0.5">
-                  <h3 className="text-xs font-black text-slate-900 flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-indigo-600" />
+                  <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 flex items-center gap-1.5 tracking-tight">
+                    <Lock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Catatan Internal Tim Investigasi (Rahasia)</span>
                   </h3>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Hanya dapat dilihat oleh tim investigasi. <strong>Tidak dapat diakses</strong> oleh pelapor anonim.
                   </p>
                 </div>
@@ -734,17 +734,17 @@ export function IntegrityDetailClient({
               {/* Notes List */}
               <div className="space-y-3 max-h-96 overflow-y-auto pr-1 no-scrollbar">
                 {(!report.internal_notes || report.internal_notes.length === 0) ? (
-                  <div className="p-8 rounded-2xl bg-slate-50 border border-slate-200/60 text-center text-xs text-slate-400 space-y-1">
-                    <FileText className="w-6 h-6 mx-auto text-slate-300" />
+                  <div className="p-8 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] text-center text-xs text-slate-400 space-y-1">
+                    <FileText className="w-6 h-6 mx-auto text-slate-400" />
                     <p>Belum ada catatan internal.</p>
                   </div>
                 ) : (
                   report.internal_notes.map((note) => (
                     <div
                       key={note.id}
-                      className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-xs text-indigo-950 space-y-1.5"
+                      className="p-4 rounded-2xl bg-indigo-500/10 dark:bg-indigo-900/20 border border-indigo-500/30 text-xs text-indigo-950 dark:text-indigo-100 space-y-1.5 shadow-xs"
                     >
-                      <div className="flex items-center justify-between text-[11px] font-bold text-indigo-900">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-indigo-900 dark:text-indigo-300">
                         <span>{note.author_name || 'Investigator'}</span>
                         <span className="text-slate-400 font-mono text-[10px]">
                           {formatWib(note.created_at, 'dd MMM yyyy, HH:mm')}
@@ -757,18 +757,18 @@ export function IntegrityDetailClient({
               </div>
 
               {/* Add Note Form */}
-              <form onSubmit={handleAddNote} className="pt-2 flex items-start gap-2">
+              <form onSubmit={handleAddNote} className="pt-2 flex items-start gap-2.5">
                 <textarea
                   rows={2}
                   value={noteInput}
                   onChange={(e) => setNoteInput(e.target.value)}
                   placeholder="Tambahkan catatan temuan rahasia tim investigasi..."
-                  className="flex-1 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 leading-relaxed"
+                  className="flex-1 p-3 rounded-2xl neu-inset bg-transparent border-0 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 leading-relaxed"
                 />
                 <button
                   type="submit"
                   disabled={addingNote || !noteInput.trim()}
-                  className="p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 active:scale-95 disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0"
+                  className="p-3 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-xs shadow-md shadow-indigo-500/20 active:scale-95 disabled:opacity-50 transition-all touch-target flex items-center justify-center shrink-0"
                   title="Simpan Catatan"
                 >
                   {addingNote ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
@@ -779,8 +779,8 @@ export function IntegrityDetailClient({
 
           {/* TAB 3: Activity Audit Trail */}
           {activeTab === 'activities' && (
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-5 space-y-4 shadow-2xs">
-              <h3 className="text-xs font-black text-slate-900 border-b border-slate-100 pb-3">
+            <div className="neu-raised rounded-3xl p-5 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+              <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 border-b border-black/[0.04] dark:border-white/[0.05] pb-3 tracking-tight">
                 Log Riwayat Investigasi (Audit Trail)
               </h3>
 
@@ -791,17 +791,17 @@ export function IntegrityDetailClient({
                   report.activities.map((act) => (
                     <div
                       key={act.id}
-                      className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs space-y-1"
+                      className="p-3.5 rounded-2xl neu-inset-sm bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] text-xs space-y-1"
                     >
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-bold text-slate-800">
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
                           {act.action.replace(/_/g, ' ').toUpperCase()}
                         </span>
                         <span className="text-slate-400 font-mono text-[10px]">
                           {formatWib(act.created_at, 'dd MMM yyyy, HH:mm')}
                         </span>
                       </div>
-                      <p className="text-slate-500 text-[11px]">
+                      <p className="text-slate-500 dark:text-slate-400 text-[11px]">
                         Aktor: {act.actor_name || (act.actor_type === 'anonymous_reporter' ? 'Pelapor Anonim' : 'Sistem')}
                       </p>
                     </div>
@@ -817,24 +817,24 @@ export function IntegrityDetailClient({
 
       {/* Modal: Assign Investigator */}
       {activeModal === 'assign' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-black text-slate-900">Tugaskan Penyelidik Integritas</h3>
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="neu-raised-lg rounded-3xl p-6 max-w-md w-full bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 tracking-tight">Tugaskan Penyelidik Integritas</h3>
 
             {modalError && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-xs text-rose-700 dark:text-rose-300">
                 {modalError}
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+              <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Pilih Akun Penyelidik
               </label>
               <select
                 value={selectedCandidateId}
                 onChange={(e) => setSelectedCandidateId(e.target.value)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800"
+                className="w-full p-3 rounded-xl neu-inset bg-transparent border-0 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               >
                 <option value="">-- Pilih Penyelidik --</option>
                 {candidates.map((c) => (
@@ -845,12 +845,12 @@ export function IntegrityDetailClient({
               </select>
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
                 disabled={modalLoading}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                className="neu-btn-secondary flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 transition-all active:scale-95"
               >
                 Batal
               </button>
@@ -858,7 +858,7 @@ export function IntegrityDetailClient({
                 type="button"
                 onClick={handleAssign}
                 disabled={modalLoading || !selectedCandidateId}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 flex items-center justify-center gap-1.5"
+                className="fintech-btn-primary flex-1 py-2.5 rounded-2xl text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
               >
                 {modalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                 <span>Simpan</span>
@@ -870,12 +870,12 @@ export function IntegrityDetailClient({
 
       {/* Modal: Change Severity */}
       {activeModal === 'severity' && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-black text-slate-900">Ubah Tingkat Keparahan (Severity)</h3>
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="neu-raised-lg rounded-3xl p-6 max-w-md w-full bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 tracking-tight">Ubah Tingkat Keparahan (Severity)</h3>
 
             {modalError && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-xs text-rose-700 dark:text-rose-300">
                 {modalError}
               </div>
             )}
@@ -890,25 +890,25 @@ export function IntegrityDetailClient({
                     type="button"
                     onClick={() => setTargetSeverity(sev)}
                     className={cn(
-                      'w-full p-3 rounded-2xl border text-left flex items-center justify-between text-xs font-bold transition-all',
+                      'w-full p-3.5 rounded-2xl border text-left flex items-center justify-between text-xs font-bold transition-all active:scale-98',
                       isSelected
-                        ? 'bg-blue-50 border-blue-500 text-blue-950 ring-1 ring-blue-500'
-                        : 'bg-slate-50 border-slate-200 text-slate-800'
+                        ? 'neu-inset border-blue-500/40 text-blue-900 dark:text-blue-300'
+                        : 'neu-raised border-black/[0.04] dark:border-white/[0.05] text-slate-800 dark:text-slate-200'
                     )}
                   >
                     <span>{sMeta.label}</span>
-                    {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
                 disabled={modalLoading}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                className="neu-btn-secondary flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 transition-all active:scale-95"
               >
                 Batal
               </button>
@@ -916,7 +916,7 @@ export function IntegrityDetailClient({
                 type="button"
                 onClick={handleChangeSeverity}
                 disabled={modalLoading}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 flex items-center justify-center gap-1.5"
+                className="fintech-btn-primary flex-1 py-2.5 rounded-2xl text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
               >
                 {modalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tag className="w-4 h-4" />}
                 <span>Simpan</span>
@@ -928,27 +928,27 @@ export function IntegrityDetailClient({
 
       {/* Modal: Resolve / Status */}
       {(activeModal === 'resolve' || activeModal === 'status') && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <h3 className="text-sm font-black text-slate-900">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="neu-raised-lg rounded-3xl p-6 max-w-lg w-full bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 tracking-tight">
               {activeModal === 'resolve' ? 'Selesaikan Investigasi Integritas' : 'Perbarui Status Kasus'}
             </h3>
 
             {modalError && (
-              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
+              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-xs text-rose-700 dark:text-rose-300">
                 {modalError}
               </div>
             )}
 
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Status Akhir
                 </label>
                 <select
                   value={targetStatus}
                   onChange={(e) => setTargetStatus(e.target.value as IntegrityStatus)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800"
+                  className="w-full p-3 rounded-xl neu-inset bg-transparent border-0 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 >
                   <option value="triage">Screening / Triage</option>
                   <option value="investigating">Proses Investigasi</option>
@@ -960,7 +960,7 @@ export function IntegrityDetailClient({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Tindakan yang Diambil (Action Taken)
                 </label>
                 <input
@@ -968,12 +968,12 @@ export function IntegrityDetailClient({
                   value={resolutionAction}
                   onChange={(e) => setResolutionAction(e.target.value)}
                   placeholder="Contoh: Surat Peringatan (SP) & pengetatan kontrol akses"
-                  className="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                  className="w-full p-3 rounded-xl neu-inset bg-transparent border-0 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Catatan Kesimpulan / Hasil Investigasi (Dapat dibaca pelapor)
                 </label>
                 <textarea
@@ -981,17 +981,17 @@ export function IntegrityDetailClient({
                   value={resolutionNotes}
                   onChange={(e) => setResolutionNotes(e.target.value)}
                   placeholder="Ringkasan temuan dan konfirmasi penanganan..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900"
+                  className="w-full p-3 rounded-xl neu-inset bg-transparent border-0 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 leading-relaxed"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setActiveModal(null)}
                 disabled={modalLoading}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                className="neu-btn-secondary flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 transition-all active:scale-95"
               >
                 Batal
               </button>
@@ -999,7 +999,7 @@ export function IntegrityDetailClient({
                 type="button"
                 onClick={() => handleStatusChange(targetStatus)}
                 disabled={modalLoading}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 flex items-center justify-center gap-1.5"
+                className="fintech-btn-primary flex-1 py-2.5 rounded-2xl text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95"
               >
                 {modalLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                 <span>Simpan Status</span>
@@ -1019,14 +1019,14 @@ export function IntegrityDetailClient({
             <button
               type="button"
               onClick={() => setSelectedPhotoUrl(null)}
-              className="absolute -top-10 right-0 p-2 rounded-full bg-slate-800 text-white hover:bg-rose-600"
+              className="neu-icon-well absolute -top-12 right-0 p-2.5 rounded-2xl text-white hover:bg-rose-600 transition-all active:scale-95 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
             <img
               src={selectedPhotoUrl}
               alt="Bukti Foto"
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+              className="max-w-full max-h-[85vh] object-contain rounded-3xl neu-raised-lg border border-white/10"
             />
           </div>
         </div>

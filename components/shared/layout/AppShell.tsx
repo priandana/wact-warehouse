@@ -131,7 +131,7 @@ export function AppShell({
     else if (pathname === '/profile') currentTitle = 'Profil';
 
     return (
-      <div className="flex min-h-screen bg-[#F8FAFC]">
+      <div className="flex min-h-screen bg-[#EEF2F7] dark:bg-[#0D1322] text-[#172033] dark:text-[#F8FAFC]">
         <NavigationProgressBar />
         <Sidebar
           warehouseName={warehouseName}
@@ -142,8 +142,8 @@ export function AppShell({
           isSuperAdmin={isSuperAdmin}
         />
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Desktop Clean Topbar */}
-          <header className="h-16 px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-20 flex items-center justify-between relative">
+          {/* Desktop Clean Soft Topbar */}
+          <header className="h-16 px-8 bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md border-b border-white/70 dark:border-slate-800/50 sticky top-0 z-20 flex items-center justify-between relative shadow-[0_4px_12px_-4px_rgba(163,177,198,0.2)] dark:shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)]">
             {/* Indeterminate top indicator during warehouse switching */}
             {isSwitchingWarehouse && (
               <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-blue-100/50 overflow-hidden z-50 pointer-events-none">
@@ -152,11 +152,11 @@ export function AppShell({
             )}
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-400">
                 WACT
               </span>
-              <span className="text-slate-300 font-bold">/</span>
-              <span className="text-sm font-extrabold text-slate-900 tracking-tight">
+              <span className="text-slate-300 dark:text-slate-600 font-bold">/</span>
+              <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
                 {currentTitle}
               </span>
             </div>
@@ -167,14 +167,14 @@ export function AppShell({
                 type="button"
                 onClick={() => setIsFlyoutOpen((prev) => !prev)}
                 className={cn(
-                  'relative p-2 rounded-xl text-slate-500 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60 shadow-2xs transition-colors',
-                  isFlyoutOpen && 'bg-blue-50 text-blue-700 border-blue-200'
+                  'relative p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-[#EEF2F7] dark:bg-[#131C31] shadow-[3px_3px_8px_rgba(163,177,198,0.32),-3px_-3px_8px_rgba(255,255,255,0.95)] dark:shadow-[3px_3px_8px_rgba(0,0,0,0.5),-2px_-2px_6px_rgba(255,255,255,0.03)] border border-white/70 dark:border-white/5 hover:text-blue-600 active:scale-95 transition-all',
+                  isFlyoutOpen && 'shadow-[inset_2px_2px_4px_rgba(163,177,198,0.35),inset_-2px_-2px_4px_rgba(255,255,255,0.95)] text-blue-600'
                 )}
                 title="Notifikasi"
               >
                 <Bell className="w-4 h-4" />
                 {displayBadge && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white font-black text-[10px] flex items-center justify-center ring-2 ring-white shadow-xs">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white font-black text-[10px] flex items-center justify-center ring-2 ring-[#EEF2F7] dark:ring-[#131C31] shadow-xs">
                     {displayBadge}
                   </span>
                 )}
@@ -209,11 +209,11 @@ export function AppShell({
 
   // Mobile Composition
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFC]">
+    <div className="flex flex-col min-h-screen bg-[#EEF2F7] dark:bg-[#0D1322] text-[#172033] dark:text-[#F8FAFC]">
       <NavigationProgressBar />
 
       {/* Mobile Topbar */}
-      <header className="h-14 px-3 sm:px-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between relative">
+      <header className="h-14 px-3 sm:px-4 bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md border-b border-white/70 dark:border-slate-800/50 sticky top-0 z-30 flex items-center justify-between relative shadow-[0_2px_8px_-2px_rgba(163,177,198,0.2)] dark:shadow-[0_2px_8px_-2px_rgba(0,0,0,0.5)]">
         {/* Indeterminate top indicator during warehouse switching */}
         {isSwitchingWarehouse && (
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-blue-100/50 overflow-hidden z-50 pointer-events-none">
@@ -225,7 +225,7 @@ export function AppShell({
           <button
             type="button"
             onClick={() => setIsMobileDrawerOpen(true)}
-            className="p-1.5 -ml-1 rounded-xl text-slate-700 hover:bg-slate-100 touch-target flex items-center justify-center"
+            className="p-1.5 -ml-1 rounded-xl text-slate-700 dark:text-slate-200 bg-[#EEF2F7] dark:bg-[#131C31] shadow-[2.5px_2.5px_6px_rgba(163,177,198,0.3),-2.5px_-2.5px_6px_rgba(255,255,255,0.9)] dark:shadow-[2.5px_2.5px_6px_rgba(0,0,0,0.45),-2px_-2px_5px_rgba(255,255,255,0.03)] border border-white/60 dark:border-white/5 touch-target flex items-center justify-center active:scale-95 transition-all"
             aria-label="Buka Menu"
           >
             <Menu className="w-5 h-5" />
@@ -236,7 +236,7 @@ export function AppShell({
         <div className="flex items-center gap-2">
           <Link
             href="/notifications"
-            className="relative p-1.5 rounded-xl text-slate-600 hover:bg-slate-100 touch-target flex items-center justify-center"
+            className="relative p-1.5 rounded-xl text-slate-700 dark:text-slate-200 bg-[#EEF2F7] dark:bg-[#131C31] shadow-[2.5px_2.5px_6px_rgba(163,177,198,0.3),-2.5px_-2.5px_6px_rgba(255,255,255,0.9)] dark:shadow-[2.5px_2.5px_6px_rgba(0,0,0,0.45),-2px_-2px_5px_rgba(255,255,255,0.03)] border border-white/60 dark:border-white/5 touch-target flex items-center justify-center active:scale-95 transition-all"
             aria-label="Notifikasi"
           >
             <Bell className="w-4 h-4" />
@@ -248,7 +248,7 @@ export function AppShell({
           </Link>
           <Link
             href="/profile"
-            className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs"
+            className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-blue-500/25 ring-2 ring-white/80 dark:ring-slate-800"
             aria-label="Profil"
           >
             {getInitials(userName)}

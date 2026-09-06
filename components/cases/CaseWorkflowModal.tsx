@@ -230,7 +230,7 @@ export function CaseWorkflowModal({
         ref={dialogRef}
         tabIndex={-1}
         className={cn(
-          'relative z-10 w-full bg-white rounded-3xl shadow-2xl border border-slate-200/80 flex flex-col max-h-[min(calc(100dvh-2rem),640px)] sm:max-h-[85vh] overflow-hidden focus:outline-none',
+          'relative z-10 w-full bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl shadow-[10px_10px_30px_rgba(163,177,198,0.45),-10px_-10px_30px_rgba(255,255,255,0.95)] dark:shadow-[10px_10px_30px_rgba(0,0,0,0.6),-6px_-6px_20px_rgba(30,41,59,0.3)] border border-white/80 dark:border-slate-800/80 flex flex-col max-h-[min(calc(100dvh-2rem),640px)] sm:max-h-[85vh] overflow-hidden focus:outline-none',
           maxWidthClasses,
           isClosing ? 'animate-modal-dialog-out' : 'animate-modal-dialog',
           className
@@ -238,19 +238,19 @@ export function CaseWorkflowModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Dialog Header ────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0 bg-white">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/60 dark:border-slate-800 shrink-0 bg-[#EEF2F7] dark:bg-[#131C31]">
           <div className="flex items-center gap-2.5 min-w-0">
             {Icon && (
-              <div className="w-7 h-7 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#EEF2F7] dark:bg-[#0D1322] shadow-[2px_2px_5px_rgba(163,177,198,0.3),-2px_-2px_5px_rgba(255,255,255,0.9)] dark:shadow-[2px_2px_5px_rgba(0,0,0,0.4)] border border-white/70 dark:border-slate-800 flex items-center justify-center shrink-0">
                 <Icon className={cn('w-4 h-4', iconColor)} />
               </div>
             )}
             <div className="min-w-0">
-              <h3 id={titleId} className="text-sm font-extrabold text-slate-900 tracking-tight leading-snug truncate">
+              <h3 id={titleId} className="text-sm font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-snug truncate">
                 {title}
               </h3>
               {subtitle && (
-                <p id={descId} className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                <p id={descId} className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
                   {subtitle}
                 </p>
               )}
@@ -261,7 +261,7 @@ export function CaseWorkflowModal({
             type="button"
             onClick={onRequestClose}
             disabled={loading}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all touch-target flex items-center justify-center shrink-0 ml-2"
+            className="neu-btn-secondary p-1.5 rounded-xl active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all touch-target flex items-center justify-center shrink-0 ml-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
             aria-label="Tutup dialog"
           >
             <X className="w-4 h-4" />
@@ -276,7 +276,7 @@ export function CaseWorkflowModal({
         {/* ── Sticky Dialog Footer (if provided) ───────────────────────── */}
         {footer && (
           <div
-            className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 shrink-0 rounded-b-3xl"
+            className="flex items-center gap-2 px-5 py-3.5 border-t border-slate-200/60 dark:border-slate-800 bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 shrink-0 rounded-b-3xl"
             style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
           >
             {footer}

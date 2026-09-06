@@ -140,14 +140,14 @@ export function NotificationDropdownFlyout({
   return (
     <div
       ref={flyoutRef}
-      className="absolute right-0 top-12 w-[360px] bg-white rounded-2xl border border-slate-200/90 shadow-xl shadow-slate-900/10 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col"
+      className="absolute right-0 top-12 w-[360px] bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised-lg border border-slate-200/50 dark:border-slate-800/60 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col"
     >
       {/* ── 1. Flyout Header ────────────────────────────────────────────── */}
-      <div className="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+      <div className="p-3.5 border-b border-slate-200/40 dark:border-slate-800/60 flex items-center justify-between bg-slate-100/40 dark:bg-slate-800/40">
         <div className="flex items-center gap-2">
-          <span className="font-extrabold text-xs text-slate-900">Notifikasi</span>
+          <span className="font-black text-xs text-slate-900 dark:text-slate-100">Notifikasi</span>
           {unreadCount > 0 && (
-            <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-700 dark:text-blue-300">
               {unreadCount} Baru
             </span>
           )}
@@ -158,7 +158,7 @@ export function NotificationDropdownFlyout({
             type="button"
             onClick={handleMarkAllRead}
             disabled={isMarkingAll}
-            className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 hover:underline disabled:opacity-50"
+            className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 hover:underline disabled:opacity-50 cursor-pointer"
           >
             {isMarkingAll ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -171,9 +171,9 @@ export function NotificationDropdownFlyout({
       </div>
 
       {/* ── 2. Notification List ────────────────────────────────────────── */}
-      <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-100">
+      <div className="max-h-[320px] overflow-y-auto divide-y divide-slate-200/30 dark:divide-slate-800/50">
         {isLoading ? (
-          <div className="p-8 text-center text-xs font-bold text-slate-400 flex flex-col items-center gap-2">
+          <div className="p-8 text-center text-xs font-bold text-slate-400 dark:text-slate-500 flex flex-col items-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
             <span>Memuat notifikasi...</span>
           </div>
@@ -195,14 +195,14 @@ export function NotificationDropdownFlyout({
                 key={notif.id}
                 onClick={() => handleItemClick(notif)}
                 className={cn(
-                  'p-3 hover:bg-slate-50/80 cursor-pointer transition-colors flex items-start gap-2.5 select-none',
-                  !notif.is_read ? 'bg-blue-50/30' : ''
+                  'p-3.5 hover:bg-blue-500/5 dark:hover:bg-blue-400/5 cursor-pointer transition-colors flex items-start gap-3 select-none',
+                  !notif.is_read ? 'bg-blue-500/5' : ''
                 )}
               >
                 {!notif.is_read ? (
-                  <span className="w-2 h-2 rounded-full bg-blue-600 ring-2 ring-blue-100 shrink-0 mt-1.5" />
+                  <span className="w-2 h-2 rounded-full bg-blue-600 ring-2 ring-blue-500/20 shrink-0 mt-1.5" />
                 ) : (
-                  <span className="w-2 h-2 rounded-full bg-slate-200 shrink-0 mt-1.5" />
+                  <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0 mt-1.5" />
                 )}
 
                 <div className="min-w-0 flex-1 space-y-0.5">
@@ -210,25 +210,25 @@ export function NotificationDropdownFlyout({
                     <p
                       className={cn(
                         'text-xs truncate',
-                        notif.is_read ? 'font-medium text-slate-700' : 'font-extrabold text-slate-900'
+                        notif.is_read ? 'font-bold text-slate-700 dark:text-slate-300' : 'font-black text-slate-900 dark:text-slate-100'
                       )}
                     >
                       {notif.title}
                     </p>
-                    <span className="text-[10px] text-slate-400 shrink-0">{timeAgo}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{timeAgo}</span>
                   </div>
 
                   {notif.body && (
-                    <p className="text-[11px] text-slate-500 line-clamp-1 font-normal">{notif.body}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 font-normal">{notif.body}</p>
                   )}
 
                   {notif.caseInfo?.case_number && (
-                    <div className="flex items-center gap-1 text-[10px] pt-0.5">
-                      <span className="font-bold text-blue-700 font-mono">
+                    <div className="flex items-center gap-1.5 text-[10px] pt-0.5">
+                      <span className="font-bold text-blue-700 dark:text-blue-400 font-mono">
                         {notif.caseInfo.case_number}
                       </span>
                       {notif.caseInfo.warehouse_code && (
-                        <span className="px-1 py-0.2 rounded bg-slate-100 text-slate-600 font-bold">
+                        <span className="px-1.5 py-0.2 rounded font-mono neu-inset-sm text-slate-600 dark:text-slate-300 font-bold">
                           {notif.caseInfo.warehouse_code}
                         </span>
                       )}
@@ -239,20 +239,20 @@ export function NotificationDropdownFlyout({
             );
           })
         ) : (
-          <div className="p-6 text-center text-xs text-slate-400 space-y-1">
-            <CheckCircle2 className="w-6 h-6 text-slate-300 mx-auto" />
-            <p className="font-bold text-slate-600">Tidak ada notifikasi</p>
+          <div className="p-6 text-center text-xs text-slate-400 dark:text-slate-500 space-y-1">
+            <CheckCircle2 className="w-6 h-6 text-slate-300 dark:text-slate-600 mx-auto" />
+            <p className="font-bold text-slate-600 dark:text-slate-300">Tidak ada notifikasi</p>
             <p className="text-[11px]">Semua notifikasi sudah dibaca.</p>
           </div>
         )}
       </div>
 
       {/* ── 3. Flyout Footer ────────────────────────────────────────────── */}
-      <div className="p-2.5 border-t border-slate-100 bg-slate-50/70 text-center">
+      <div className="p-3 border-t border-slate-200/40 dark:border-slate-800/60 bg-slate-100/40 dark:bg-slate-800/40 text-center">
         <Link
           href="/notifications"
           onClick={onClose}
-          className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 hover:bg-slate-100 transition-colors"
+          className="neu-btn-secondary inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-2xl text-xs font-bold transition-colors cursor-pointer"
         >
           <span>Lihat Semua Notifikasi</span>
           <ArrowRight className="w-3.5 h-3.5" />

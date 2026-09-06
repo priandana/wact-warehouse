@@ -179,27 +179,25 @@ export function TemplateManagementView({
       <div className="flex items-center justify-between">
         <Link
           href="/inspections"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 neu-btn-secondary px-3 py-1.5 rounded-xl transition-all"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Kembali ke Daftar Inspeksi</span>
         </Link>
       </div>
 
       {/* ── 2. Header Banner ────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] neu-raised rounded-3xl border border-black/[0.04] dark:border-white/[0.05] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
         <div className="relative z-10 space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
               Master Template Checklist QC
             </h1>
-            <span className="text-xs font-mono font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200/70 shadow-2xs">
+            <span className="text-xs font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/20 neu-inset-sm">
               {templates.length} Aktif
             </span>
           </div>
-          <p className="text-xs text-slate-500 font-medium leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
             Standar audit keselamatan, kebersihan, dan integritas mekanis per kategori aset
           </p>
         </div>
@@ -208,7 +206,7 @@ export function TemplateManagementView({
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="relative z-10 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all self-start sm:self-center"
+            className="relative z-10 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl fintech-btn-primary font-bold text-xs active:scale-95 transition-all self-start sm:self-center"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Template Baru</span>
@@ -217,7 +215,7 @@ export function TemplateManagementView({
       </div>
 
       {!canManage && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-center gap-2 font-medium">
+        <div className="p-3.5 sm:p-4 rounded-2xl neu-inset-sm bg-slate-100/50 dark:bg-slate-900/40 border border-black/[0.04] dark:border-white/[0.05] text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 font-medium">
           <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
           <span>Mode Read-Only: Hanya Administrator yang berwenang menambah atau menonaktifkan template master.</span>
         </div>
@@ -232,32 +230,32 @@ export function TemplateManagementView({
           return (
             <div
               key={tpl.id}
-              className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden transition-all"
+              className="bg-[#EEF2F7] dark:bg-[#131C31] neu-raised rounded-3xl border border-black/[0.04] dark:border-white/[0.05] overflow-hidden transition-all"
             >
               {/* Header */}
               <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                    <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 neu-inset-sm px-2.5 py-1 rounded-xl border border-black/[0.04] dark:border-white/[0.05]">
                       Kategori: {tpl.category?.name || 'Global / Semua Aset'}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 neu-inset-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                       <span>Aktif</span>
                     </span>
                   </div>
 
-                  <h3 className="text-base font-black text-slate-900">
+                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100">
                     {tpl.name}
                   </h3>
 
                   {tpl.description && (
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                       {tpl.description}
                     </p>
                   )}
 
-                  <div className="flex items-center gap-2.5 text-[11px] font-bold text-slate-400 pt-0.5 flex-wrap">
+                  <div className="flex items-center gap-2.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-0.5 flex-wrap">
                     <span>{tpl.sections.length} Section</span>
                     <span>&bull;</span>
                     <span>{totalItems} Poin Checklist</span>
@@ -276,7 +274,7 @@ export function TemplateManagementView({
                   <button
                     type="button"
                     onClick={() => toggleExpand(tpl.id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl neu-btn-secondary text-slate-800 dark:text-slate-200 font-bold text-xs transition-all active:scale-95"
                   >
                     <span>{isExpanded ? 'Tutup Poin' : 'Lihat Poin Audit'}</span>
                     {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -287,7 +285,7 @@ export function TemplateManagementView({
                       type="button"
                       onClick={() => handleDeactivate(tpl.id, tpl.name)}
                       disabled={deactivatingId === tpl.id}
-                      className="p-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors disabled:opacity-50 active:scale-95"
+                      className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-rose-600 dark:text-rose-400 hover:text-rose-700 transition-colors disabled:opacity-50 active:scale-95"
                       title="Nonaktifkan Template"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -298,36 +296,36 @@ export function TemplateManagementView({
 
               {/* Accordion Detail: Sections & Items */}
               {isExpanded && (
-                <div className="bg-slate-50/70 p-4 sm:p-5 border-t border-slate-100 space-y-3 animate-in fade-in duration-100">
+                <div className="neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 p-4 sm:p-5 border-t border-black/[0.04] dark:border-white/[0.05] space-y-3 animate-in fade-in duration-100">
                   {tpl.sections.map((sec, sIdx) => (
                     <div
                       key={sec.id}
-                      className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 p-3.5 sm:p-4 space-y-2.5"
+                      className="bg-[#EEF2F7] dark:bg-[#131C31] neu-raised-sm rounded-2xl border border-black/[0.04] dark:border-white/[0.05] p-3.5 sm:p-4 space-y-2.5"
                     >
-                      <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                        <span className="w-4 h-4 rounded bg-blue-50 text-blue-700 font-mono font-black text-[10px] flex items-center justify-center border border-blue-200">
+                      <div className="flex items-center gap-2 border-b border-black/[0.04] dark:border-white/[0.05] pb-2">
+                        <span className="w-5 h-5 rounded-lg neu-inset-sm bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-black text-[10px] flex items-center justify-center border border-blue-500/20">
                           {sIdx + 1}
                         </span>
-                        <h4 className="text-xs font-black text-slate-900">
+                        <h4 className="text-xs font-black text-slate-800 dark:text-slate-100">
                           {sec.title}
                         </h4>
                       </div>
 
-                      <div className="divide-y divide-slate-100 text-xs">
+                      <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05] text-xs">
                         {sec.items.map((item, iIdx) => (
                           <div key={item.id} className="py-2 space-y-0.5">
                             <div className="flex items-center justify-between gap-2">
-                              <span className="font-bold text-slate-800">
+                              <span className="font-bold text-slate-800 dark:text-slate-200">
                                 {iIdx + 1}. {item.label}
                               </span>
                               {item.is_required && (
-                                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/60 shrink-0">
+                                <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20 neu-inset-sm shrink-0">
                                   Wajib
                                 </span>
                               )}
                             </div>
                             {item.description && (
-                              <p className="text-[11px] text-slate-500 pl-4">
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 pl-4">
                                 {item.description}
                               </p>
                             )}
@@ -345,31 +343,31 @@ export function TemplateManagementView({
 
       {/* ── 4. Create Modal ─────────────────────────────────────────────── */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 relative">
-            <div className="px-5 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
-              <h3 className="text-base font-black text-slate-900">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm overflow-hidden animate-in fade-in">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] neu-raised-lg rounded-3xl border border-black/[0.04] dark:border-white/[0.05] max-w-xl w-full max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 relative">
+            <div className="px-5 sm:px-6 py-4 border-b border-black/[0.04] dark:border-white/[0.05] flex items-center justify-between shrink-0 bg-[#EEF2F7] dark:bg-[#131C31]">
+              <h3 className="text-base font-black text-slate-800 dark:text-slate-100">
                 Buat Master Template Baru
               </h3>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateTemplate} className="flex flex-col flex-1 overflow-hidden">
               <div className="p-5 sm:p-6 overflow-y-auto overscroll-contain touch-pan-y space-y-4 flex-1">
                 {error && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                  <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold">
                     {error}
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     Nama Template <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -377,7 +375,7 @@ export function TemplateManagementView({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Contoh: Checklist Inspeksi Forklift Listrik"
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full text-xs rounded-2xl neu-inset p-3 font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                     required
                   />
                 </div>
@@ -394,7 +392,7 @@ export function TemplateManagementView({
                   />
 
                   <div>
-                    <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+                    <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                       Interval Siklus (Hari)
                     </label>
                     <input
@@ -402,13 +400,13 @@ export function TemplateManagementView({
                       value={intervalDays}
                       onChange={(e) => setIntervalDays(e.target.value)}
                       placeholder="Kosongkan jika manual"
-                      className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full text-xs rounded-2xl neu-inset p-3 font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     Deskripsi Panduan
                   </label>
                   <textarea
@@ -416,28 +414,28 @@ export function TemplateManagementView({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Instruksi singkat bagi inspector saat melakukan audit..."
-                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full text-xs rounded-2xl neu-inset p-3 font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Sticky Actions Footer */}
               <div
-                className="flex items-center gap-2 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50/90 backdrop-blur-xs shrink-0"
+                className="flex items-center gap-2.5 px-5 sm:px-6 py-3.5 border-t border-black/[0.04] dark:border-white/[0.05] bg-[#EEF2F7] dark:bg-[#131C31] shrink-0"
                 style={{ paddingBottom: 'max(0.875rem, env(safe-area-inset-bottom, 0px))' }}
               >
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl neu-btn-secondary text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || !name.trim()}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
+                  className="flex-1 py-2.5 rounded-xl fintech-btn-primary font-bold text-xs disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]"
                 >
                   {isSubmitting ? (
                     <>

@@ -17,7 +17,7 @@ export function PageHeader({ title, subtitle, backHref, actions, className }: Pa
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 bg-[--color-bg]/80 backdrop-blur-md border-b border-[--color-border-light]',
+        'sticky top-0 z-40 bg-[#EEF2F7]/90 dark:bg-[#0D1322]/90 backdrop-blur-md border-b border-black/[0.04] dark:border-white/[0.05] shadow-[0_2px_10px_rgba(163,177,198,0.2)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.4)]',
         'px-4 py-3 flex items-center gap-3',
         className,
       )}
@@ -25,7 +25,7 @@ export function PageHeader({ title, subtitle, backHref, actions, className }: Pa
       {backHref && (
         <Link
           href={backHref}
-          className="flex items-center justify-center w-9 h-9 rounded-xl hover:bg-gray-100 transition-colors shrink-0"
+          className="neu-icon-well flex items-center justify-center w-9 h-9 rounded-xl transition-all shrink-0 hover:scale-105 active:scale-95 text-slate-600 dark:text-slate-300"
           aria-label="Kembali"
         >
           <ArrowLeft className="w-5 h-5 text-[--color-text-primary]" />

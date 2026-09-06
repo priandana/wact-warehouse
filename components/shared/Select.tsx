@@ -330,23 +330,26 @@ export function Select<T extends string = string>({
   // Styles per variant
   const variantStyles = {
     default: cn(
-      'bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 text-slate-800',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white',
-      'shadow-2xs transition-all duration-150 active:scale-[0.99]'
+      'bg-[#EEF2F7] dark:bg-[#131C31] hover:bg-[#E8EDF5] dark:hover:bg-[#162038] border border-white/70 dark:border-white/5 text-slate-800 dark:text-slate-200',
+      'shadow-[3px_3px_8px_rgba(163,177,198,0.28),-3px_-3px_8px_rgba(255,255,255,0.9)] dark:shadow-[3px_3px_8px_rgba(0,0,0,0.45),-2px_-2px_5px_rgba(255,255,255,0.03)]',
+      'focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500',
+      'transition-all duration-150 active:scale-[0.99]'
     ),
     filter: cn(
-      'bg-slate-50/90 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
-      'shadow-2xs transition-all duration-150'
+      'bg-[#EEF2F7] dark:bg-[#131C31] hover:bg-[#E8EDF5] dark:hover:bg-[#162038] border border-white/70 dark:border-white/5 text-slate-700 dark:text-slate-300 font-semibold',
+      'shadow-[2.5px_2.5px_6px_rgba(163,177,198,0.25),-2.5px_-2.5px_6px_rgba(255,255,255,0.9)] dark:shadow-[2.5px_2.5px_6px_rgba(0,0,0,0.45),-2px_-2px_5px_rgba(255,255,255,0.03)]',
+      'focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500',
+      'transition-all duration-150'
     ),
     ghost: cn(
-      'bg-transparent hover:bg-slate-100/80 border border-transparent text-slate-700',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-slate-200'
+      'bg-transparent hover:bg-[#E8EDF5]/80 dark:hover:bg-white/5 border border-transparent text-slate-700 dark:text-slate-300',
+      'focus:outline-none focus:ring-2 focus:ring-blue-500/20'
     ),
     pill: cn(
-      'bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 font-semibold rounded-full',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
-      'shadow-2xs transition-all duration-150'
+      'bg-[#EEF2F7] dark:bg-[#131C31] hover:bg-[#E8EDF5] border border-white/70 dark:border-white/5 text-slate-800 dark:text-slate-200 font-semibold rounded-full',
+      'shadow-[3px_3px_8px_rgba(163,177,198,0.28),-3px_-3px_8px_rgba(255,255,255,0.9)] dark:shadow-[3px_3px_8px_rgba(0,0,0,0.45),-2px_-2px_5px_rgba(255,255,255,0.03)]',
+      'focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500',
+      'transition-all duration-150'
     ),
   };
 
@@ -454,8 +457,8 @@ export function Select<T extends string = string>({
               zIndex: 9999,
             }}
             className={cn(
-              'max-w-[calc(100vw-24px)] rounded-2xl bg-white/95 backdrop-blur-md',
-              'border border-slate-200/90 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/5',
+              'max-w-[calc(100vw-24px)] rounded-2xl bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md',
+              'border border-white/80 dark:border-white/5 shadow-[8px_8px_24px_rgba(163,177,198,0.38),-8px_-8px_24px_rgba(255,255,255,0.95)] dark:shadow-[8px_8px_24px_rgba(0,0,0,0.65),-4px_-4px_14px_rgba(255,255,255,0.03)]',
               'p-1.5 focus:outline-none animate-in fade-in zoom-in-95 duration-150',
               position.placement === 'bottom' ? 'slide-in-from-top-2' : 'slide-in-from-bottom-2',
               dropdownClassName
@@ -463,7 +466,7 @@ export function Select<T extends string = string>({
           >
             {/* Search Input for searchable Combobox */}
             {searchable && (
-              <div className="relative p-1 mb-1 border-b border-slate-100">
+              <div className="relative p-1 mb-1 border-b border-slate-200/50 dark:border-slate-800/60">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   ref={searchInputRef}
@@ -475,7 +478,7 @@ export function Select<T extends string = string>({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder={searchPlaceholder}
-                  className="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white rounded-xl border border-slate-200/70 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium transition-all"
+                  className="w-full pl-8 pr-7 py-2 text-xs bg-[#EEF2F7] dark:bg-[#0D1322] rounded-xl border border-slate-300/30 dark:border-slate-800 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none shadow-[inset_2px_2px_4px_rgba(163,177,198,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] dark:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6),inset_-1px_-1px_3px_rgba(255,255,255,0.03)] font-medium transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -493,7 +496,7 @@ export function Select<T extends string = string>({
             )}
 
             {/* Options List */}
-            <div className="max-h-60 overflow-y-auto space-y-0.5 no-scrollbar py-0.5">
+            <div className="max-h-60 overflow-y-auto space-y-1 no-scrollbar py-0.5">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((opt, idx) => {
                   const isSelected = opt.value === selectedValue;
@@ -512,10 +515,10 @@ export function Select<T extends string = string>({
                       className={cn(
                         'w-full flex items-center justify-between px-3 py-2 rounded-xl text-left cursor-pointer transition-all duration-100 select-none text-xs font-semibold',
                         isSelected
-                          ? 'bg-blue-50/90 text-blue-700 font-bold'
+                          ? 'bg-[#EEF2F7] dark:bg-[#0D1322] text-blue-700 dark:text-blue-300 font-bold shadow-[inset_2px_2px_4px_rgba(163,177,198,0.35),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] border border-blue-500/20'
                           : isHighlighted
-                          ? 'bg-slate-100/90 text-slate-900'
-                          : 'text-slate-700 hover:bg-slate-50',
+                          ? 'bg-white/60 dark:bg-white/5 text-slate-900 dark:text-white'
+                          : 'text-slate-700 dark:text-slate-300 hover:bg-white/40',
                         opt.disabled && 'opacity-40 cursor-not-allowed bg-transparent hover:bg-transparent'
                       )}
                     >

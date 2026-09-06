@@ -79,44 +79,44 @@ export function SlaConfigTab({
   return (
     <div className="space-y-4">
       {/* Header Banner */}
-      <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+      <div className="p-5 bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#EEF2F7] dark:bg-[#101726] neu-inset-sm text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0 border border-blue-500/20">
                 <Clock className="w-4 h-4" />
               </div>
-              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Konfigurasi Target Waktu SLA</h2>
+              <h2 className="text-base font-black text-slate-800 dark:text-slate-100 tracking-tight">Konfigurasi Target Waktu SLA</h2>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Target penyelesaian kasus berdasarkan tingkat prioritas dan ketentuan operasional
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-extrabold text-xs border border-blue-200/60">
+            <span className="px-3 py-1.5 rounded-xl bg-[#EEF2F7] dark:bg-[#101726] neu-inset-sm text-blue-700 dark:text-blue-400 font-extrabold text-xs border border-blue-500/20">
               {warehouseCode} — {warehouseName}
             </span>
           </div>
         </div>
 
         {/* SLA Resolution Hierarchy Card */}
-        <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70 text-xs text-slate-600 space-y-1.5">
-          <div className="flex items-center gap-1.5 font-bold text-slate-900">
-            <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
+        <div className="p-4 bg-[#EEF2F7] dark:bg-[#101726] rounded-2xl neu-inset-sm border border-black/[0.04] dark:border-white/[0.05] text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
+          <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-slate-100">
+            <HelpCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Hirarki Penentuan Deadline Kasus:</span>
           </div>
           <p className="leading-relaxed">
-            <strong className="text-slate-800">1. Override Gudang Aktif</strong> (jika diatur) → <strong className="text-slate-800">2. Default Global</strong> → <strong className="text-slate-800">3. System Fallback</strong> (1j / 4j / 24j / 72j).
+            <strong className="text-slate-800 dark:text-slate-200">1. Override Gudang Aktif</strong> (jika diatur) → <strong className="text-slate-800 dark:text-slate-200">2. Default Global</strong> → <strong className="text-slate-800 dark:text-slate-200">3. System Fallback</strong> (1j / 4j / 24j / 72j).
           </p>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
             Perubahan SLA hanya berlaku untuk pelaporan kasus baru dan tidak mengubah due_date kasus yang sedang berjalan.
           </p>
         </div>
       </div>
 
       {/* SLA Priority Comparison Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {PRIORITY_ORDER.map((priority) => {
           const global = globalSlas.find((g) => g.priority === priority);
           const override = warehouseSlas.find((w) => w.priority === priority);
@@ -130,19 +130,19 @@ export function SlaConfigTab({
             <div
               key={priority}
               className={cn(
-                'p-4 bg-white rounded-2xl border transition-all shadow-2xs flex flex-col justify-between gap-3',
-                isOverridden ? 'border-blue-200 bg-blue-50/10' : 'border-slate-200/80 hover:border-slate-300'
+                'p-5 bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between gap-4',
+                isOverridden && 'ring-1 ring-blue-500/30'
               )}
             >
               {/* Card Header */}
-              <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <span className={cn('w-2.5 h-2.5 rounded-full', meta.badge)} />
-                  <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{meta.label}</span>
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-black/[0.04] dark:border-white/[0.05]">
+                <div className="flex items-center gap-2.5">
+                  <span className={cn('w-2.5 h-2.5 rounded-full ring-2 ring-black/5 dark:ring-white/10', meta.badge)} />
+                  <span className="text-sm font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">{meta.label}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-400">Effective:</span>
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-900 text-white font-extrabold text-xs shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Effective:</span>
+                  <span className="px-3 py-1 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-black text-xs shadow-xs">
                     {effectiveHours} Jam
                   </span>
                 </div>
@@ -151,16 +151,18 @@ export function SlaConfigTab({
               {/* Rows: Global Default vs Warehouse Override */}
               <div className="space-y-2.5 text-xs">
                 {/* Global Row */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 min-h-[56px] gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Globe className="w-4 h-4 text-purple-600 shrink-0" />
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#101726] neu-inset-sm border border-black/[0.04] dark:border-white/[0.05] min-h-[56px] gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+                      <Globe className="w-4 h-4" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-slate-800 leading-tight">Default Global</p>
-                      <p className="text-[10px] text-slate-400 leading-tight truncate">Berlaku untuk semua gudang</p>
+                      <p className="font-bold text-slate-800 dark:text-slate-200 leading-tight">Default Global</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">Berlaku untuk semua gudang</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="font-extrabold text-slate-900 text-xs sm:text-sm">
+                    <span className="font-black text-slate-900 dark:text-slate-100 text-xs sm:text-sm">
                       {global ? `${global.duration_hours} Jam` : '—'}
                     </span>
                     {isSuperAdmin && global ? (
@@ -179,17 +181,19 @@ export function SlaConfigTab({
                 {/* Warehouse Override Row */}
                 <div
                   className={cn(
-                    'flex items-center justify-between p-3 rounded-xl border transition-all min-h-[56px] gap-2',
+                    'flex items-center justify-between p-3.5 rounded-2xl border transition-all min-h-[56px] gap-2.5 neu-inset-sm',
                     isOverridden
-                      ? 'bg-blue-50/60 border-blue-200/80 text-blue-950'
-                      : 'bg-slate-50/60 border-slate-200/60 text-slate-700'
+                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-950 dark:text-blue-200'
+                      : 'bg-[#EEF2F7] dark:bg-[#101726] border-black/[0.04] dark:border-white/[0.05] text-slate-700 dark:text-slate-300'
                   )}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+                      <Building2 className="w-4 h-4" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-slate-800 leading-tight">Override {warehouseCode}</p>
-                      <p className="text-[10px] text-slate-400 leading-tight truncate">
+                      <p className="font-bold text-slate-800 dark:text-slate-200 leading-tight">Override {warehouseCode}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">
                         {isOverridden ? 'Aktif khusus gudang ini' : 'Belum diatur (mengikuti global)'}
                       </p>
                     </div>
@@ -198,8 +202,8 @@ export function SlaConfigTab({
                   <div className="flex items-center gap-2 shrink-0">
                     <span
                       className={cn(
-                        'font-extrabold text-xs sm:text-sm',
-                        isOverridden ? 'text-blue-900 font-black' : 'text-slate-500 font-medium'
+                        'text-xs sm:text-sm',
+                        isOverridden ? 'text-blue-900 dark:text-blue-300 font-black' : 'text-slate-500 dark:text-slate-400 font-semibold'
                       )}
                     >
                       {isOverridden ? `${override.duration_hours} Jam` : 'Mengikuti Global'}
@@ -331,13 +335,13 @@ function EditGlobalSlaModalForm({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-700 dark:text-rose-400 neu-inset-sm">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             Target Durasi (Jam) <span className="text-rose-500">*</span>
           </label>
           <input
@@ -347,22 +351,22 @@ function EditGlobalSlaModalForm({
             required
             value={durationHours}
             onChange={(e) => setDurationHours(parseFloat(e.target.value) || 1)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 bg-[#EEF2F7] dark:bg-[#101726] border border-black/[0.04] dark:border-white/[0.05] rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 fintech-input neu-inset transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold text-slate-700 dark:text-slate-300 transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Simpan SLA Global'}
           </button>
@@ -427,20 +431,20 @@ function UpsertWarehouseOverrideModalForm({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-700 dark:text-rose-400 neu-inset-sm">
             {error}
           </div>
         )}
 
-        <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200/60 text-xs text-blue-900 space-y-1">
+        <div className="p-3.5 bg-[#EEF2F7] dark:bg-[#101726] rounded-xl neu-inset-sm border border-blue-500/20 text-xs text-blue-900 dark:text-blue-300 space-y-1">
           <p className="font-bold">Khusus Gudang {warehouseCode}:</p>
-          <p className="text-[11px] leading-relaxed">
+          <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
             Target SLA ini akan menggantikan Default Global ({globalHours} Jam) khusus untuk kasus baru di gudang ini.
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             Target Durasi Override (Jam) <span className="text-rose-500">*</span>
           </label>
           <input
@@ -450,22 +454,22 @@ function UpsertWarehouseOverrideModalForm({
             required
             value={durationHours}
             onChange={(e) => setDurationHours(parseFloat(e.target.value) || 1)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-3.5 py-2.5 bg-[#EEF2F7] dark:bg-[#101726] border border-black/[0.04] dark:border-white/[0.05] rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 fintech-input neu-inset transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
+        <div className="flex items-center gap-2.5 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all touch-target"
+            className="flex-1 py-2.5 px-4 rounded-xl neu-btn-secondary text-xs font-bold text-slate-700 dark:text-slate-300 transition-all touch-target"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
+            className="flex-1 py-2.5 px-4 rounded-xl fintech-btn-primary text-xs font-bold text-white shadow-xs transition-all touch-target flex items-center justify-center"
           >
             {loading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Simpan Override'}
           </button>

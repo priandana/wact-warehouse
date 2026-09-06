@@ -394,7 +394,7 @@ export default function PublicIntegrityReportPage() {
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         {/* Receipt Header Banner */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/10 mb-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl neu-icon-well bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 mb-2">
             <CheckCircle2 className="w-8 h-8" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -406,12 +406,14 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* Security Credential Card */}
-        <div className="bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-6 relative overflow-hidden">
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] border border-emerald-500/30 neu-raised-lg rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
           {/* Subtle Security Watermark Background */}
           <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          <div className="flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <div className="flex items-center gap-2.5 pb-4 border-b border-black/[0.04] dark:border-white/[0.05]">
+            <div className="w-9 h-9 rounded-xl neu-icon-well bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 Kredensial Pelacakan Rahasia
@@ -429,13 +431,13 @@ export default function PublicIntegrityReportPage() {
               {copiedCode && <span className="text-emerald-600 text-xs font-semibold">Tersalin!</span>}
             </label>
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 font-mono text-base sm:text-lg font-extrabold tracking-wider text-slate-900 dark:text-white">
+              <div className="flex-1 bg-[#E5EBF3] dark:bg-[#0D1322] neu-inset rounded-xl px-4 py-3 font-mono text-base sm:text-lg font-extrabold tracking-wider text-slate-900 dark:text-white">
                 {createdReportCode}
               </div>
               <button
                 type="button"
                 onClick={() => copyToClipboard(createdReportCode, 'code')}
-                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0 cursor-pointer"
+                className="p-3 rounded-xl neu-btn-secondary transition-colors shrink-0 cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Salin Nomor Laporan"
               >
                 {copiedCode ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
@@ -450,12 +452,12 @@ export default function PublicIntegrityReportPage() {
               {copiedSecret && <span className="text-emerald-600 text-xs font-semibold">Tersalin!</span>}
             </label>
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 font-mono text-sm sm:text-base font-bold tracking-wider text-slate-900 dark:text-white flex items-center justify-between overflow-x-auto">
+              <div className="flex-1 bg-[#E5EBF3] dark:bg-[#0D1322] neu-inset rounded-xl px-4 py-3 font-mono text-sm sm:text-base font-bold tracking-wider text-slate-900 dark:text-white flex items-center justify-between overflow-x-auto">
                 <span>{showSecret ? createdAccessSecret : '••••-••••-••••-••••-••••-••••'}</span>
                 <button
                   type="button"
                   onClick={() => setShowSecret(!showSecret)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 focus:outline-none cursor-pointer"
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 focus:outline-hidden cursor-pointer"
                   title={showSecret ? 'Sembunyikan' : 'Tampilkan'}
                 >
                   {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -464,7 +466,7 @@ export default function PublicIntegrityReportPage() {
               <button
                 type="button"
                 onClick={() => copyToClipboard(createdAccessSecret, 'secret')}
-                className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-blue-200 dark:border-slate-700 transition-colors shrink-0 cursor-pointer"
+                className="p-3 rounded-xl neu-btn-secondary transition-colors shrink-0 cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title="Salin Kunci Akses"
               >
                 {copiedSecret ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
@@ -473,7 +475,7 @@ export default function PublicIntegrityReportPage() {
           </div>
 
           {/* Warning Alert */}
-          <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3">
+          <div className="p-4 rounded-xl neu-raised-sm bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3">
             <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="font-bold">Kunci ini tidak dapat dipulihkan jika hilang!</p>
@@ -487,7 +489,7 @@ export default function PublicIntegrityReportPage() {
           <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
             <Link
               href={`/integrity/track?code=${encodeURIComponent(createdReportCode)}&secret=${encodeURIComponent(createdAccessSecret)}`}
-              className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md shadow-blue-500/20 text-center flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+              className="w-full sm:flex-1 py-3 px-4 rounded-xl sm:rounded-2xl fintech-btn-primary text-center flex items-center justify-center gap-2 font-bold text-sm min-h-[44px]"
             >
               <span>Pantau Status Laporan Sekarang</span>
               <ArrowRight className="w-4 h-4" />
@@ -504,7 +506,7 @@ export default function PublicIntegrityReportPage() {
                 setPhotoPreview(null);
                 setPhotoBase64(null);
               }}
-              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-colors cursor-pointer"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl sm:rounded-2xl neu-btn-secondary font-semibold text-sm transition-colors cursor-pointer min-h-[44px]"
             >
               Buat Laporan Baru
             </button>
@@ -540,7 +542,7 @@ export default function PublicIntegrityReportPage() {
           <button
             type="button"
             onClick={() => setIsTrustModalOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all cursor-pointer group min-h-[38px] max-w-full text-center"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full neu-inset-sm bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs font-bold hover:bg-blue-500/15 transition-all cursor-pointer group min-h-[38px] max-w-full text-center"
           >
             <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
             <span className="truncate">Lihat bagaimana anonimitas bekerja</span>
@@ -577,8 +579,8 @@ export default function PublicIntegrityReportPage() {
 
       {/* 3-Point Privacy & Compliance Pillars */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3.5 w-full">
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+        <div className="p-3.5 sm:p-4 rounded-2xl neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] flex items-center md:items-start gap-3">
+          <div className="w-9 h-9 rounded-xl neu-icon-well bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Lock className="w-4 h-4" />
           </div>
           <div>
@@ -589,8 +591,8 @@ export default function PublicIntegrityReportPage() {
           </div>
         </div>
 
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+        <div className="p-3.5 sm:p-4 rounded-2xl neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] flex items-center md:items-start gap-3">
+          <div className="w-9 h-9 rounded-xl neu-icon-well bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Camera className="w-4 h-4" />
           </div>
           <div>
@@ -601,8 +603,8 @@ export default function PublicIntegrityReportPage() {
           </div>
         </div>
 
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center md:items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+        <div className="p-3.5 sm:p-4 rounded-2xl neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] flex items-center md:items-start gap-3">
+          <div className="w-9 h-9 rounded-xl neu-icon-well bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div>
@@ -617,11 +619,11 @@ export default function PublicIntegrityReportPage() {
       {/* Main Submission Form */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 shadow-sm dark:shadow-none space-y-6 sm:space-y-7 transition-colors w-full min-w-0 max-w-full"
+        className="bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] neu-raised rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 space-y-6 sm:space-y-7 transition-colors w-full min-w-0 max-w-full"
       >
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-3 animate-shake">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-3 animate-shake">
             <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
             <p className="font-medium break-words">{errorMessage}</p>
           </div>
@@ -646,10 +648,10 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedWarehouseId(wh.id)}
                   className={cn(
-                    'p-3.5 sm:p-4 rounded-xl border text-left transition-all flex items-center justify-between group cursor-pointer min-h-[56px] w-full min-w-0 max-w-full box-border',
+                    'p-3.5 sm:p-4 rounded-2xl border text-left transition-all flex items-center justify-between group cursor-pointer min-h-[56px] w-full min-w-0 max-w-full box-border',
                     isSelected
-                      ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
-                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                      ? 'neu-inset-sm bg-blue-500/10 border-blue-500/30'
+                      : 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border-black/[0.04] dark:border-white/[0.05] hover:border-black/10 dark:hover:border-white/10'
                   )}
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -657,8 +659,8 @@ export default function PublicIntegrityReportPage() {
                       className={cn(
                         'w-9 h-9 rounded-xl flex items-center justify-center font-extrabold text-xs transition-colors shrink-0',
                         isSelected
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          ? 'neu-inset-sm bg-blue-600 text-white shadow-xs'
+                          : 'neu-icon-well text-slate-700 dark:text-slate-300'
                       )}
                     >
                       {wh.code}
@@ -678,7 +680,7 @@ export default function PublicIntegrityReportPage() {
                     className={cn(
                       'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ml-3',
                       isSelected
-                        ? 'border-blue-600 bg-blue-600 text-white'
+                        ? 'border-blue-600 bg-blue-600 text-white shadow-xs'
                         : 'border-slate-300 dark:border-slate-700'
                     )}
                   >
@@ -713,16 +715,16 @@ export default function PublicIntegrityReportPage() {
                   type="button"
                   onClick={() => setSelectedCategory(catKey)}
                   className={cn(
-                    'p-3 sm:p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[96px] sm:min-h-[105px] h-full w-full min-w-0 max-w-full box-border cursor-pointer',
+                    'p-3 sm:p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between group relative overflow-hidden min-h-[96px] sm:min-h-[105px] h-full w-full min-w-0 max-w-full box-border cursor-pointer',
                     isSelected
-                      ? 'bg-blue-50/80 border-blue-500 ring-2 ring-blue-500/20 dark:bg-blue-950/40 dark:border-blue-500 dark:ring-blue-500/30'
-                      : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                      ? 'neu-inset-sm bg-blue-500/10 border-blue-500/30'
+                      : 'neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border-black/[0.04] dark:border-white/[0.05] hover:border-black/10 dark:hover:border-white/10'
                   )}
                 >
                   <div className="flex items-start justify-between w-full min-w-0 mb-1.5 sm:mb-2">
                     <div
                       className={cn(
-                        'w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
+                        'w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
                         uiMeta.iconBg,
                         uiMeta.iconColor
                       )}
@@ -734,7 +736,7 @@ export default function PublicIntegrityReportPage() {
                       className={cn(
                         'w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ml-2',
                         isSelected
-                          ? 'border-blue-600 bg-blue-600 text-white'
+                          ? 'border-blue-600 bg-blue-600 text-white shadow-xs'
                           : 'border-slate-300 dark:border-slate-700'
                       )}
                     >
@@ -757,7 +759,7 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* ── STEP 3: KRONOLOGI & DETAIL KEJADIAN ───────────────────────────── */}
-        <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800 w-full min-w-0 max-w-full">
+        <div className="space-y-4 pt-2 border-t border-black/[0.04] dark:border-white/[0.05] w-full min-w-0 max-w-full">
           <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>3. Kronologi & Detail Kejadian</span>
@@ -785,7 +787,7 @@ export default function PublicIntegrityReportPage() {
                     }
                   }}
                   aria-label="Pilih tanggal kejadian"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
+                  className="w-full neu-inset rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
                 >
                   <span className={cn('truncate', incidentDate ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
                     {incidentDate ? formatIndonesianDate(incidentDate) : 'Pilih tanggal'}
@@ -844,7 +846,7 @@ export default function PublicIntegrityReportPage() {
                     }
                   }}
                   aria-label="Pilih waktu kejadian"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
+                  className="w-full neu-inset rounded-xl px-3.5 py-2.5 text-xs flex items-center justify-between min-h-[44px] transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none"
                 >
                   <span className={cn('truncate', incidentTime ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-400')}>
                     {incidentTime ? `${incidentTime} WIB` : 'Pilih waktu'}
@@ -900,7 +902,7 @@ export default function PublicIntegrityReportPage() {
                   placeholder="Contoh: 5.000.000"
                   value={estimatedLossStr}
                   onChange={(e) => setEstimatedLossStr(e.target.value)}
-                  className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                  className="block w-full max-w-full min-w-0 box-border neu-inset rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-hidden min-h-[44px]"
                 />
               </div>
             </div>
@@ -915,7 +917,7 @@ export default function PublicIntegrityReportPage() {
                 placeholder="Contoh: Vendor Ekspedisi X, Driver Plat B 1234 XX, atau shift malam"
                 value={involvedParty}
                 onChange={(e) => setInvolvedParty(e.target.value)}
-                className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+                className="block w-full max-w-full min-w-0 box-border neu-inset rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-hidden min-h-[44px]"
               />
             </div>
           </div>
@@ -943,11 +945,11 @@ export default function PublicIntegrityReportPage() {
               placeholder="Jelaskan apa yang terjadi, lokasi spesifik di gudang (rak/zona/docking), barang atau dokumen terkait, dan bagaimana modus kejadian tersebut berlangsung..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="block w-full max-w-full min-w-0 box-border bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed placeholder:text-slate-400"
+              className="block w-full max-w-full min-w-0 box-border neu-inset rounded-xl p-3.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-hidden leading-relaxed placeholder:text-slate-400"
             />
 
             {/* Reporter Self-Identification Warning (Part E) */}
-            <div className="p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-[11.5px] text-amber-800 dark:text-amber-300 flex items-start gap-2.5 w-full min-w-0 box-border">
+            <div className="p-3 rounded-xl neu-raised-sm bg-amber-500/10 border border-amber-500/20 text-[11.5px] text-amber-800 dark:text-amber-300 flex items-start gap-2.5 w-full min-w-0 box-border">
               <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
               <p className="leading-relaxed break-words">
                 <strong>Peringatan Anonimitas:</strong> Untuk tetap anonim, jangan menuliskan nama, nomor karyawan, nomor telepon, atau informasi pribadi Anda sendiri di dalam kronologi.
@@ -957,13 +959,13 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* ── STEP 4: BUKTI FOTO (OPSIONAL) ─────────────────────────────────── */}
-        <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div className="space-y-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.05]">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
               <Camera className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <span>4. Foto Bukti Pendukung (Opsional)</span>
             </label>
-            <span className="text-[10.5px] px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-200 dark:border-emerald-800/60">
+            <span className="text-[10.5px] px-2.5 py-1 rounded-full neu-inset-sm text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-500/20">
               Auto-Sanitized EXIF
             </span>
           </div>
@@ -981,7 +983,7 @@ export default function PublicIntegrityReportPage() {
               type="button"
               disabled={photoProcessing}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full p-6 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/30 transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer"
+              className="w-full p-6 rounded-2xl border-2 border-dashed border-black/10 dark:border-white/10 neu-inset-sm hover:border-blue-500/40 bg-transparent transition-all flex flex-col items-center justify-center gap-2 group cursor-pointer"
             >
               {photoProcessing ? (
                 <div className="flex items-center gap-2 text-xs text-blue-600 font-semibold">
@@ -990,7 +992,7 @@ export default function PublicIntegrityReportPage() {
                 </div>
               ) : (
                 <>
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-xl neu-icon-well bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Camera className="w-5 h-5" />
                   </div>
                   <div className="text-center">
@@ -1005,7 +1007,7 @@ export default function PublicIntegrityReportPage() {
               )}
             </button>
           ) : (
-            <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950 max-w-sm">
+            <div className="relative rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden neu-raised-sm bg-[#EEF2F7] dark:bg-[#0D1322] max-w-sm">
               <img
                 src={photoPreview}
                 alt="Pratinjau Bukti"
@@ -1019,7 +1021,7 @@ export default function PublicIntegrityReportPage() {
               >
                 <XCircle className="w-4 h-4" />
               </button>
-              <div className="p-2.5 bg-white dark:bg-slate-900 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between border-t border-slate-200 dark:border-slate-800">
+              <div className="p-2.5 bg-[#EEF2F7] dark:bg-[#131C31] text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between border-t border-black/[0.04] dark:border-white/[0.05]">
                 <span className="font-semibold text-emerald-600 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Foto Siap Dikirim
                 </span>
@@ -1036,11 +1038,11 @@ export default function PublicIntegrityReportPage() {
         </div>
 
         {/* Submit Button */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="pt-4 border-t border-black/[0.04] dark:border-white/[0.05]">
           <button
             type="submit"
             disabled={submitting || photoProcessing}
-            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.005] cursor-pointer"
+            className="w-full py-3.5 px-6 rounded-2xl fintech-btn-primary disabled:opacity-50 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[48px]"
           >
             {submitting ? (
               <>

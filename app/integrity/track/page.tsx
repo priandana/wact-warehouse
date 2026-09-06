@@ -186,7 +186,7 @@ function TrackContent() {
     <div className="w-full max-w-3xl mx-auto space-y-6 sm:space-y-8 animate-fade-in min-w-0">
       {/* ── 1. Header & Tracking Auth Form ────────────────────────────────── */}
       <div className="text-center space-y-2.5 sm:space-y-3 px-1 sm:px-0">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-xs max-w-full truncate">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full neu-inset-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-bold max-w-full truncate">
           <Search className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span className="truncate">Pelacakan Status & Saluran Komunikasi Terenkripsi</span>
         </div>
@@ -209,10 +209,10 @@ function TrackContent() {
           e.preventDefault();
           handleSearch();
         }}
-        className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 space-y-4 sm:space-y-5 shadow-sm dark:shadow-none transition-colors w-full min-w-0 max-w-full"
+        className="bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] neu-raised rounded-2xl sm:rounded-3xl p-4 min-[390px]:p-5 sm:p-8 space-y-4 sm:space-y-5 transition-colors w-full min-w-0 max-w-full"
       >
         {errorMessage && (
-          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-800 dark:text-rose-200 flex items-start sm:items-center gap-2.5 animate-shake">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-800 dark:text-rose-200 flex items-start sm:items-center gap-2.5 animate-shake">
             <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5 sm:mt-0" />
             <span className="break-words">{errorMessage}</span>
           </div>
@@ -228,7 +228,7 @@ function TrackContent() {
               value={reportCode}
               onChange={(e) => setReportCode(e.target.value.toUpperCase())}
               placeholder="Contoh: INT-PDL-8K2M4X"
-              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-blue-600 dark:text-blue-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+              className="w-full py-2.5 px-3.5 rounded-xl neu-inset text-xs font-mono font-bold text-blue-600 dark:text-blue-400 placeholder:text-slate-400 focus:outline-hidden min-h-[44px]"
               required
             />
           </div>
@@ -242,7 +242,7 @@ function TrackContent() {
               value={accessSecret}
               onChange={(e) => setAccessSecret(e.target.value)}
               placeholder="Contoh: WACT-INT-XXXX-XXXX-XXXX-XXXX"
-              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px]"
+              className="w-full py-2.5 px-3.5 rounded-xl neu-inset text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 placeholder:text-slate-400 focus:outline-hidden min-h-[44px]"
               required
             />
           </div>
@@ -251,7 +251,7 @@ function TrackContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 sm:py-3.5 px-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
+          className="w-full py-3 sm:py-3.5 px-5 rounded-xl sm:rounded-2xl fintech-btn-primary font-bold text-xs sm:text-sm disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[44px]"
         >
           {loading ? (
             <>
@@ -271,15 +271,15 @@ function TrackContent() {
       {report && (
         <div className="space-y-5 sm:space-y-6 animate-fade-in w-full min-w-0">
           {/* Main Status Card */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm dark:shadow-none transition-colors">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] neu-raised rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 transition-colors">
             {/* Top Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/[0.04] dark:border-white/[0.05] pb-5">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2.5">
                   <span className="font-mono text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-wide">
                     {report.report_code}
                   </span>
-                  <span className={cn('text-xs font-extrabold px-3 py-0.5 rounded-full border', INTEGRITY_STATUSES[report.status].badgeClass)}>
+                  <span className={cn('text-xs font-extrabold px-3 py-1 rounded-full border shadow-xs', INTEGRITY_STATUSES[report.status].badgeClass)}>
                     {report.status_label}
                   </span>
                 </div>
@@ -300,7 +300,7 @@ function TrackContent() {
                 type="button"
                 onClick={() => handleSearch()}
                 disabled={loading}
-                className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+                className="neu-btn-secondary py-2 px-3 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-bold cursor-pointer"
                 title="Perbarui Data"
               >
                 <RefreshCw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
@@ -315,7 +315,7 @@ function TrackContent() {
                 <span>Tahapan Penanganan Investigasi</span>
               </span>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-2xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.04] dark:border-white/[0.05] text-center">
                 {[
                   { key: 'submitted', label: '1. Diterima' },
                   { key: 'triage', label: '2. Triase / Penelaahan' },
@@ -334,10 +334,10 @@ function TrackContent() {
                       className={cn(
                         'p-2.5 rounded-xl text-xs font-bold transition-all',
                         isCurrent
-                          ? 'bg-blue-600 text-white shadow-xs'
+                          ? 'fintech-btn-primary text-white shadow-xs'
                           : isPassed
-                          ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300'
-                          : 'text-slate-400 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60'
+                          ? 'neu-raised-sm bg-blue-500/15 text-blue-800 dark:text-blue-300'
+                          : 'neu-raised-sm text-slate-400 bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.03] dark:border-white/[0.03]'
                       )}
                     >
                       <p className="text-[11.5px] truncate">{step.label}</p>
@@ -352,9 +352,9 @@ function TrackContent() {
             </div>
 
             {/* Report Details Accordion/Summary */}
-            <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="space-y-3 pt-2 border-t border-black/[0.04] dark:border-white/[0.05]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 space-y-1">
+                <div className="p-3.5 rounded-xl neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Kategori Pelanggaran
                   </span>
@@ -362,7 +362,7 @@ function TrackContent() {
                 </div>
 
                 {report.estimated_loss && (
-                  <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 space-y-1">
+                  <div className="p-3.5 rounded-xl neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] space-y-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                       Estimasi Nilai Kerugian
                     </span>
@@ -374,7 +374,7 @@ function TrackContent() {
               </div>
 
               {/* Chronology text */}
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5">
+              <div className="p-4 rounded-xl neu-inset-sm bg-[#EEF2F7] dark:bg-[#0D1322] border border-black/[0.04] dark:border-white/[0.05] space-y-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                   Kronologi Kejadian yang Dilaporkan
                 </span>
@@ -385,7 +385,7 @@ function TrackContent() {
 
               {/* Resolution Notes if Resolved */}
               {report.resolution_notes && (
-                <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 space-y-1">
+                <div className="p-4 rounded-xl neu-raised-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 dark:text-emerald-200 space-y-1">
                   <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-700 dark:text-emerald-300">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Catatan Hasil Penanganan & Kesimpulan Investigasi</span>
@@ -399,15 +399,17 @@ function TrackContent() {
           </div>
 
           {/* ── 3. Two-Way Anonymous Conversation Thread ──────────────────── */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm dark:shadow-none transition-colors">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05] neu-raised rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-6 transition-colors">
+            <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-4">
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="w-8 h-8 rounded-xl neu-icon-well bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
                 <h2 className="text-sm font-extrabold text-slate-900 dark:text-white">
                   Percakapan Langsung dengan Tim Investigasi
                 </h2>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full neu-inset-sm text-slate-700 dark:text-slate-300">
                 {report.messages.length} Pesan
               </span>
             </div>
@@ -419,7 +421,7 @@ function TrackContent() {
             {/* Message List */}
             <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
               {report.messages.length === 0 ? (
-                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 text-center text-xs text-slate-500 space-y-1">
+                <div className="p-6 rounded-2xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.04] dark:border-white/[0.05] text-center text-xs text-slate-500 space-y-1">
                   <MessageSquare className="w-6 h-6 mx-auto text-slate-400 mb-1" />
                   <p className="font-semibold text-slate-700 dark:text-slate-300">Belum ada pesan dari tim investigasi.</p>
                   <p className="text-[11px] text-slate-500">
@@ -435,8 +437,8 @@ function TrackContent() {
                       className={cn(
                         'p-4 rounded-2xl space-y-2 text-xs transition-all',
                         isReporter
-                          ? 'bg-blue-50/90 border border-blue-200 text-blue-950 dark:bg-blue-950/40 dark:border-blue-800/50 dark:text-blue-200 ml-4 sm:ml-8'
-                          : 'bg-slate-50 border border-slate-200/90 text-slate-800 dark:bg-slate-950 dark:border-slate-800 dark:text-slate-300 mr-4 sm:mr-8'
+                          ? 'neu-raised-sm bg-blue-500/10 border border-blue-500/20 text-blue-950 dark:text-blue-200 ml-4 sm:ml-8'
+                          : 'neu-raised-sm bg-[#EEF2F7] border border-black/[0.04] dark:border-white/[0.05] text-slate-800 dark:bg-[#0D1322] dark:text-slate-300 mr-4 sm:mr-8'
                       )}
                     >
                       <div className="flex items-center justify-between text-[11px]">
@@ -468,7 +470,7 @@ function TrackContent() {
                               key={ev.id}
                               type="button"
                               onClick={() => setSelectedPhotoUrl(ev.signed_url)}
-                              className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 group cursor-pointer"
+                              className="relative w-20 h-20 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06] neu-raised-sm bg-[#EEF2F7] dark:bg-[#0D1322] group cursor-pointer"
                             >
                               <img src={ev.signed_url} alt="Lampiran" className="w-full h-full object-cover" />
                               <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
@@ -486,10 +488,10 @@ function TrackContent() {
 
             {/* Conditional Reply Form or Terminal Closure Notice */}
             {isIntegrityReportClosed(report.status) ? (
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200/90 dark:border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
+              <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.05]">
+                <div className="p-4 sm:p-5 rounded-2xl neu-inset-sm bg-[#EEF2F7] dark:bg-[#0D1322] border border-black/[0.04] dark:border-white/[0.05] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                    <div className="w-8 h-8 rounded-xl neu-icon-well bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div className="space-y-0.5 min-w-0">
@@ -504,7 +506,7 @@ function TrackContent() {
 
                   <Link
                     href="/integrity/report"
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-700 dark:text-blue-300 font-bold text-xs border border-blue-200 dark:border-slate-700 transition-colors flex items-center justify-center gap-1.5 shrink-0 touch-target"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl neu-btn-secondary text-blue-700 dark:text-blue-300 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shrink-0 touch-target"
                   >
                     <span>Buat Laporan Baru</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -515,7 +517,7 @@ function TrackContent() {
               /* Reply Input Form */
               <form onSubmit={handleSendReply} className="pt-2 space-y-3">
                 {replySuccess && (
-                  <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Pesan balasan berhasil terkirim secara aman & anonim.</span>
                   </div>
@@ -530,7 +532,7 @@ function TrackContent() {
                 />
 
                 {replyPhotoPreview && (
-                  <div className="relative inline-block rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-950">
+                  <div className="relative inline-block rounded-xl overflow-hidden border border-black/[0.05] dark:border-white/[0.05] neu-inset-sm bg-[#EEF2F7] dark:bg-[#0D1322]">
                     <img src={replyPhotoPreview} alt="Preview" className="w-24 h-24 object-cover" />
                     <button
                       type="button"
@@ -552,14 +554,14 @@ function TrackContent() {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Tulis pesan balasan atau informasi tambahan untuk tim investigasi..."
-                    className="flex-1 min-w-0 max-w-full box-border p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed min-h-[44px]"
+                    className="flex-1 min-w-0 max-w-full box-border p-3 rounded-xl neu-inset text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden leading-relaxed min-h-[44px]"
                   />
 
                   <button
                     type="button"
                     disabled={photoProcessing}
                     onClick={() => fileInputRef.current?.click()}
-                    className="p-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
+                    className="p-3 rounded-xl neu-icon-well text-slate-600 dark:text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
                     title="Lampirkan Foto Bukti Tambahan"
                   >
                     <Camera className="w-5 h-5" />
@@ -568,7 +570,7 @@ function TrackContent() {
                   <button
                     type="submit"
                     disabled={sendingReply || !replyText.trim() || photoProcessing}
-                    className="p-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
+                    className="p-3 rounded-xl fintech-btn-primary font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center shrink-0 cursor-pointer min-h-[44px] min-w-[44px]"
                     title="Kirim Balasan Anonim"
                   >
                     {sendingReply ? (

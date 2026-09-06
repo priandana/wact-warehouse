@@ -59,11 +59,11 @@ export function PriorityBadge({ priority, size = 'md', variant = 'pill' }: Prior
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-bold rounded-full border shadow-2xs select-none',
+        'inline-flex items-center gap-1.5 font-extrabold rounded-full border select-none shadow-[1.5px_1.5px_3px_rgba(163,177,198,0.22),-1.5px_-1.5px_3px_rgba(255,255,255,0.85)] dark:shadow-[1.5px_1.5px_3px_rgba(0,0,0,0.35),-1px_-1px_2px_rgba(255,255,255,0.02)]',
         conf.bg,
         conf.text,
         conf.border,
-        size === 'sm' ? 'text-[10.5px] px-2 py-0.5' : 'text-xs px-2.5 py-1',
+        size === 'sm' ? 'text-[10.5px] px-2.5 py-0.5' : 'text-xs px-3 py-1',
       )}
     >
       <Icon className={size === 'sm' ? 'w-3 h-3' : 'w-3.5 h-3.5'} />

@@ -43,66 +43,66 @@ interface TypeConfig {
 const TYPE_CONFIGS: Record<NotificationType, TypeConfig> = {
   case_assigned: {
     icon: ClipboardCheck,
-    badgeBg: 'bg-blue-50',
-    badgeText: 'text-blue-700',
-    badgeBorder: 'border-blue-200/80',
-    iconColor: 'text-blue-600',
+    badgeBg: 'bg-blue-500/10 dark:bg-blue-500/20',
+    badgeText: 'text-blue-700 dark:text-blue-300',
+    badgeBorder: 'border-blue-500/20 dark:border-blue-500/30',
+    iconColor: 'text-blue-600 dark:text-blue-400',
     label: 'Penugasan PIC',
   },
   waiting_verification: {
     icon: Clock,
-    badgeBg: 'bg-purple-50',
-    badgeText: 'text-purple-700',
-    badgeBorder: 'border-purple-200/80',
-    iconColor: 'text-purple-600',
+    badgeBg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    badgeText: 'text-purple-700 dark:text-purple-300',
+    badgeBorder: 'border-purple-500/20 dark:border-purple-500/30',
+    iconColor: 'text-purple-600 dark:text-purple-400',
     label: 'Menunggu Verifikasi',
   },
   case_closed: {
     icon: CheckCircle2,
-    badgeBg: 'bg-emerald-50',
-    badgeText: 'text-emerald-700',
-    badgeBorder: 'border-emerald-200/80',
-    iconColor: 'text-emerald-600',
+    badgeBg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+    badgeText: 'text-emerald-700 dark:text-emerald-300',
+    badgeBorder: 'border-emerald-500/20 dark:border-emerald-500/30',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
     label: 'Kasus Selesai',
   },
   verification_failed: {
     icon: XCircle,
-    badgeBg: 'bg-rose-50',
-    badgeText: 'text-rose-700',
-    badgeBorder: 'border-rose-200/80',
-    iconColor: 'text-rose-600',
+    badgeBg: 'bg-rose-500/10 dark:bg-rose-500/20',
+    badgeText: 'text-rose-700 dark:text-rose-300',
+    badgeBorder: 'border-rose-500/20 dark:border-rose-500/30',
+    iconColor: 'text-rose-600 dark:text-rose-400',
     label: 'Verifikasi Ditolak',
   },
   reopened: {
     icon: RefreshCw,
-    badgeBg: 'bg-indigo-50',
-    badgeText: 'text-indigo-700',
-    badgeBorder: 'border-indigo-200/80',
-    iconColor: 'text-indigo-600',
+    badgeBg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
+    badgeText: 'text-indigo-700 dark:text-indigo-300',
+    badgeBorder: 'border-indigo-500/20 dark:border-indigo-500/30',
+    iconColor: 'text-indigo-600 dark:text-indigo-400',
     label: 'Kasus Dibuka Kembali',
   },
   force_closed: {
     icon: ShieldAlert,
-    badgeBg: 'bg-rose-50',
-    badgeText: 'text-rose-700',
-    badgeBorder: 'border-rose-200/80',
-    iconColor: 'text-rose-600',
+    badgeBg: 'bg-rose-500/10 dark:bg-rose-500/20',
+    badgeText: 'text-rose-700 dark:text-rose-300',
+    badgeBorder: 'border-rose-500/20 dark:border-rose-500/30',
+    iconColor: 'text-rose-600 dark:text-rose-400',
     label: 'Ditutup Paksa Admin',
   },
   sla_approaching: {
     icon: Clock,
-    badgeBg: 'bg-amber-50',
-    badgeText: 'text-amber-700',
-    badgeBorder: 'border-amber-200/80',
-    iconColor: 'text-amber-600',
+    badgeBg: 'bg-amber-500/10 dark:bg-amber-500/20',
+    badgeText: 'text-amber-700 dark:text-amber-300',
+    badgeBorder: 'border-amber-500/20 dark:border-amber-500/30',
+    iconColor: 'text-amber-600 dark:text-amber-400',
     label: 'SLA Mendekati Batas',
   },
   sla_overdue: {
     icon: AlertTriangle,
-    badgeBg: 'bg-rose-50',
-    badgeText: 'text-rose-700',
-    badgeBorder: 'border-rose-200/80',
-    iconColor: 'text-rose-600',
+    badgeBg: 'bg-rose-500/10 dark:bg-rose-500/20',
+    badgeText: 'text-rose-700 dark:text-rose-300',
+    badgeBorder: 'border-rose-500/20 dark:border-rose-500/30',
+    iconColor: 'text-rose-600 dark:text-rose-400',
     label: 'SLA Terlewati',
   },
 };
@@ -116,10 +116,10 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
 
   const config = TYPE_CONFIGS[notification.type] || {
     icon: Bell,
-    badgeBg: 'bg-slate-50',
-    badgeText: 'text-slate-700',
-    badgeBorder: 'border-slate-200',
-    iconColor: 'text-slate-600',
+    badgeBg: 'bg-slate-500/10 dark:bg-slate-500/20',
+    badgeText: 'text-slate-700 dark:text-slate-300',
+    badgeBorder: 'border-slate-500/20 dark:border-slate-500/30',
+    iconColor: 'text-slate-600 dark:text-slate-400',
     label: 'Notifikasi',
   };
 
@@ -196,11 +196,11 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
     <div
       onClick={hasCase ? handleNavigate : undefined}
       className={cn(
-        'group relative p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 flex flex-col gap-2.5 select-none',
-        hasCase ? 'cursor-pointer hover:shadow-xs active:scale-[0.99]' : '',
+        'group relative p-4 rounded-3xl transition-all duration-200 flex flex-col gap-2.5 select-none',
+        hasCase ? 'cursor-pointer active:scale-[0.99]' : '',
         notification.is_read
-          ? 'bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300/80 text-slate-600'
-          : 'bg-white border-blue-200/90 shadow-2xs shadow-blue-500/5 hover:border-blue-300'
+          ? 'neu-raised-sm opacity-85 hover:opacity-100 text-slate-600 dark:text-slate-300'
+          : 'neu-raised ring-1 ring-blue-500/30'
       )}
     >
       {/* Top Meta Bar */}
@@ -221,7 +221,7 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
 
           {/* Warehouse Badge */}
           {caseInfo?.warehouse_code && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-bold text-[10px] bg-slate-100 text-slate-700 border border-slate-200/80">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg font-mono font-bold text-[10px] neu-inset-sm text-slate-700 dark:text-slate-300">
               <Building2 className="w-2.5 h-2.5 text-slate-400" />
               <span>{caseInfo.warehouse_code}</span>
             </span>
@@ -229,7 +229,7 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
 
           {/* Case Number */}
           {caseInfo?.case_number && (
-            <span className="text-[11px] font-extrabold text-blue-700 tracking-tight font-mono">
+            <span className="text-[11px] font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20 tracking-tight">
               {caseInfo.case_number}
             </span>
           )}
@@ -237,10 +237,10 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
 
         {/* Timestamp & Unread Dot */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[10.5px] font-medium text-slate-400">{timeAgo}</span>
+          <span className="text-[10.5px] font-medium text-slate-400 dark:text-slate-500">{timeAgo}</span>
           {!notification.is_read && (
             <span
-              className="w-2 h-2 rounded-full bg-blue-600 ring-2 ring-blue-100 shrink-0 animate-pulse"
+              className="w-2 h-2 rounded-full bg-blue-600 ring-2 ring-blue-500/20 shrink-0 animate-pulse"
               title="Belum dibaca"
             />
           )}
@@ -252,13 +252,13 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
         <h4
           className={cn(
             'text-xs sm:text-sm tracking-tight',
-            notification.is_read ? 'font-semibold text-slate-700' : 'font-extrabold text-slate-900'
+            notification.is_read ? 'font-bold text-slate-700 dark:text-slate-300' : 'font-black text-slate-900 dark:text-slate-100'
           )}
         >
           {notification.title}
         </h4>
         {notification.body && (
-          <p className="text-[11.5px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed font-medium">
+          <p className="text-[11.5px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-medium">
             {notification.body}
           </p>
         )}
@@ -266,14 +266,14 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
 
       {/* Error Alert if Navigation Fails */}
       {errorMessage && (
-        <div className="p-2 rounded-xl bg-rose-50 border border-rose-200/80 text-[11px] font-bold text-rose-700 flex items-center justify-between">
+        <div className="p-2.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-[11px] font-bold text-rose-700 dark:text-rose-400 flex items-center justify-between">
           <span>{errorMessage}</span>
           <button
             onClick={(e) => {
               e.stopPropagation();
               setErrorMessage(null);
             }}
-            className="text-rose-500 hover:text-rose-700 ml-2"
+            className="text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 ml-2 cursor-pointer"
           >
             ✕
           </button>
@@ -281,9 +281,9 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
       )}
 
       {/* Bottom Action Footer */}
-      <div className="flex items-center justify-between pt-1 border-t border-slate-100 mt-0.5">
+      <div className="flex items-center justify-between pt-2 border-t border-slate-200/40 dark:border-slate-800/60 mt-0.5">
         {hasCase ? (
-          <div className="flex items-center gap-1 text-[11px] font-bold text-blue-600 group-hover:text-blue-700 group-hover:translate-x-0.5 transition-all">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all">
             {isNavigating ? (
               <>
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -305,7 +305,7 @@ export function NotificationCard({ notification, onMarkRead, onNavigate }: Notif
             type="button"
             onClick={handleMarkAsRead}
             disabled={isMarkingRead}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 active:scale-95 transition-all"
+            className="neu-btn-secondary inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[10.5px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer"
             title="Tandai sudah dibaca"
           >
             {isMarkingRead ? (

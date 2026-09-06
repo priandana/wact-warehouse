@@ -27,29 +27,29 @@ const TYPE_CONFIG: Record<
   info: {
     icon: Info,
     containerClass:
-      'bg-blue-50/90 dark:bg-blue-950/40 border-blue-200/90 dark:border-blue-800/60 text-blue-950 dark:text-blue-200',
-    iconBgClass: 'bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400',
+      'neu-raised-sm bg-blue-500/10 border-blue-500/20 text-blue-950 dark:text-blue-200',
+    iconBgClass: 'neu-icon-well bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25',
     iconColorClass: 'text-blue-600 dark:text-blue-400',
     badgeLabel: 'Informasi',
-    badgeClass: 'bg-blue-100 dark:bg-blue-900/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700/60',
+    badgeClass: 'neu-inset-sm bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/20',
   },
   important: {
     icon: AlertCircle,
     containerClass:
-      'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200/90 dark:border-amber-800/60 text-amber-950 dark:text-amber-200',
-    iconBgClass: 'bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400',
+      'neu-raised-sm bg-amber-500/10 border-amber-500/20 text-amber-950 dark:text-amber-200',
+    iconBgClass: 'neu-icon-well bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25',
     iconColorClass: 'text-amber-600 dark:text-amber-400',
     badgeLabel: 'Penting',
-    badgeClass: 'bg-amber-100 dark:bg-amber-900/80 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700/60',
+    badgeClass: 'neu-inset-sm bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/20',
   },
   warning: {
     icon: AlertTriangle,
     containerClass:
-      'bg-rose-50/90 dark:bg-rose-950/40 border-rose-200/90 dark:border-rose-800/60 text-rose-950 dark:text-rose-200',
-    iconBgClass: 'bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400',
+      'neu-raised-sm bg-rose-500/10 border-rose-500/20 text-rose-950 dark:text-rose-200',
+    iconBgClass: 'neu-icon-well bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25',
     iconColorClass: 'text-rose-600 dark:text-rose-400',
     badgeLabel: 'Peringatan',
-    badgeClass: 'bg-rose-100 dark:bg-rose-900/80 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-700/60',
+    badgeClass: 'neu-inset-sm bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/20',
   },
 };
 
@@ -66,14 +66,14 @@ export function IntegrityAnnouncementBanner({
   return (
     <div
       className={cn(
-        'p-3.5 sm:p-4.5 rounded-2xl border shadow-xs flex items-start gap-2.5 sm:gap-3.5 transition-all w-full min-w-0',
+        'p-3.5 sm:p-4.5 rounded-2xl sm:rounded-3xl border flex items-start gap-2.5 sm:gap-3.5 transition-all w-full min-w-0',
         typeConfig.containerClass,
         className
       )}
     >
       <div
         className={cn(
-          'w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-xs',
+          'w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5',
           typeConfig.iconBgClass
         )}
       >

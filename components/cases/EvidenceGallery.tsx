@@ -71,15 +71,19 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
     return (
       <div className={cn('space-y-3', className)}>
         <div className="flex items-center gap-2">
-          <ImageIcon className="w-4 h-4 text-blue-600" />
-          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+          <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+            <ImageIcon className="w-3.5 h-3.5" />
+          </div>
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
             Bukti Foto (0)
           </h2>
         </div>
-        <div className="p-5 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-center">
-          <ImageIcon className="w-6 h-6 text-slate-300 mb-1" />
-          <p className="text-xs font-semibold text-slate-500">Belum ada foto bukti diunggah</p>
-          <p className="text-[11px] text-slate-400 mt-0.5">Foto temuan awal atau foto selesai akan muncul di sini.</p>
+        <div className="p-6 rounded-2xl neu-inset-sm flex flex-col items-center justify-center text-center">
+          <div className="w-10 h-10 rounded-2xl neu-icon-well flex items-center justify-center text-slate-400 mb-2">
+            <ImageIcon className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">Belum ada foto bukti diunggah</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Foto temuan awal atau foto selesai akan muncul di sini.</p>
         </div>
       </div>
     );
@@ -124,8 +128,10 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
     <div className={cn('space-y-3', className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ImageIcon className="w-4 h-4 text-blue-600" />
-          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+          <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+            <ImageIcon className="w-3.5 h-3.5" />
+          </div>
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
             Bukti Foto ({evidences.length})
           </h2>
         </div>
@@ -143,22 +149,22 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
               key={item.id}
               onClick={() => !isError && setSelectedIdx(idx)}
               className={cn(
-                'group relative aspect-square rounded-2xl overflow-hidden border border-slate-200/80 bg-slate-100 shadow-2xs transition-all duration-200',
-                !isError ? 'cursor-pointer hover:shadow-md hover:border-blue-300' : 'cursor-default'
+                'group relative aspect-square rounded-2xl overflow-hidden neu-raised-sm bg-slate-100 dark:bg-slate-900 transition-all duration-200',
+                !isError ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-default'
               )}
             >
               {/* Skeleton Placeholder while image is loading */}
               {!isLoaded && !isError && (
-                <div className="absolute inset-0 bg-slate-200/70 animate-pulse flex items-center justify-center">
-                  <ImageIcon className="w-6 h-6 text-slate-300" />
+                <div className="absolute inset-0 bg-slate-200/70 dark:bg-slate-800/70 animate-pulse flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-slate-400 dark:text-slate-600" />
                 </div>
               )}
 
               {/* Unavailable / Missing Storage Fallback */}
               {isError && (
-                <div className="absolute inset-0 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col items-center justify-center p-2.5 text-center">
+                <div className="absolute inset-0 neu-inset-sm rounded-2xl flex flex-col items-center justify-center p-2.5 text-center">
                   <ImageOff className="w-5 h-5 text-slate-400 mb-1" />
-                  <span className="text-[10px] font-bold text-slate-700 line-clamp-1 max-w-full px-1">
+                  <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 line-clamp-1 max-w-full px-1">
                     {item.file_name || 'Foto Bukti'}
                   </span>
                   <span className="text-[9px] text-slate-400 mt-0.5 font-medium">
@@ -184,7 +190,7 @@ export function EvidenceGallery({ evidences, className }: EvidenceGalleryProps) 
               {/* Hover overlay with zoom icon */}
               {!isError && (
                 <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-slate-800 shadow-sm">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-xs flex items-center justify-center text-slate-800 dark:text-slate-100 shadow-sm">
                     <Maximize2 className="w-4 h-4" />
                   </div>
                 </div>

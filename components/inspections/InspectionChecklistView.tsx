@@ -390,7 +390,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
       <div className="flex items-center justify-between">
         <Link
           href="/inspections"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn-secondary text-xs font-bold text-slate-600 dark:text-slate-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Daftar</span>
@@ -399,26 +399,24 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
         <button
           type="button"
           onClick={() => setIsCancelModalOpen(true)}
-          className="px-3 py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors active:scale-95"
+          className="px-3 py-1.5 rounded-xl neu-btn-secondary text-rose-600 dark:text-rose-400 font-bold text-xs transition-colors"
         >
           Batalkan Sesi
         </button>
       </div>
 
       {/* ── 2. Main Inspection Header Card ──────────────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-transparent rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
-
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised p-4 sm:p-6 space-y-4 relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200/70 shadow-2xs">
+              <span className="font-mono text-xs font-black text-blue-700 dark:text-blue-300 neu-inset-sm bg-blue-500/10 px-2.5 py-0.5 rounded-lg border border-blue-500/20">
                 {inspection.inspection_number}
               </span>
               <InspectionStatusBadge status="draft" size="md" />
             </div>
 
-            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+            <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
               {inspection.template?.name || 'Checklist Inspeksi QC'}
             </h1>
           </div>
@@ -426,7 +424,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
           <Link
             href={`/assets/${inspection.asset_id}`}
             target="_blank"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-colors self-start sm:self-center shrink-0 active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl neu-btn-secondary text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors self-start sm:self-center shrink-0"
           >
             <span>Aset: {inspection.asset?.asset_code}</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -434,39 +432,39 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
         </div>
 
         {/* Info Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-slate-100 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 border-t border-black/[0.04] dark:border-white/[0.05] text-xs">
+          <div className="p-2.5 rounded-xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.03] dark:border-white/[0.03]">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Nama Aset
             </span>
-            <span className="font-black text-slate-900 mt-0.5 block truncate">
+            <span className="font-black text-slate-900 dark:text-white mt-0.5 block truncate">
               {inspection.asset?.name || '-'}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="p-2.5 rounded-xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.03] dark:border-white/[0.03]">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Lokasi / Area
             </span>
-            <span className="font-bold text-slate-700 mt-0.5 block truncate">
+            <span className="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block truncate">
               {inspection.warehouse?.code} &bull; {inspection.asset?.area?.name || 'Area Umum'}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="p-2.5 rounded-xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.03] dark:border-white/[0.03]">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Inspector
             </span>
-            <span className="font-bold text-slate-700 mt-0.5 block truncate">
+            <span className="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block truncate">
               {inspection.inspector?.full_name || 'Petugas QC'}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70">
+          <div className="p-2.5 rounded-xl neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] border border-black/[0.03] dark:border-white/[0.03]">
             <span className="block text-[10px] font-extrabold uppercase text-slate-400">
               Mulai Sesi
             </span>
-            <span className="font-bold text-slate-700 mt-0.5 block truncate">
+            <span className="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block truncate">
               {new Date(inspection.started_at).toLocaleTimeString('id-ID', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -478,39 +476,39 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
       </div>
 
       {/* ── 3. Progress & Defect Summary ────────────────────────────────── */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-5 space-y-3">
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised p-4 sm:p-5 space-y-3">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-slate-900">
+            <span className="font-extrabold text-slate-900 dark:text-white">
               Progress Checklist:
             </span>
-            <span className="font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60">
+            <span className="font-black text-blue-700 dark:text-blue-300 neu-inset-sm bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20">
               {stats.filledCount} dari {stats.total} Poin ({stats.progressPercent}%)
             </span>
           </div>
 
           {stats.ngCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-lg shadow-2xs">
-              <AlertOctagon className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-rose-700 dark:text-rose-300 bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 rounded-lg">
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 animate-pulse" />
               <span>{stats.ngCount} Temuan Defect</span>
             </span>
           )}
         </div>
 
         {/* Clean Gradient Progress Bar */}
-        <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+        <div className="w-full h-2.5 rounded-full neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] overflow-hidden p-0.5">
           <div
-            className={`h-full transition-all duration-300 ${
+            className={`h-full rounded-full transition-all duration-300 ${
               stats.progressPercent === 100
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-xs'
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xs'
             }`}
             style={{ width: `${stats.progressPercent}%` }}
           />
         </div>
 
         {stats.requiredRemaining > 0 && (
-          <p className="text-[11px] text-amber-700 font-semibold flex items-center gap-1.5">
+          <p className="text-[11px] text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
             <span>Masih ada {stats.requiredRemaining} poin wajib (*) yang belum ditentukan kondisinya.</span>
           </p>
@@ -529,26 +527,26 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
         {inspection.sections.map((section, sIndex) => (
           <div
             key={section.id}
-            className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden"
+            className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-2xl sm:rounded-3xl border border-black/[0.04] dark:border-white/[0.05] neu-raised overflow-hidden"
           >
             {/* Section Header */}
-            <div className="bg-slate-50/90 px-4 sm:px-5 py-3 border-b border-slate-200/80 flex items-center justify-between">
+            <div className="bg-[#E5EBF3] dark:bg-[#0D1322] px-4 sm:px-5 py-3 border-b border-black/[0.04] dark:border-white/[0.05] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-black text-[11px] flex items-center justify-center">
+                <span className="w-6 h-6 rounded-lg neu-inset-sm bg-blue-500/10 text-blue-700 dark:text-blue-300 font-mono font-black text-[11px] flex items-center justify-center">
                   {sIndex + 1}
                 </span>
-                <h3 className="text-xs sm:text-sm font-black text-slate-900">
+                <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                   {section.title}
                 </h3>
               </div>
 
-              <span className="text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 neu-inset-sm bg-[#EEF2F7] dark:bg-[#131C31] px-2 py-0.5 rounded-md border border-black/[0.04] dark:border-white/[0.05]">
                 {section.items.filter((i) => results[i.id]?.value != null).length} / {section.items.length} Selesai
               </span>
             </div>
 
             {/* Section Items */}
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-black/[0.03] dark:divide-white/[0.03]">
               {section.items.map((item, iIndex) => {
                 const currentResult = results[item.id];
                 const currentValue = currentResult?.value;
@@ -561,9 +559,9 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                     key={item.id}
                     className={`p-3.5 sm:p-4 transition-colors space-y-2.5 ${
                       currentValue === 'ng'
-                        ? 'bg-rose-50/20'
+                        ? 'bg-rose-500/5 dark:bg-rose-950/20'
                         : currentValue === 'ok'
-                        ? 'bg-emerald-50/10'
+                        ? 'bg-emerald-500/5 dark:bg-emerald-950/20'
                         : ''
                     }`}
                   >
@@ -571,7 +569,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                       {/* Item Label & Description */}
                       <div className="space-y-0.5 flex-1 pr-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-xs sm:text-sm font-black text-slate-900">
+                          <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                             {item.label}
                           </span>
                           {item.is_required && (
@@ -580,28 +578,28 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                             </span>
                           )}
                           {isSaving && (
-                            <span className="text-[10px] text-blue-600 font-bold flex items-center gap-1 animate-pulse">
+                            <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1 animate-pulse">
                               <Save className="w-2.5 h-2.5" />
                               <span>Menyimpan...</span>
                             </span>
                           )}
                         </div>
                         {item.description && (
-                          <p className="text-[11px] text-slate-500 leading-relaxed">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                             {item.description}
                           </p>
                         )}
                       </div>
 
                       {/* 3-Way Pill Toggles: OK, NG, N/A */}
-                      <div className="flex items-center gap-1.5 shrink-0 bg-slate-100/90 p-1 rounded-xl self-start sm:self-center">
+                      <div className="flex items-center gap-1.5 shrink-0 neu-inset-sm bg-[#E5EBF3] dark:bg-[#0D1322] p-1 rounded-2xl self-start sm:self-center">
                         <button
                           type="button"
                           onClick={() => handleValueChange(item.id, 'ok')}
-                          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 ${
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
                             currentValue === 'ok'
                               ? 'bg-emerald-600 text-white shadow-xs'
-                              : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                           }`}
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
@@ -611,10 +609,10 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                         <button
                           type="button"
                           onClick={() => handleValueChange(item.id, 'ng')}
-                          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 ${
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
                             currentValue === 'ng'
                               ? 'bg-rose-600 text-white shadow-xs'
-                              : 'text-slate-600 hover:bg-white hover:text-rose-700'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400'
                           }`}
                         >
                           <AlertOctagon className="w-3.5 h-3.5" />
@@ -624,10 +622,10 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                         <button
                           type="button"
                           onClick={() => handleValueChange(item.id, 'na')}
-                          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 ${
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
                             currentValue === 'na'
                               ? 'bg-slate-700 text-white shadow-xs'
-                              : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                           }`}
                         >
                           <MinusCircle className="w-3.5 h-3.5" />
@@ -637,7 +635,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                     </div>
 
                     {/* Notes & Photo Attachments Bar */}
-                    <div className="flex items-center justify-between gap-2 text-xs pt-1 border-t border-slate-100/60">
+                    <div className="flex items-center justify-between gap-2 text-xs pt-1 border-t border-black/[0.04] dark:border-white/[0.05]">
                       <div className="flex items-center gap-2 flex-wrap">
                         <button
                           type="button"
@@ -649,8 +647,8 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                           }
                           className={`inline-flex items-center gap-1 text-[11px] font-bold transition-colors ${
                             currentResult?.notes
-                              ? 'text-blue-700 font-extrabold'
-                              : 'text-slate-500 hover:text-slate-800'
+                              ? 'text-blue-700 dark:text-blue-400 font-extrabold'
+                              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                           }`}
                         >
                           <FileEdit className="w-3 h-3" />
@@ -661,8 +659,8 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
 
                         <label className={`inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer transition-colors px-2 py-0.5 rounded-md ${
                           currentValue === 'ng' && (!evidences[item.id] || evidences[item.id].length === 0)
-                            ? 'bg-rose-50 text-rose-700 border border-rose-200/80 font-extrabold'
-                            : 'text-slate-500 hover:text-slate-800'
+                            ? 'bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30 font-extrabold'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                         }`}>
                           <Camera className="w-3 h-3" />
                           <span>
@@ -681,7 +679,7 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
 
                       {/* Evidence thumb count */}
                       {evidences[item.id] && evidences[item.id].length > 0 && (
-                        <span className="text-[10.5px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                        <span className="text-[10.5px] font-bold text-slate-600 dark:text-slate-400 neu-inset-sm px-2 py-0.5 rounded-md">
                           {evidences[item.id].length} Foto
                         </span>
                       )}
@@ -700,10 +698,10 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
                               ? 'Jelaskan temuan kerusakan / defect yang ditemukan...'
                               : 'Tuliskan catatan kondisi item (opsional)...'
                           }
-                          className={`w-full text-xs rounded-xl border p-2.5 font-medium focus:outline-none focus:ring-2 ${
+                          className={`w-full text-xs rounded-xl neu-inset p-2.5 font-medium focus:outline-hidden ${
                             currentValue === 'ng'
-                              ? 'border-rose-300 bg-white focus:border-rose-500 focus:ring-rose-500/20'
-                              : 'border-slate-200 bg-slate-50 focus:border-blue-500 focus:ring-blue-500/20'
+                              ? 'border-rose-300 dark:border-rose-700 focus:ring-2 focus:ring-rose-500/20'
+                              : 'border-black/[0.04] dark:border-white/[0.05]'
                           }`}
                         />
                       </div>
@@ -717,19 +715,19 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
       </div>
 
       {/* ── 5. Fixed Bottom Action Bar ──────────────────────────────────── */}
-      <div className="fixed bottom-[calc(100px+env(safe-area-inset-bottom,0px))] sm:bottom-0 left-0 right-0 z-50 px-3 sm:px-6 py-2 sm:py-3 pointer-events-none sm:pointer-events-auto sm:bg-white/95 sm:backdrop-blur-md sm:border-t sm:border-slate-200/80 sm:shadow-lg sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-[calc(100px+env(safe-area-inset-bottom,0px))] sm:bottom-0 left-0 right-0 z-50 px-3 sm:px-6 py-2 sm:py-3 pointer-events-none sm:pointer-events-auto sm:bg-[#EEF2F7]/95 sm:dark:bg-[#131C31]/95 sm:backdrop-blur-md sm:border-t sm:border-black/[0.04] sm:dark:border-white/[0.05] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <div className="max-w-4xl mx-auto pointer-events-auto">
-          <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 sm:border-0 rounded-2xl sm:rounded-none p-3 sm:p-0 shadow-lg shadow-slate-900/10 sm:shadow-none flex items-center justify-between gap-3">
+          <div className="bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md border border-black/[0.04] dark:border-white/[0.05] sm:border-0 rounded-2xl sm:rounded-none p-3 sm:p-0 neu-raised-lg sm:shadow-none flex items-center justify-between gap-3">
           <div className="text-xs">
-            <span className="text-slate-500 font-bold block sm:inline">
+            <span className="text-slate-500 dark:text-slate-400 font-bold block sm:inline">
               Progress: {stats.filledCount}/{stats.total} Selesai &bull;{' '}
             </span>
             {stats.ngCount > 0 ? (
-              <span className="font-extrabold text-rose-600">
+              <span className="font-extrabold text-rose-600 dark:text-rose-400">
                 {stats.ngCount} Poin Defect (NG)
               </span>
             ) : (
-              <span className="font-bold text-emerald-600">
+              <span className="font-bold text-emerald-600 dark:text-emerald-400">
                 Semua OK sejauh ini
               </span>
             )}
@@ -740,10 +738,10 @@ export function InspectionChecklistView({ inspection }: InspectionChecklistViewP
               type="button"
               onClick={handleCompleteInspection}
               disabled={isCompleting || isPending || isAnyUploading}
-              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs shadow-xs transition-all active:scale-95 disabled:opacity-50 ${
+              className={`inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs transition-all disabled:opacity-50 ${
                 stats.isAllRequiredFilled
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-emerald-500/20'
-                  : 'bg-slate-800 hover:bg-slate-900 text-white'
+                  ? 'fintech-btn-primary'
+                  : 'neu-btn-secondary text-slate-700 dark:text-slate-200'
               }`}
             >
               {isCompleting ? (

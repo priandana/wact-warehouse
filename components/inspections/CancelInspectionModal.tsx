@@ -55,47 +55,47 @@ export function CancelInspectionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs overflow-hidden animate-in fade-in">
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 duration-150 relative">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-sm overflow-hidden animate-in fade-in">
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] neu-raised-lg rounded-3xl border border-black/[0.04] dark:border-white/[0.05] max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[calc(100dvh-2rem)] sm:max-h-[85vh] overflow-y-auto overscroll-contain animate-in zoom-in-95 duration-150 relative">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-rose-600">
-            <div className="p-2 rounded-xl bg-rose-50 border border-rose-200/80">
-              <AlertTriangle className="w-4 h-4 text-rose-600" />
+          <div className="flex items-center gap-2.5 text-rose-600 dark:text-rose-400">
+            <div className="w-10 h-10 rounded-2xl neu-icon-well flex items-center justify-center bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+              <AlertTriangle className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-black text-slate-900">
+            <h3 className="text-base font-black text-slate-800 dark:text-slate-100">
               Batalkan Inspeksi
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="w-9 h-9 rounded-xl neu-icon-well flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <p className="text-xs text-slate-600 leading-relaxed">
+        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
           Apakah Anda yakin ingin membatalkan inspeksi{' '}
           {inspectionNumber ? (
-            <span className="font-mono font-black text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+            <span className="font-mono font-black text-slate-800 dark:text-slate-100 neu-inset-sm px-2 py-0.5 rounded-lg border border-black/[0.04] dark:border-white/[0.05]">
               {inspectionNumber}
             </span>
           ) : (
             'ini'
           )}
-          ? Sesi draft akan ditutup permanen dengan status <span className="font-bold text-slate-800">Dibatalkan</span>.
+          ? Sesi draft akan ditutup permanen dengan status <span className="font-bold text-slate-800 dark:text-slate-200">Dibatalkan</span>.
         </p>
 
         {error && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold shadow-2xs">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-semibold">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-1">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
               Alasan Pembatalan <span className="text-rose-500">*</span>
             </label>
             <textarea
@@ -103,24 +103,24 @@ export function CancelInspectionModal({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Contoh: Unit aset sedang dipakai darurat / inspeksi dialihkan ke jadwal lain..."
-              className="w-full text-xs rounded-xl border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium placeholder:text-slate-400"
+              className="w-full text-xs rounded-2xl neu-inset p-3.5 focus:outline-none focus:ring-2 focus:ring-rose-500/30 font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               required
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-black/[0.04] dark:border-white/[0.05]">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-bold neu-btn-secondary transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !reason.trim()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-bold text-xs shadow-md active:scale-95 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

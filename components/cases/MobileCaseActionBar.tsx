@@ -127,16 +127,16 @@ export function MobileCaseActionBar({
     // z-50 — above BottomNav (z-40), below modals (z-[60]) and MobileNavDrawer (z-[70])
     // bottom: cleanly docked above BottomNav & elevated center FAB (100px + safe area = 8px visual gap)
     <div
-      className="sm:hidden fixed left-0 right-0 z-50 px-3"
+      className="sm:hidden fixed left-0 right-0 z-50 px-4"
       style={{ bottom: 'calc(100px + env(safe-area-inset-bottom, 0px))' }}
       aria-label="Aksi kasus cepat"
     >
-      <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-lg shadow-slate-900/8 px-2.5 py-2">
+      <div className="bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md border border-black/[0.04] dark:border-white/[0.05] rounded-3xl neu-raised-lg px-2.5 py-2">
         <button
           type="button"
           disabled={loading}
           onClick={onClick}
-          className={`w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl font-extrabold text-sm active:scale-[0.98] disabled:opacity-60 transition-all duration-150 ${className}`}
+          className={`w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl font-extrabold text-sm active:scale-[0.98] disabled:opacity-60 transition-all duration-150 shadow-md ${className}`}
           aria-live="polite"
         >
           {loading ? (

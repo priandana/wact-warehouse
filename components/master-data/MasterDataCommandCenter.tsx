@@ -110,23 +110,23 @@ export function MasterDataCommandCenter({
       {/* ── COMMAND CENTER TOP HEADER ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-blue-500/20">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400">
               <Settings className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                   Pengaturan Master Data
                 </h1>
                 {isSuperAdmin && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-100/90 text-purple-800 font-extrabold text-[10.5px] border border-purple-200">
-                    <ShieldCheck className="w-3 h-3 text-purple-600" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full neu-inset-sm bg-purple-500/10 text-purple-700 dark:text-purple-400 font-black text-[10.5px] border border-purple-500/20">
+                    <ShieldCheck className="w-3 h-3 text-purple-500" />
                     <span>Super Admin</span>
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 Kelola taksonomi sistem, struktur area gudang, dan target waktu operasional
               </p>
             </div>
@@ -134,11 +134,11 @@ export function MasterDataCommandCenter({
         </div>
 
         {/* Active Warehouse Context Pill */}
-        <div className="flex items-center gap-2 self-start md:self-auto p-2 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 shrink-0 ml-1" />
+        <div className="flex items-center gap-2.5 self-start md:self-auto p-2.5 rounded-2xl neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 border border-black/[0.04] dark:border-white/[0.05]">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 shrink-0 ml-1" />
           <div className="min-w-0 pr-2 text-left">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Gudang Aktif Terpilih</p>
-            <p className="text-xs font-black text-slate-900 truncate">
+            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Gudang Aktif Terpilih</p>
+            <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">
               {currentWarehouseCode} — {currentWarehouseName}
             </p>
           </div>
@@ -146,7 +146,7 @@ export function MasterDataCommandCenter({
       </div>
 
       {/* ── RESPONSIVE TAB BAR ── */}
-      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60 overflow-x-auto no-scrollbar shadow-2xs w-full scroll-smooth">
+      <div className="flex items-center gap-1.5 p-1.5 neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 rounded-2xl border border-black/[0.04] dark:border-white/[0.05] overflow-x-auto no-scrollbar w-full scroll-smooth">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -156,11 +156,11 @@ export function MasterDataCommandCenter({
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all touch-target shrink-0',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 active:scale-95',
+                'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all touch-target shrink-0',
+                'focus-visible:outline-none active:scale-95',
                 isActive
-                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-extrabold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  ? 'neu-pill-active text-slate-900 dark:text-slate-100 font-black'
+                  : 'neu-pill-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               <Icon
@@ -168,20 +168,20 @@ export function MasterDataCommandCenter({
                   'w-4 h-4 shrink-0',
                   isActive
                     ? tab.scope === 'global'
-                      ? 'text-purple-600'
-                      : 'text-blue-600'
+                      ? 'text-purple-600 dark:text-purple-400'
+                      : 'text-blue-600 dark:text-blue-400'
                     : 'text-slate-400'
                 )}
               />
               <span>{tab.label}</span>
               <span
                 className={cn(
-                  'text-[9.5px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 transition-colors',
+                  'text-[9.5px] font-bold px-1.5 py-0.5 rounded-md shrink-0 transition-colors',
                   isActive
                     ? tab.scope === 'global'
-                      ? 'bg-purple-50 text-purple-700 border border-purple-200/60'
-                      : 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                    : 'bg-slate-200/70 text-slate-500'
+                      ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20'
+                      : 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20'
+                    : 'bg-slate-200/60 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                 )}
               >
                 {tab.scopeLabel}

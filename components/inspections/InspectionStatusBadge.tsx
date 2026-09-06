@@ -30,7 +30,7 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30 font-bold',
             sizeClasses,
             className
           )}
@@ -43,12 +43,12 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 font-bold',
             sizeClasses,
             className
           )}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 shrink-0" />
           <span>Selesai</span>
         </span>
       );
@@ -56,7 +56,7 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 text-slate-700 dark:text-slate-300 border border-slate-500/30 font-bold',
             sizeClasses,
             className
           )}
@@ -69,7 +69,7 @@ export function InspectionStatusBadge({ status, size = 'sm', className }: Status
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-black/[0.06] dark:border-white/[0.06] font-bold',
             sizeClasses,
             className
           )}
@@ -110,12 +110,12 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 font-bold',
             sizeClasses,
             className
           )}
         >
-          {showIcon && <CheckCircle2 className={cn(iconSizes, 'text-emerald-600')} />}
+          {showIcon && <CheckCircle2 className={cn(iconSizes, 'text-emerald-600 dark:text-emerald-400')} />}
           <span>LOLOS (OK)</span>
         </span>
       );
@@ -123,12 +123,12 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200/80 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 text-rose-800 dark:text-rose-300 border border-rose-500/30 font-bold',
             sizeClasses,
             className
           )}
         >
-          {showIcon && <AlertOctagon className={cn(iconSizes, 'text-rose-600 animate-pulse')} />}
+          {showIcon && <AlertOctagon className={cn(iconSizes, 'text-rose-600 dark:text-rose-400 animate-pulse')} />}
           <span>TEMUAN DEFECT (NG)</span>
         </span>
       );
@@ -136,7 +136,7 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-500/15 text-slate-700 dark:text-slate-300 border border-slate-500/30 font-bold',
             sizeClasses,
             className
           )}
@@ -149,7 +149,7 @@ export function OverallResultBadge({
       return (
         <span
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 font-bold',
+            'inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-black/[0.06] dark:border-white/[0.06] font-bold',
             sizeClasses,
             className
           )}

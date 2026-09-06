@@ -288,37 +288,37 @@ export function AnalyticsCommandCenter({
   return (
     <div className="space-y-6">
       {/* ── Executive Header ── */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 text-xs font-bold border border-blue-200/60 shadow-2xs">
-              <Building2 className="w-3.5 h-3.5 text-blue-600" />
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-inset-sm font-bold text-xs text-blue-600 dark:text-blue-400 border border-black/[0.04] dark:border-white/[0.05]">
+              <Building2 className="w-3.5 h-3.5 text-blue-500" />
               <span>{warehouseCode} — {warehouseName}</span>
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium">
-              <Clock className="w-3 h-3 text-slate-500" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg neu-inset-sm font-medium text-[11px] text-slate-600 dark:text-slate-400">
+              <Clock className="w-3 h-3 text-slate-400" />
               <span>WIB (UTC+7)</span>
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
             Analitik & Intelijen Operasional
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Monitoring performa kepatuhan SLA, waktu penyelesaian kasus, dan kualitas inspeksi gudang
           </p>
         </div>
 
         {/* Period Selector Tabs */}
-        <div className="flex items-center p-1 bg-slate-100/90 rounded-xl border border-slate-200/60 self-start md:self-auto overflow-x-auto max-w-full">
+        <div className="flex items-center p-1.5 neu-inset-sm bg-[#E5EBF3]/60 dark:bg-[#0D1322]/60 rounded-2xl border border-black/[0.04] dark:border-white/[0.05] self-start md:self-auto overflow-x-auto max-w-full">
           {PERIOD_OPTIONS.map((opt) => (
             <button
               key={opt.key}
               onClick={() => setSelectedPeriod(opt.key)}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap',
+                'px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap',
                 selectedPeriod === opt.key
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               )}
             >
               {opt.label}
@@ -331,8 +331,8 @@ export function AnalyticsCommandCenter({
       <div>
         <div className="flex items-center justify-between mb-3 px-1">
           <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-500" />
-            <h2 className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <h2 className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Metrik Periode: {PERIOD_OPTIONS.find((p) => p.key === selectedPeriod)?.label}
             </h2>
           </div>
@@ -340,44 +340,44 @@ export function AnalyticsCommandCenter({
 
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* 1. Total Kasus Baru */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] sm:text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Kasus Baru
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <BarChart3 className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              <div className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
                 {periodMetrics.totalNewCases}
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 pt-2.5 border-t border-black/[0.04] dark:border-white/[0.05] flex items-center justify-between">
               <span>Selesai di periode:</span>
-              <span className="font-bold text-slate-800">{periodMetrics.totalClosedCases}</span>
+              <span className="font-bold text-slate-800 dark:text-slate-200">{periodMetrics.totalClosedCases}</span>
             </div>
           </div>
 
           {/* 2. Kepatuhan SLA Selesai */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] sm:text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Kepatuhan SLA
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              <div className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
                 {periodMetrics.slaComplianceRate !== null
                   ? `${periodMetrics.slaComplianceRate.toFixed(1)}%`
                   : '—'}
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-2 pt-2 border-t border-slate-100 truncate">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 pt-2.5 border-t border-black/[0.04] dark:border-white/[0.05] truncate">
               {periodMetrics.slaEligibleCount > 0
                 ? `${periodMetrics.slaOnTimeCount}/${periodMetrics.slaEligibleCount} tepat SLA`
                 : 'Belum ada kasus selesai'}
@@ -385,21 +385,21 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* 3. Waktu Selesai (MTTR) */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] sm:text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Rata-rata MTTR
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-amber-600 dark:text-amber-400">
                   <Clock className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              <div className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
                 {formatMttr(periodMetrics.avgResolutionMinutes)}
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-2 pt-2 border-t border-slate-100 truncate">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 pt-2.5 border-t border-black/[0.04] dark:border-white/[0.05] truncate">
               {periodMetrics.totalClosedCases > 0
                 ? `Dari ${periodMetrics.totalClosedCases} kasus selesai`
                 : 'Belum ada kasus selesai'}
@@ -407,21 +407,21 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* 4. Sesi QC Selesai */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="bg-[#EEF2F7] dark:bg-[#131C31] p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] sm:text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Inspeksi QC
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-purple-600 dark:text-purple-400">
                   <ClipboardCheck className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              <div className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
                 {periodMetrics.totalCompletedInspections}
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-2 pt-2 border-t border-slate-100 truncate">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 pt-2.5 border-t border-black/[0.04] dark:border-white/[0.05] truncate">
               {periodMetrics.totalCompletedInspections > 0
                 ? `${periodMetrics.totalCompletedInspections} sesi selesai diaudit`
                 : 'Belum ada audit selesai'}
@@ -429,23 +429,23 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* 5. Tingkat Temuan NG QC */}
-          <div className="col-span-2 lg:col-span-1 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div className="col-span-2 lg:col-span-1 bg-[#EEF2F7] dark:bg-[#131C31] p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive border border-black/[0.04] dark:border-white/[0.05] transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <span className="text-[11px] sm:text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Defect Rate QC
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-2xl neu-icon-well flex items-center justify-center text-rose-600 dark:text-rose-400">
                   <AlertCircle className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              <div className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100">
                 {periodMetrics.qcDefectRate !== null
                   ? `${periodMetrics.qcDefectRate.toFixed(1)}%`
                   : '—'}
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-2 pt-2 border-t border-slate-100 truncate">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-3 pt-2.5 border-t border-black/[0.04] dark:border-white/[0.05] truncate">
               {periodMetrics.applicableItems > 0
                 ? `${periodMetrics.ngCount} NG dari ${periodMetrics.applicableItems} item applicable`
                 : 'Belum ada data QC'}
@@ -455,14 +455,14 @@ export function AnalyticsCommandCenter({
       </div>
 
       {/* ── Real-time Operational Snapshot Tier ── */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md border border-slate-800">
+      <div className="bg-[#101726] neu-raised-lg rounded-3xl p-5 sm:p-6 text-white border border-white/[0.08]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             <h2 className="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-2">
               <span>Snapshot Operasional Berjalan</span>
             </h2>
-            <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase tracking-wider border border-emerald-500/30">
+            <span className="px-2.5 py-0.5 rounded-lg neu-inset-sm bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30">
               Saat Ini
             </span>
           </div>
@@ -473,7 +473,7 @@ export function AnalyticsCommandCenter({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Total Aktif */}
-          <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+          <div className="neu-inset-sm bg-white/[0.03] rounded-2xl p-3.5 border border-white/[0.06]">
             <span className="text-[10.5px] text-slate-400 font-medium block mb-1">Kasus Aktif</span>
             <div className="text-xl sm:text-2xl font-black text-white">
               {currentSnapshot.totalActive}
@@ -482,7 +482,7 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* Reopened Aktif */}
-          <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+          <div className="neu-inset-sm bg-white/[0.03] rounded-2xl p-3.5 border border-white/[0.06]">
             <span className="text-[10.5px] text-slate-400 font-medium block mb-1">Kasus Reopened</span>
             <div className="text-xl sm:text-2xl font-black text-amber-400">
               {currentSnapshot.currentReopened}
@@ -491,7 +491,7 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* Overdue */}
-          <div className="bg-rose-500/10 rounded-xl p-3.5 border border-rose-500/30">
+          <div className="neu-inset-sm bg-rose-500/10 rounded-2xl p-3.5 border border-rose-500/30">
             <span className="text-[10.5px] text-rose-300 font-medium block mb-1">SLA Overdue</span>
             <div className="text-xl sm:text-2xl font-black text-rose-400">
               {currentSnapshot.overdueCount}
@@ -500,7 +500,7 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* Mendekati Deadline */}
-          <div className="bg-amber-500/10 rounded-xl p-3.5 border border-amber-500/30">
+          <div className="neu-inset-sm bg-amber-500/10 rounded-2xl p-3.5 border border-amber-500/30">
             <span className="text-[10.5px] text-amber-300 font-medium block mb-1">Mendekati SLA</span>
             <div className="text-xl sm:text-2xl font-black text-amber-400">
               {currentSnapshot.approachingCount}
@@ -509,7 +509,7 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* Aman */}
-          <div className="bg-emerald-500/10 rounded-xl p-3.5 border border-emerald-500/30">
+          <div className="neu-inset-sm bg-emerald-500/10 rounded-2xl p-3.5 border border-emerald-500/30">
             <span className="text-[10.5px] text-emerald-300 font-medium block mb-1">SLA Aman</span>
             <div className="text-xl sm:text-2xl font-black text-emerald-400">
               {currentSnapshot.onTimeCount}
@@ -518,7 +518,7 @@ export function AnalyticsCommandCenter({
           </div>
 
           {/* Tanpa Target SLA */}
-          <div className="bg-white/5 rounded-xl p-3.5 border border-white/10">
+          <div className="neu-inset-sm bg-white/[0.03] rounded-2xl p-3.5 border border-white/[0.06]">
             <span className="text-[10.5px] text-slate-400 font-medium block mb-1">Tanpa Target SLA</span>
             <div className="text-xl sm:text-2xl font-black text-slate-300">
               {currentSnapshot.noSlaCount}
@@ -529,17 +529,17 @@ export function AnalyticsCommandCenter({
       </div>
 
       {/* ── Main Trend Timeline Chart ── */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+      <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+            <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight">
               Tren Kasus Masuk vs Kasus Selesai
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Perbandingan laju pembuatan insiden baru terhadap penyelesaian kasus per hari
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-bold text-slate-600">
+          <div className="flex items-center gap-4 text-xs font-bold text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
               <span>Kasus Masuk</span>
@@ -564,7 +564,7 @@ export function AnalyticsCommandCenter({
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#94a3b8" strokeOpacity={0.15} />
               <XAxis
                 dataKey="dateLabel"
                 tickLine={false}
@@ -581,10 +581,10 @@ export function AnalyticsCommandCenter({
                 contentStyle={{
                   backgroundColor: '#0f172a',
                   color: '#fff',
-                  borderRadius: '0.75rem',
+                  borderRadius: '1rem',
                   border: 'none',
                   fontSize: '12px',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
                 }}
               />
               <Area
@@ -613,18 +613,18 @@ export function AnalyticsCommandCenter({
       {/* ── Operational Distributions Grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Status Distribution */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-slate-500" />
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+          <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
+            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Distribusi Status Kasus</span>
             </h3>
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
               Total: {distributions.datasetTotal} kasus
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {[
               { label: 'Open', count: distributions.statusCounts.open, color: 'bg-blue-500' },
               { label: 'Reopened', count: distributions.statusCounts.reopened, color: 'bg-indigo-500' },
@@ -637,12 +637,12 @@ export function AnalyticsCommandCenter({
                 ? Math.round((item.count / distributions.datasetTotal) * 100)
                 : 0;
               return (
-                <div key={item.label} className="space-y-1">
+                <div key={item.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700">{item.label}</span>
-                    <span className="font-bold text-slate-900">{item.count} ({pct}%)</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">{item.label}</span>
+                    <span className="font-black text-slate-800 dark:text-slate-100">{item.count} ({pct}%)</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="w-full h-2.5 rounded-full neu-inset-sm bg-[#E5EBF3]/80 dark:bg-[#0D1322]/80 overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all', item.color)}
                       style={{ width: `${pct}%` }}
@@ -655,18 +655,18 @@ export function AnalyticsCommandCenter({
         </div>
 
         {/* Priority Distribution */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-slate-500" />
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+          <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
+            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Distribusi Tingkat Prioritas</span>
             </h3>
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
               Total: {distributions.datasetTotal} kasus
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {[
               { label: 'Kritis (Critical)', count: distributions.priorityCounts.critical, color: 'bg-rose-500' },
               { label: 'Tinggi (High)', count: distributions.priorityCounts.high, color: 'bg-amber-500' },
@@ -677,12 +677,12 @@ export function AnalyticsCommandCenter({
                 ? Math.round((item.count / distributions.datasetTotal) * 100)
                 : 0;
               return (
-                <div key={item.label} className="space-y-1">
+                <div key={item.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700">{item.label}</span>
-                    <span className="font-bold text-slate-900">{item.count} ({pct}%)</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">{item.label}</span>
+                    <span className="font-black text-slate-800 dark:text-slate-100">{item.count} ({pct}%)</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="w-full h-2.5 rounded-full neu-inset-sm bg-[#E5EBF3]/80 dark:bg-[#0D1322]/80 overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all', item.color)}
                       style={{ width: `${pct}%` }}
@@ -695,13 +695,13 @@ export function AnalyticsCommandCenter({
         </div>
 
         {/* Area Hotspots */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" />
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+          <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
+            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Hotspot Area Kasus Tertinggi</span>
             </h3>
-            <span className="text-xs text-slate-400 font-medium">Top Area</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">Top Area</span>
           </div>
 
           {distributions.areaHotspots.length === 0 ? (
@@ -713,15 +713,15 @@ export function AnalyticsCommandCenter({
               {distributions.areaHotspots.map((item, idx) => (
                 <div
                   key={item.name}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100"
+                  className="flex items-center justify-between p-3 rounded-2xl neu-inset-sm bg-[#E5EBF3]/40 dark:bg-[#0D1322]/40 border border-black/[0.04] dark:border-white/[0.05]"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-md bg-slate-200 text-slate-700 font-bold text-[10px] flex items-center justify-center">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-6 h-6 rounded-lg neu-raised-sm bg-[#EEF2F7] dark:bg-[#131C31] text-slate-700 dark:text-slate-300 font-black text-[10px] flex items-center justify-center">
                       {idx + 1}
                     </span>
-                    <span className="text-xs font-bold text-slate-800">{item.name}</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{item.name}</span>
                   </div>
-                  <span className="text-xs font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                  <span className="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-xl neu-inset-sm">
                     {item.count} kasus
                   </span>
                 </div>
@@ -731,13 +731,13 @@ export function AnalyticsCommandCenter({
         </div>
 
         {/* QC Inspection Summary */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <ClipboardCheck className="w-4 h-4 text-slate-500" />
+        <div className="bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl p-5 sm:p-6 neu-raised border border-black/[0.04] dark:border-white/[0.05] space-y-4">
+          <div className="flex items-center justify-between border-b border-black/[0.04] dark:border-white/[0.05] pb-3">
+            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <ClipboardCheck className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span>Rekapitulasi Temuan Audit QC</span>
             </h3>
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
               Sesi: {periodMetrics.totalCompletedInspections}
             </span>
           </div>
@@ -748,29 +748,29 @@ export function AnalyticsCommandCenter({
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
-                  <span className="text-[10px] font-bold text-emerald-700 uppercase block">OK</span>
-                  <span className="text-lg font-black text-emerald-800">{periodMetrics.okCount}</span>
+              <div className="grid grid-cols-3 gap-2.5 text-center">
+                <div className="p-3 rounded-2xl neu-inset-sm bg-emerald-500/10 border border-emerald-500/20">
+                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase block">OK</span>
+                  <span className="text-lg font-black text-emerald-700 dark:text-emerald-300">{periodMetrics.okCount}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-100">
-                  <span className="text-[10px] font-bold text-rose-700 uppercase block">NG</span>
-                  <span className="text-lg font-black text-rose-800">{periodMetrics.ngCount}</span>
+                <div className="p-3 rounded-2xl neu-inset-sm bg-rose-500/10 border border-rose-500/20">
+                  <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase block">NG</span>
+                  <span className="text-lg font-black text-rose-700 dark:text-rose-300">{periodMetrics.ngCount}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">N/A</span>
-                  <span className="text-lg font-black text-slate-700">{periodMetrics.naCount}</span>
+                <div className="p-3 rounded-2xl neu-inset-sm bg-slate-500/10 border border-slate-500/20">
+                  <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase block">N/A</span>
+                  <span className="text-lg font-black text-slate-700 dark:text-slate-300">{periodMetrics.naCount}</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1">
-                <div className="flex justify-between font-medium text-slate-600">
+              <div className="p-3.5 rounded-2xl neu-inset-sm bg-[#E5EBF3]/40 dark:bg-[#0D1322]/40 border border-black/[0.04] dark:border-white/[0.05] text-xs space-y-1.5">
+                <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
                   <span>Total Item Berlaku (OK + NG):</span>
-                  <span className="font-bold text-slate-900">{periodMetrics.applicableItems} item</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">{periodMetrics.applicableItems} item</span>
                 </div>
-                <div className="flex justify-between font-medium text-slate-600">
+                <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
                   <span>Tingkat Defect (NG / Applicable):</span>
-                  <span className="font-extrabold text-rose-600">
+                  <span className="font-black text-rose-600 dark:text-rose-400">
                     {periodMetrics.qcDefectRate !== null ? `${periodMetrics.qcDefectRate.toFixed(1)}%` : '—'}
                   </span>
                 </div>

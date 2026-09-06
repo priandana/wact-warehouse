@@ -89,10 +89,10 @@ export function CaseActivityTimeline({
 }: CaseActivityTimelineProps) {
   if (!activities || activities.length === 0) {
     return (
-      <div className={cn('p-6 text-center rounded-2xl bg-slate-50/60 border border-slate-100', className)}>
-        <Activity className="w-6 h-6 text-slate-300 mx-auto mb-1.5" />
-        <p className="text-xs font-bold text-slate-500">Belum ada riwayat aktivitas</p>
-        <p className="text-[11px] text-slate-400 mt-0.5">Semua aksi dan perubahan status kasus akan tercatat di sini.</p>
+      <div className={cn('p-6 text-center rounded-2xl neu-inset-sm bg-[#EEF2F7] dark:bg-[#131C31] border border-black/[0.04] dark:border-white/[0.05]', className)}>
+        <Activity className="w-6 h-6 text-slate-400 dark:text-slate-500 mx-auto mb-1.5" />
+        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Belum ada riwayat aktivitas</p>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Semua aksi dan perubahan status kasus akan tercatat di sini.</p>
       </div>
     );
   }
@@ -105,14 +105,14 @@ export function CaseActivityTimeline({
         <div key={group.dateKey} className="space-y-2.5">
           {/* Date Section Header */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 bg-slate-100/80 border border-slate-200/60 px-2 py-0.5 rounded-md">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 bg-[#E2E8F0] dark:bg-[#1E293B] border border-black/[0.04] dark:border-white/[0.05] px-2.5 py-1 rounded-lg">
               {group.dateLabel}
             </span>
-            <div className="flex-1 h-px bg-slate-100" />
+            <div className="flex-1 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
           </div>
 
           {/* Activity Items List */}
-          <div className="relative pl-5 sm:pl-6 space-y-3.5 before:absolute before:left-[15px] sm:before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200/70">
+          <div className="relative pl-5 sm:pl-6 space-y-3.5 before:absolute before:left-[15px] sm:before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-300/70 dark:before:bg-slate-700/70">
             {group.items.map((act) => {
               const pres = getActivityPresentation({
                 action: act.action,
@@ -141,7 +141,7 @@ export function CaseActivityTimeline({
                   {/* Semantic Icon Node (32px) */}
                   <div
                     className={cn(
-                      'w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 z-10 transition-transform shadow-2xs -ml-5 sm:-ml-6 bg-white',
+                      'w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 z-10 transition-transform shadow-2xs -ml-5 sm:-ml-6 bg-[#EEF2F7] dark:bg-[#131C31]',
                       pres.nodeBorder
                     )}
                     aria-hidden="true"
@@ -152,22 +152,22 @@ export function CaseActivityTimeline({
                   </div>
 
                   {/* Activity Details Card */}
-                  <div className="min-w-0 flex-1 p-3 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-1.5">
+                  <div className="min-w-0 flex-1 p-3.5 rounded-2xl bg-[#E5EBF3]/70 dark:bg-[#101726]/70 border border-black/[0.04] dark:border-white/[0.05] space-y-1.5">
                     {/* Header Row: Action Title + Timestamp */}
                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2">
-                      <h4 className="text-xs font-bold text-slate-900 leading-snug">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">
                         {pres.title}
                       </h4>
-                      <span className="text-[10px] font-medium text-slate-400 shrink-0">
+                      <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 shrink-0">
                         {formatWib(act.created_at, 'HH:mm')} WIB
                       </span>
                     </div>
 
                     {/* Actor Identity Row */}
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
-                      <span className="font-semibold text-slate-700">{actorName}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-slate-400 text-[10.5px]">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">{actorName}</span>
+                      <span className="text-slate-400 dark:text-slate-600">â€¢</span>
+                      <span className="text-slate-500 dark:text-slate-400 text-[10.5px]">
                         {formatDistanceToNow(new Date(act.created_at), { addSuffix: true, locale: idLocale })}
                       </span>
                     </div>

@@ -558,11 +558,11 @@ export function CaseWorkflowActionPanel({
   return (
     <div className="space-y-4">
       {/* ── Main Action Bar ─────────────────────────────────────────────── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+      <div className="p-4 sm:p-5 rounded-3xl bg-[#EEF2F7] dark:bg-[#131C31] shadow-[6px_6px_16px_rgba(163,177,198,0.35),-6px_-6px_16px_rgba(255,255,255,0.95)] dark:shadow-[6px_6px_16px_rgba(0,0,0,0.5),-4px_-4px_12px_rgba(30,41,59,0.25)] border border-white/60 dark:border-slate-800/60 space-y-3.5">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-600" />
-            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
               Aksi Operasional
             </h2>
           </div>
@@ -571,13 +571,13 @@ export function CaseWorkflowActionPanel({
 
         {/* Error / Success Alerts on Main Panel */}
         {errorMessage && !activeModal && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2 animate-in fade-in">
+          <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/50 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-2 animate-in fade-in">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <span className="leading-snug">{errorMessage}</span>
           </div>
         )}
         {successMessage && !activeModal && (
-          <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2 animate-in fade-in">
+          <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/50 text-xs text-emerald-800 dark:text-emerald-200 flex items-start gap-2 animate-in fade-in">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <span className="leading-snug">{successMessage}</span>
           </div>
@@ -590,7 +590,7 @@ export function CaseWorkflowActionPanel({
             <button
               type="button"
               onClick={() => setActiveModal('assign')}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] transition-all"
+              className="fintech-btn-primary w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs active:scale-[0.98] transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4 stroke-[2.5]" />
               <span>{currentAssigneeName ? 'Ganti Penugasan PIC' : 'Tugaskan PIC Sekarang'}</span>
@@ -605,7 +605,7 @@ export function CaseWorkflowActionPanel({
                   <button
                     type="button"
                     onClick={() => setActiveModal('verify')}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] transition-all"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-[4px_4px_12px_rgba(16,185,129,0.35),-2px_-2px_6px_rgba(255,255,255,0.6)] border border-emerald-400/40 active:scale-[0.98] transition-all cursor-pointer"
                   >
                     <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                     <span>Setujui & Selesaikan (Close)</span>
@@ -614,19 +614,19 @@ export function CaseWorkflowActionPanel({
                   <button
                     type="button"
                     onClick={() => setActiveModal('reject')}
-                    className="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 active:scale-[0.98] transition-all"
+                    className="neu-btn-secondary w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-rose-600 dark:text-rose-400 active:scale-[0.98] transition-all cursor-pointer"
                   >
                     <XCircle className="w-4 h-4" />
                     <span>Tolak / Minta Perbaikan Ulang</span>
                   </button>
                 </div>
               ) : isAssignee ? (
-                <div className="p-3 rounded-xl bg-indigo-50/80 border border-indigo-100 text-[11.5px] font-semibold text-indigo-900 flex items-center gap-2">
+                <div className="p-3 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/50 text-[11.5px] font-semibold text-indigo-900 dark:text-indigo-200 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-indigo-600 shrink-0" />
                   <span>Menunggu verifikasi dari tim QC / Koordinator. PIC tidak dapat memverifikasi pekerjaan sendiri.</span>
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11.5px] font-semibold text-slate-600 flex items-center gap-2">
+                <div className="p-3 rounded-2xl bg-slate-100/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800 text-[11.5px] font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>Menunggu verifikasi dari tim QC / Koordinator.</span>
                 </div>
@@ -638,11 +638,11 @@ export function CaseWorkflowActionPanel({
           {(status === 'on_progress' || status === 'waiting_repair') && (
             <div className="space-y-2">
               {canRequestVerification && !hasAfterEvidence && (
-                <div className="p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-[11.5px] text-amber-900 flex items-start gap-2">
+                <div className="p-3 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/50 text-[11.5px] text-amber-900 dark:text-amber-200 flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold">Foto Selesai Diperlukan</p>
-                    <p className="text-amber-800 font-normal mt-0.5">
+                    <p className="text-amber-800 dark:text-amber-300 font-normal mt-0.5">
                       Lengkapi foto bukti penyelesaian (Foto Selesai) sebelum mengajukan verifikasi QC.
                     </p>
                   </div>
@@ -655,7 +655,7 @@ export function CaseWorkflowActionPanel({
                   disabled={loading || !hasAfterEvidence}
                   onClick={handleRequestVerification}
                   title={!hasAfterEvidence ? 'Lengkapi foto selesai sebelum mengajukan verifikasi' : undefined}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-xs active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="fintech-btn-primary w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
                   <Clock className="w-4 h-4 stroke-[2.5]" />
                   <span>Ajukan Verifikasi QC</span>
@@ -670,7 +670,7 @@ export function CaseWorkflowActionPanel({
                       setEvidencePhase('after');
                       setActiveModal('evidence');
                     }}
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs border border-emerald-200/80 active:scale-95 transition-all text-center"
+                    className="neu-btn-secondary inline-flex items-center justify-center gap-1.5 px-3 py-2 text-emerald-700 dark:text-emerald-400 active:scale-95 transition-all text-center cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
                     <span>Foto Selesai</span>
@@ -681,9 +681,9 @@ export function CaseWorkflowActionPanel({
                   <button
                     type="button"
                     onClick={() => setActiveModal('progress')}
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 active:scale-95 transition-all text-center"
+                    className="neu-btn-secondary inline-flex items-center justify-center gap-1.5 px-3 py-2 text-slate-800 dark:text-slate-200 active:scale-95 transition-all text-center cursor-pointer"
                   >
-                    <FileText className="w-3.5 h-3.5 text-slate-600" />
+                    <FileText className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
                     <span>Update Progres</span>
                   </button>
                 )}
@@ -696,7 +696,7 @@ export function CaseWorkflowActionPanel({
             <button
               type="button"
               onClick={() => setActiveModal('reopen')}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200 active:scale-[0.98] transition-all"
+              className="neu-btn-secondary w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-amber-800 dark:text-amber-400 active:scale-[0.98] transition-all cursor-pointer"
             >
               <RotateCw className="w-4 h-4 text-amber-700" />
               <span>Buka Kembali Kasus (Reopen)</span>
@@ -706,7 +706,7 @@ export function CaseWorkflowActionPanel({
 
         {/* 2. Administrative Controls */}
         {(canChangePriority || canOverrideDueDate || canForceClose) && status !== 'closed' && (
-          <div className="pt-2 border-t border-slate-100">
+          <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800">
             <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
               Kontrol Administratif
             </p>
@@ -718,7 +718,7 @@ export function CaseWorkflowActionPanel({
                     setSelectedPriority(priority);
                     setActiveModal('priority');
                   }}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200/70 active:scale-95 transition-all"
+                  className="neu-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] active:scale-95 transition-all cursor-pointer"
                 >
                   <Tag className="w-3 h-3 text-slate-500" />
                   <span>Prioritas</span>
@@ -732,7 +732,7 @@ export function CaseWorkflowActionPanel({
                     setNewDueDate(dueDate ? new Date(dueDate).toISOString().slice(0, 16) : '');
                     setActiveModal('due_date');
                   }}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200/70 active:scale-95 transition-all"
+                  className="neu-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] active:scale-95 transition-all cursor-pointer"
                 >
                   <Calendar className="w-3 h-3 text-slate-500" />
                   <span>Batas SLA</span>
@@ -743,7 +743,7 @@ export function CaseWorkflowActionPanel({
                 <button
                   type="button"
                   onClick={() => setActiveModal('force_close')}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-[11px] border border-rose-200 active:scale-95 transition-all"
+                  className="neu-btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 text-rose-600 dark:text-rose-400 text-[11px] active:scale-95 transition-all cursor-pointer"
                 >
                   <ShieldAlert className="w-3 h-3 text-rose-600" />
                   <span>Tutup Paksa</span>
@@ -755,10 +755,10 @@ export function CaseWorkflowActionPanel({
       </div>
 
       {/* ── Add Comment Form ─────────────────────────────────────────────── */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+      <div className="p-4 sm:p-5 rounded-3xl bg-[#EEF2F7] dark:bg-[#131C31] shadow-[6px_6px_16px_rgba(163,177,198,0.35),-6px_-6px_16px_rgba(255,255,255,0.95)] dark:shadow-[6px_6px_16px_rgba(0,0,0,0.5),-4px_-4px_12px_rgba(30,41,59,0.25)] border border-white/60 dark:border-slate-800/60 space-y-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-blue-600" />
-          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
             Komentar & Catatan Kasus
           </h3>
         </div>
@@ -770,12 +770,12 @@ export function CaseWorkflowActionPanel({
               value={commentContent}
               onChange={(e) => setCommentContent(e.target.value)}
               placeholder="Tulis catatan, instruksi teknis, atau pembaruan investigasi..."
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all leading-relaxed"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#0D1322] shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.85)] border border-slate-300/30 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all leading-relaxed"
             />
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isInternalComment}
@@ -788,7 +788,7 @@ export function CaseWorkflowActionPanel({
             <button
               type="submit"
               disabled={loading || !commentContent.trim()}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs active:scale-95 disabled:opacity-50 transition-all"
+              className="fintech-btn-primary inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs active:scale-95 disabled:opacity-50 transition-all cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Kirim</span>
@@ -815,7 +815,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -823,7 +823,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleAssignPIC}
               disabled={loading || !selectedAssigneeId || assignableUsers.length === 0}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:active:scale-100 transition-all flex items-center justify-center gap-1.5"
+              className="fintech-btn-primary flex-1 h-10 min-h-[40px] px-4 text-xs active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -939,7 +939,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -947,7 +947,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleUpdateProgress}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="fintech-btn-primary flex-1 h-10 min-h-[40px] px-4 text-xs active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
               <span>Simpan Perubahan</span>
@@ -983,7 +983,7 @@ export function CaseWorkflowActionPanel({
             value={correctiveAction}
             onChange={(e) => setCorrectiveAction(e.target.value)}
             placeholder="Tindakan langsung yang telah dilakukan untuk mengatasi masalah..."
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full px-3.5 py-2.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#0D1322] shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.85)] border border-slate-300/30 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
         </div>
 
@@ -997,7 +997,7 @@ export function CaseWorkflowActionPanel({
             value={preventiveAction}
             onChange={(e) => setPreventiveAction(e.target.value)}
             placeholder="Langkah pencegahan agar masalah serupa tidak terulang kembali..."
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full px-3.5 py-2.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#0D1322] shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.85)] border border-slate-300/30 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
         </div>
       </CaseWorkflowModal>
@@ -1020,7 +1020,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -1028,7 +1028,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleUploadEvidence}
               disabled={loading || !evidenceFile || evidenceProcessing}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-[4px_4px_12px_rgba(16,185,129,0.35),-2px_-2px_6px_rgba(255,255,255,0.6)] border border-emerald-400/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
               <span>
@@ -1128,7 +1128,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -1136,7 +1136,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleVerifyApprove}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-xs hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-[4px_4px_12px_rgba(16,185,129,0.35),-2px_-2px_6px_rgba(255,255,255,0.6)] border border-emerald-400/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
               <span>Setujui & Selesaikan</span>
@@ -1187,7 +1187,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -1195,7 +1195,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleVerifyReject}
               disabled={loading || !rejectionNote.trim()}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-[4px_4px_12px_rgba(225,29,72,0.35),-2px_-2px_6px_rgba(255,255,255,0.6)] border border-rose-400/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
               <span>Kembalikan ke PIC</span>
@@ -1243,7 +1243,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 text-xs disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               Batal
             </button>
@@ -1251,7 +1251,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleReopen}
               disabled={loading || !reopenReason.trim()}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-xs hover:bg-amber-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-[4px_4px_12px_rgba(217,119,6,0.35),-2px_-2px_6px_rgba(255,255,255,0.6)] border border-amber-400/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCw className="w-4 h-4" />}
               <span>Buka Kembali</span>
@@ -1275,7 +1275,7 @@ export function CaseWorkflowActionPanel({
             value={reopenReason}
             onChange={(e) => setReopenReason(e.target.value)}
             placeholder="Jelaskan alasan mengapa kasus ini perlu dibuka dan diinvestigasi kembali..."
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            className="w-full px-3 py-2 rounded-xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
             autoFocus
           />
         </div>
@@ -1290,7 +1290,7 @@ export function CaseWorkflowActionPanel({
         title="Ubah Prioritas Kasus"
         subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
         icon={Tag}
-        iconColor="text-indigo-600"
+        iconColor="text-indigo-600 dark:text-indigo-400"
         loading={loading}
         maxWidth="md"
         footer={
@@ -1299,7 +1299,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center"
             >
               Batal
             </button>
@@ -1307,7 +1307,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleChangePriority}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="fintech-btn-primary flex-1 h-10 min-h-[40px] px-4 rounded-xl text-white font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tag className="w-4 h-4" />}
               <span>Simpan Prioritas</span>
@@ -1316,7 +1316,7 @@ export function CaseWorkflowActionPanel({
         }
       >
         {errorMessage && (
-          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-200 dark:border-rose-900/40 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
@@ -1344,7 +1344,7 @@ export function CaseWorkflowActionPanel({
         title="Ubah Batas Waktu SLA Kasus"
         subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
         icon={Calendar}
-        iconColor="text-purple-600"
+        iconColor="text-purple-600 dark:text-purple-400"
         loading={loading}
         maxWidth="md"
         footer={
@@ -1353,7 +1353,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center"
             >
               Batal
             </button>
@@ -1361,7 +1361,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleOverrideDueDate}
               disabled={loading || !newDueDate || !dueDateReason.trim()}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-xs hover:bg-purple-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="fintech-btn-primary flex-1 h-10 min-h-[40px] px-4 rounded-xl text-white font-bold text-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
               <span>Perbarui Batas Waktu</span>
@@ -1370,7 +1370,7 @@ export function CaseWorkflowActionPanel({
         }
       >
         {errorMessage && (
-          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-200 dark:border-rose-900/40 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
@@ -1384,7 +1384,7 @@ export function CaseWorkflowActionPanel({
             type="datetime-local"
             value={newDueDate}
             onChange={(e) => setNewDueDate(e.target.value)}
-            className="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="w-full py-2.5 px-3 rounded-xl neu-inset text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
           />
         </div>
 
@@ -1397,7 +1397,7 @@ export function CaseWorkflowActionPanel({
             value={dueDateReason}
             onChange={(e) => setDueDateReason(e.target.value)}
             placeholder="Jelaskan alasan perubahan SLA (misal: kendala pengiriman sparepart)..."
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="w-full px-3 py-2 rounded-xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
             autoFocus
           />
         </div>
@@ -1412,7 +1412,7 @@ export function CaseWorkflowActionPanel({
         title="Tutup Paksa Kasus (Admin Only)"
         subtitle={caseNumber ? `Kasus ${caseNumber}` : undefined}
         icon={ShieldAlert}
-        iconColor="text-rose-600"
+        iconColor="text-rose-600 dark:text-rose-400"
         loading={loading}
         maxWidth="md"
         footer={
@@ -1421,7 +1421,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={closeModal}
               disabled={loading}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="neu-btn-secondary flex-1 h-10 min-h-[40px] px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center"
             >
               Batal
             </button>
@@ -1429,7 +1429,7 @@ export function CaseWorkflowActionPanel({
               type="button"
               onClick={handleForceClose}
               disabled={loading || !forceCloseReason.trim()}
-              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-rose-600 text-white font-bold text-xs shadow-xs hover:bg-rose-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 min-h-[40px] px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-500/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
               <span>Tutup Paksa Sekarang</span>
@@ -1438,13 +1438,13 @@ export function CaseWorkflowActionPanel({
         }
       >
         {errorMessage && (
-          <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-200 dark:border-rose-900/40 text-xs font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        <div className="p-3 rounded-2xl bg-rose-50 border border-rose-100 text-xs text-rose-800 leading-relaxed font-medium">
+        <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-200 dark:border-rose-900/40 text-xs text-rose-700 dark:text-rose-300 leading-relaxed font-medium">
           ⚠️ <strong>Perhatian:</strong> Tindakan ini akan langsung menyelesaikan kasus <strong>{caseNumber}</strong> tanpa melalui verifikasi QC standar. Wajib menyertakan alasan resmi.
         </div>
 
@@ -1457,7 +1457,7 @@ export function CaseWorkflowActionPanel({
             value={forceCloseReason}
             onChange={(e) => setForceCloseReason(e.target.value)}
             placeholder="Contoh: Laporan duplikat atau diselesaikan melalui jalur maintenance pusat..."
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            className="w-full px-3 py-2 rounded-xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/30"
             autoFocus
           />
         </div>

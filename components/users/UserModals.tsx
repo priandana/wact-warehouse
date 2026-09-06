@@ -74,31 +74,31 @@ export function PortalModal({
   return createPortal(
     <div className="fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden animate-in fade-in">
       <div
-        className={`w-full ${maxWidth} bg-white rounded-3xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[88vh] overflow-hidden animate-in zoom-in-95 relative`}
+        className={`w-full ${maxWidth} bg-[#EEF2F7] dark:bg-[#131C31] rounded-3xl neu-raised-lg border border-slate-200/50 dark:border-slate-800/60 flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[88vh] overflow-hidden animate-in zoom-in-95 relative`}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 shrink-0 bg-white">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4.5 border-b border-slate-200/40 dark:border-slate-800/60 shrink-0 bg-[#EEF2F7]/95 dark:bg-[#131C31]/95 backdrop-blur-md">
           <div className="flex items-center gap-3">
             {Icon && (
-              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-2xl neu-icon-well text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <Icon className="w-5 h-5" />
               </div>
             )}
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">{title}</h3>
-              {subtitle && <p className="text-[11px] text-slate-500 font-medium">{subtitle}</p>}
+              <h3 className="text-base font-black text-slate-900 dark:text-slate-100 tracking-tight">{title}</h3>
+              {subtitle && <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{subtitle}</p>}
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto flex-1">{children}</div>
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 text-slate-800 dark:text-slate-200">{children}</div>
       </div>
     </div>,
     document.body
@@ -240,29 +240,29 @@ export function CreateUserModal({
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div className="p-4 rounded-2xl neu-inset-sm space-y-3">
             <div>
-              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Nama Pengguna</span>
-              <p className="text-xs font-bold text-slate-900">{createdResult.user.fullName}</p>
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nama Pengguna</span>
+              <p className="text-xs font-black text-slate-900 dark:text-slate-100">{createdResult.user.fullName}</p>
             </div>
             <div>
-              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Email Login</span>
-              <p className="text-xs font-mono font-bold text-blue-600">{createdResult.user.email}</p>
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Email Login</span>
+              <p className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">{createdResult.user.email}</p>
             </div>
 
             <div>
-              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Password Awal (Sementara)</span>
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Password Awal (Sementara)</span>
               <div className="mt-1 flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
                   value={createdResult.initialPassword}
-                  className="flex-1 px-3 py-2 rounded-xl bg-white border border-slate-200 font-mono text-xs font-bold text-slate-900 select-all"
+                  className="flex-1 px-3 py-2 rounded-xl neu-inset font-mono text-xs font-bold text-slate-900 dark:text-slate-100 select-all"
                 />
                 <button
                   type="button"
                   onClick={handleCopyPassword}
-                  className="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm shadow-blue-500/20"
+                  className="fintech-btn-primary px-3 py-2 rounded-xl text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Tersalin' : 'Salin'}</span>
@@ -271,8 +271,8 @@ export function CreateUserModal({
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-amber-900 text-xs flex items-start gap-2.5 leading-relaxed">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5 leading-relaxed">
+            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold">Penting:</span> Password awal hanya berlaku sampai pengguna mengganti password pada login pertama. Berikan kredensial ini secara aman kepada pengguna.
             </div>
@@ -281,7 +281,7 @@ export function CreateUserModal({
           <button
             type="button"
             onClick={handleFinish}
-            className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer shadow-md"
+            className="w-full fintech-btn-primary py-3 px-4 rounded-2xl text-white font-bold text-xs transition-colors cursor-pointer"
           >
             Selesai & Tutup
           </button>
@@ -309,7 +309,7 @@ export function CreateUserModal({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
               Nama Lengkap <span className="text-rose-500">*</span>
             </label>
             <input
@@ -318,12 +318,12 @@ export function CreateUserModal({
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="e.g. Ahmad Fauzi"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
               Email Perusahaan <span className="text-rose-500">*</span>
             </label>
             <input
@@ -332,43 +332,43 @@ export function CreateUserModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. ahmad.fauzi@wact.com"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">ID Karyawan (Opsional)</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">ID Karyawan (Opsional)</label>
             <input
               type="text"
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               placeholder="e.g. EMP-10492"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">Nomor Telepon / WA (Opsional)</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nomor Telepon / WA (Opsional)</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="e.g. +62 812-3456-7890"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
             />
           </div>
         </div>
 
         {/* Warehouse Selection */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             Gudang Penugasan Awal <span className="text-rose-500">*</span>
           </label>
           <select
             value={targetWarehouseId}
             onChange={(e) => setTargetWarehouseId(e.target.value)}
             disabled={!isSuperAdmin}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-500"
+            className="w-full px-3.5 py-2.5 rounded-2xl neu-inset-sm text-xs font-bold text-slate-900 dark:text-slate-100 outline-hidden transition-all disabled:opacity-60"
           >
             {warehouses.map((w) => (
               <option key={w.id} value={w.id}>
@@ -380,10 +380,10 @@ export function CreateUserModal({
 
         {/* Role Selection */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             Role untuk Gudang <span className="text-rose-500">*</span>
           </label>
-          <p className="text-[11px] text-slate-400 mb-2">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-2">
             Pilih satu atau beberapa role yang berlaku pada gudang terpilih.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -394,8 +394,8 @@ export function CreateUserModal({
                   key={r.id}
                   className={`flex items-center gap-2.5 p-3 rounded-2xl border transition-all cursor-pointer ${
                     isChecked
-                      ? 'bg-blue-50/70 border-blue-300 text-blue-900 font-bold shadow-xs'
-                      : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
+                      ? 'bg-blue-500/15 border-blue-500/30 text-blue-900 dark:text-blue-200 font-bold shadow-xs'
+                      : 'neu-raised neu-card-interactive border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-medium'
                   }`}
                 >
                   <input
@@ -406,7 +406,7 @@ export function CreateUserModal({
                   />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs truncate">{r.display_name}</p>
-                    <p className="text-[10px] text-slate-400 font-mono">{r.name}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{r.name}</p>
                   </div>
                 </label>
               );
@@ -414,18 +414,18 @@ export function CreateUserModal({
           </div>
         </div>
 
-        <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+        <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200/40 dark:border-slate-800/60">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-colors cursor-pointer"
+            className="neu-btn-secondary py-2.5 px-4 rounded-2xl font-bold text-xs transition-colors cursor-pointer"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-md shadow-blue-500/20 flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="fintech-btn-primary py-2.5 px-5 rounded-2xl font-bold text-xs text-white transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>Buat Pengguna & Hasilkan Password</span>
@@ -577,13 +577,13 @@ export function AssignExistingUserModal({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="e.g. pic.bdg@wact.test atau EMP-102"
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
               />
             </div>
             <button
               type="submit"
               disabled={searching}
-              className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="fintech-btn-primary py-2.5 px-4 rounded-2xl text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               {searching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
               <span>Cari</span>
@@ -592,7 +592,7 @@ export function AssignExistingUserModal({
         </form>
 
         {searchError && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" />
             <span>{searchError}</span>
           </div>
@@ -601,26 +601,26 @@ export function AssignExistingUserModal({
         {/* Resolved User Attribution Card */}
         {resolvedUser && (
           <div className="space-y-4 animate-in fade-in">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+            <div className="p-4 rounded-2xl neu-inset-sm flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
                   {resolvedUser.fullName?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">{resolvedUser.fullName}</h4>
-                  <p className="text-[11px] text-slate-500 font-mono">{resolvedUser.email}</p>
+                  <h4 className="text-xs font-black text-slate-900 dark:text-slate-100">{resolvedUser.fullName}</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{resolvedUser.email}</p>
                   {resolvedUser.employeeId && (
-                    <span className="text-[10px] text-slate-400 font-medium">ID: {resolvedUser.employeeId}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">ID: {resolvedUser.employeeId}</span>
                   )}
                 </div>
               </div>
 
               {resolvedUser.isGloballyInactive ? (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20">
                   Nonaktif Global
                 </span>
               ) : (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                   Aktif
                 </span>
               )}
@@ -628,8 +628,8 @@ export function AssignExistingUserModal({
 
             {/* Inactive Global User Warning */}
             {resolvedUser.isGloballyInactive ? (
-              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold">Akun Nonaktif:</span> Akun pengguna sedang dinonaktifkan secara global. Hubungi Super Admin untuk mengaktifkannya kembali sebelum memberikan akses gudang.
                 </div>
@@ -637,7 +637,7 @@ export function AssignExistingUserModal({
             ) : (
               /* Role Multi-Select */
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-700">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                   Pilih Role untuk Gudang [{activeWarehouse.code}] {activeWarehouse.name}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -648,8 +648,8 @@ export function AssignExistingUserModal({
                         key={r.id}
                         className={`flex items-center gap-2.5 p-3 rounded-2xl border transition-all cursor-pointer ${
                           isChecked
-                            ? 'bg-blue-50/70 border-blue-300 text-blue-900 font-bold shadow-xs'
-                            : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium'
+                            ? 'bg-blue-500/15 border-blue-500/30 text-blue-900 dark:text-blue-200 font-bold shadow-xs'
+                            : 'neu-raised neu-card-interactive border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 font-medium'
                         }`}
                       >
                         <input
@@ -660,7 +660,7 @@ export function AssignExistingUserModal({
                         />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs truncate">{r.display_name}</p>
-                          <p className="text-[10px] text-slate-400 font-mono">{r.name}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{r.name}</p>
                         </div>
                       </label>
                     );
@@ -668,16 +668,16 @@ export function AssignExistingUserModal({
                 </div>
 
                 {saveError && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs mt-2">
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs mt-2">
                     {saveError}
                   </div>
                 )}
 
-                <div className="pt-3 flex items-center justify-end gap-2.5">
+                <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200/40 dark:border-slate-800/60">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors"
+                    className="neu-btn-secondary py-2.5 px-4 rounded-2xl text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors"
                   >
                     Batal
                   </button>
@@ -685,7 +685,7 @@ export function AssignExistingUserModal({
                     type="button"
                     onClick={handleSaveAccess}
                     disabled={saving}
-                    className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="fintech-btn-primary py-2.5 px-5 rounded-2xl text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                     <span>Simpan Penugasan Gudang</span>
@@ -762,7 +762,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSuccess }: EditProfi
         )}
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             Nama Lengkap <span className="text-rose-500">*</span>
           </label>
           <input
@@ -770,44 +770,44 @@ export function EditProfileModal({ isOpen, onClose, user, onSuccess }: EditProfi
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">ID Karyawan</label>
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">ID Karyawan</label>
           <input
             type="text"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
             placeholder="e.g. EMP-10294"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">Nomor Telepon / WhatsApp</label>
+          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nomor Telepon / WhatsApp</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. +62 812-3456-7890"
-            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="w-full px-3.5 py-2.5 rounded-2xl neu-inset text-xs font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden transition-all"
           />
         </div>
 
-        <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+        <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200/40 dark:border-slate-800/60">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors"
+            className="neu-btn-secondary py-2.5 px-4 rounded-2xl text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors cursor-pointer"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="fintech-btn-primary py-2.5 px-5 rounded-2xl text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>Simpan Perubahan</span>
@@ -963,12 +963,12 @@ export function ManageWarehouseAccessModal({
           </div>
         </div>
 
-        <div className="pt-3 flex items-center justify-between border-t border-slate-100">
+        <div className="pt-3 flex items-center justify-between border-t border-slate-200/40 dark:border-slate-800/60">
           <button
             type="button"
             onClick={handleRevoke}
             disabled={revoking || saving}
-            className="py-2 px-3 rounded-xl border border-rose-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="py-2.5 px-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <Ban className="w-3.5 h-3.5" />
             <span>Cabut Akses Gudang</span>
@@ -978,7 +978,7 @@ export function ManageWarehouseAccessModal({
             <button
               type="button"
               onClick={onClose}
-              className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors"
+              className="neu-btn-secondary py-2.5 px-4 rounded-2xl text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors"
             >
               Batal
             </button>
@@ -986,7 +986,7 @@ export function ManageWarehouseAccessModal({
               type="button"
               onClick={handleSave}
               disabled={saving || revoking}
-              className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="fintech-btn-primary py-2.5 px-5 rounded-2xl text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>Simpan Role</span>
@@ -1045,7 +1045,7 @@ export function GlobalAccountModal({ isOpen, onClose, user, onSuccess }: GlobalA
     >
       <div className="space-y-4">
         {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -1053,27 +1053,27 @@ export function GlobalAccountModal({ isOpen, onClose, user, onSuccess }: GlobalA
 
         {isDeactivating ? (
           <div className="space-y-3">
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Anda akan menonaktifkan akun <span className="font-bold text-slate-900">{user.fullName}</span> secara global. Pengguna tidak akan dapat login ke seluruh sistem WACT.
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Anda akan menonaktifkan akun <span className="font-bold text-slate-900 dark:text-slate-100">{user.fullName}</span> secara global. Pengguna tidak akan dapat login ke seluruh sistem WACT.
             </p>
-            <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-amber-900 text-xs flex items-start gap-2.5 leading-relaxed">
-              <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5 leading-relaxed">
+              <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold">Perlindungan Data Historis:</span> Seluruh riwayat pelaporan kasus, inspeksi, dan komentar pengguna ini tetap aman dan terbaca pada sistem.
               </div>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Aktifkan kembali akun <span className="font-bold text-slate-900">{user.fullName}</span>. Pengguna akan dapat login kembali dan riwayat penugasan gudang sebelumnya akan dipulihkan secara otomatis.
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            Aktifkan kembali akun <span className="font-bold text-slate-900 dark:text-slate-100">{user.fullName}</span>. Pengguna akan dapat login kembali dan riwayat penugasan gudang sebelumnya akan dipulihkan secara otomatis.
           </p>
         )}
 
-        <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+        <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-200/40 dark:border-slate-800/60">
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors"
+            className="neu-btn-secondary py-2.5 px-4 rounded-2xl text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors"
           >
             Batal
           </button>
@@ -1081,10 +1081,10 @@ export function GlobalAccountModal({ isOpen, onClose, user, onSuccess }: GlobalA
             type="button"
             onClick={handleToggle}
             disabled={loading}
-            className={`py-2.5 px-5 rounded-xl font-bold text-xs text-white transition-colors shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50 ${
+            className={`py-2.5 px-5 rounded-2xl font-bold text-xs text-white transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50 ${
               isDeactivating
-                ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
-                : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20'
+                ? 'bg-rose-600 hover:bg-rose-700 shadow-xs shadow-rose-600/25'
+                : 'bg-emerald-600 hover:bg-emerald-700 shadow-xs shadow-emerald-600/25'
             }`}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}

@@ -217,7 +217,7 @@ export function MobileNavDrawer({
       {/* ── 2. Slide-Over Panel ───────────────────────────────────────── */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 w-[300px] sm:w-[320px] max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between z-10 transition-transform duration-300 ease-out overflow-hidden',
+          'fixed top-0 bottom-0 left-0 w-[300px] sm:w-[320px] max-w-[85vw] bg-[#EEF2F7] dark:bg-[#131C31] shadow-[8px_0_30px_rgba(0,0,0,0.3)] border-r border-white/70 dark:border-white/5 flex flex-col justify-between z-10 transition-transform duration-300 ease-out overflow-hidden',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
         style={{
@@ -226,7 +226,7 @@ export function MobileNavDrawer({
         }}
       >
         {/* Top Header & Context */}
-        <div className="flex flex-col border-b border-slate-100 bg-slate-50/70">
+        <div className="flex flex-col border-b border-white/70 dark:border-slate-800/60 bg-[#EEF2F7] dark:bg-[#131C31]">
           <div className="p-4 flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2">
@@ -234,8 +234,8 @@ export function MobileNavDrawer({
                 <Package className="w-3.5 h-3.5 stroke-[2.2]" />
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="font-black text-sm tracking-tight text-slate-900">WACT</span>
-                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+                <span className="font-black text-sm tracking-tight text-slate-900 dark:text-white">WACT</span>
+                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800">
                   PRO
                 </span>
               </div>
@@ -245,7 +245,7 @@ export function MobileNavDrawer({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 active:scale-95 transition-all touch-target flex items-center justify-center"
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-[#EEF2F7] dark:bg-[#131C31] shadow-[2px_2px_5px_rgba(163,177,198,0.25),-2px_-2px_5px_rgba(255,255,255,0.85)] dark:shadow-[2px_2px_5px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.02)] border border-white/70 dark:border-white/5 active:scale-95 transition-all touch-target flex items-center justify-center cursor-pointer"
               aria-label="Tutup Menu"
             >
               <X className="w-4 h-4" />
@@ -256,12 +256,12 @@ export function MobileNavDrawer({
           <div className="px-4 pb-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
               <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="text-[11px] font-extrabold text-slate-700 truncate">
+              <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 truncate">
                 {warehouseName || 'Warehouse'}
               </span>
             </div>
             {warehouseCode && (
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-200/80 text-slate-700 shrink-0">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#EEF2F7] dark:bg-[#0D1322] text-slate-700 dark:text-slate-300 shadow-[inset_1.5px_1.5px_3px_rgba(163,177,198,0.25),inset_-1.5px_-1.5px_3px_rgba(255,255,255,0.85)] border border-white/70 dark:border-white/5 shrink-0">
                 {warehouseCode}
               </span>
             )}
@@ -282,11 +282,11 @@ export function MobileNavDrawer({
 
             return (
               <div key={gi} className="space-y-1">
-                <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   {group.label}
                 </p>
 
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {visibleItems.map((item) => {
                     const isActive =
                       pathname === item.href ||
@@ -302,25 +302,25 @@ export function MobileNavDrawer({
                           onClose();
                         }}
                         className={cn(
-                          'flex items-center justify-between p-2.5 rounded-xl text-xs transition-all active:scale-[0.98]',
+                          'flex items-center justify-between p-2.5 rounded-2xl text-xs transition-all active:scale-[0.98]',
                           isActive
-                            ? 'bg-blue-50 text-blue-700 font-bold border border-blue-100 shadow-2xs'
-                            : 'text-slate-700 hover:bg-slate-100/70 font-medium'
+                            ? 'bg-[#EEF2F7] dark:bg-[#0D1322] text-blue-700 dark:text-blue-300 font-extrabold shadow-[inset_2px_2px_4px_rgba(163,177,198,0.35),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] border border-blue-500/25'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-white/40 dark:hover:bg-white/5 font-medium'
                         )}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div
                             className={cn(
-                              'p-1.5 rounded-lg shrink-0',
-                              isActive ? 'bg-blue-100/80 text-blue-700' : 'bg-slate-100 text-slate-500'
+                              'p-1.5 rounded-xl shrink-0 shadow-[2px_2px_5px_rgba(163,177,198,0.2),-2px_-2px_5px_rgba(255,255,255,0.85)] dark:shadow-none',
+                              isActive ? 'bg-blue-600 text-white shadow-xs' : 'bg-[#EEF2F7] dark:bg-[#18233D] text-slate-500 dark:text-slate-400 border border-white/70 dark:border-white/5'
                             )}
                           >
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate leading-tight">{item.label}</p>
+                            <p className="truncate leading-tight font-bold">{item.label}</p>
                             {item.description && (
-                              <p className="text-[10px] text-slate-400 font-normal truncate mt-0.5">
+                              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-normal truncate mt-0.5">
                                 {item.description}
                               </p>
                             )}
@@ -333,7 +333,7 @@ export function MobileNavDrawer({
                             {unreadCount > 99 ? '99+' : unreadCount}
                           </span>
                         ) : (
-                          <ChevronRight className={cn('w-3.5 h-3.5 shrink-0', isActive ? 'text-blue-500' : 'text-slate-300')} />
+                          <ChevronRight className={cn('w-3.5 h-3.5 shrink-0', isActive ? 'text-blue-500 dark:text-blue-400' : 'text-slate-300 dark:text-slate-600')} />
                         )}
                       </Link>
                     );
@@ -345,35 +345,35 @@ export function MobileNavDrawer({
         </nav>
 
         {/* ── 4. User Footer Profile & Sign Out ─────────────────────────── */}
-        <div className="p-3 border-t border-slate-100 bg-slate-50/50 space-y-2">
+        <div className="p-3 border-t border-white/70 dark:border-slate-800/60 bg-[#EEF2F7] dark:bg-[#131C31] space-y-2">
           {/* Discreet Anonymous Reporting Link */}
           <Link
             href="/integrity/report"
             target="_blank"
             referrerPolicy="no-referrer"
             onClick={onClose}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-200 text-slate-600 hover:text-blue-700 text-xs font-semibold transition-all group"
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#131C31] hover:bg-blue-50/50 dark:hover:bg-blue-950/30 border border-white/70 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 text-xs font-bold transition-all group shadow-[2px_2px_5px_rgba(163,177,198,0.25),-2px_-2px_5px_rgba(255,255,255,0.85)] dark:shadow-[2px_2px_5px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.02)]"
           >
             <div className="flex items-center gap-2">
               <Shield className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600" />
               <span>Lapor Anonim (Integrity)</span>
             </div>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 group-hover:bg-blue-100 group-hover:text-blue-700 text-slate-500">
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-700 dark:group-hover:text-blue-300 text-slate-500 dark:text-slate-400">
               Aman & Rahasia
             </span>
           </Link>
 
           {/* User Card */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+          <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#EEF2F7] dark:bg-[#131C31] border border-white/70 dark:border-white/5 shadow-[2.5px_2.5px_6px_rgba(163,177,198,0.25),-2.5px_-2.5px_6px_rgba(255,255,255,0.85)] dark:shadow-[2.5px_2.5px_6px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.02)]">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-[11px] flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 ring-1 ring-white/50">
                 {getInitials(userName)}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-800 truncate leading-tight">
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate leading-tight">
                   {userName || 'Pengguna'}
                 </p>
-                <p className="text-[10px] text-slate-400 font-medium truncate flex items-center gap-1" title={roleText}>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate flex items-center gap-1" title={roleText}>
                   {effectiveIsSuperAdmin && <Shield className="w-2.5 h-2.5 text-indigo-600 shrink-0" />}
                   <span>{roleText}</span>
                 </p>
@@ -383,7 +383,7 @@ export function MobileNavDrawer({
             <button
               type="button"
               onClick={handleTriggerSignOut}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors touch-target flex items-center justify-center"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors touch-target flex items-center justify-center cursor-pointer"
               title="Keluar Akun"
               aria-label="Keluar Akun"
             >

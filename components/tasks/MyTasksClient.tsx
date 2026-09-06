@@ -130,58 +130,58 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
       {/* ── 1. Header Command Area ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-2xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400">
               <ClipboardCheck className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               Pusat Tugas & Penugasan PIC
             </h1>
           </div>
-          <p className="text-xs sm:text-[13px] text-slate-500 font-semibold mt-1">
+          <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-semibold mt-1">
             Daftar tugas operasional dan perbaikan yang saat ini ditugaskan kepada Anda
             {warehouseName ? ` • ${warehouseName}` : ''}
           </p>
         </div>
 
         {kpiStats.overdueCount > 0 && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs font-bold shadow-2xs self-start sm:self-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-xs font-bold self-start sm:self-auto shadow-xs">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
             <span>{kpiStats.overdueCount} Tugas Melewati Batas SLA</span>
           </div>
         )}
       </div>
 
-      {/* ── 2. KPI Summary Grid (4 High-Clarity Fintech Cards) ───────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+      {/* ── 2. KPI Summary Grid (4 Modern Neumorphic Cards) ───────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* KPI 1: Perlu Dikerjakan */}
         <button
           type="button"
           onClick={() => setCurrentStatus('open')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
+            'p-4 rounded-3xl text-left transition-all relative overflow-hidden group cursor-pointer active:scale-[0.98]',
             currentStatus === 'open'
-              ? 'bg-blue-50/80 border-blue-300 ring-2 ring-blue-500/20 shadow-[0_4px_16px_-2px_rgba(37,99,235,0.15)]'
-              : 'bg-white border-slate-200/80 hover:border-blue-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
+              ? 'neu-inset ring-2 ring-blue-500/40 bg-[#EEF2F7] dark:bg-[#131C31]'
+              : 'neu-raised neu-card-interactive hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/70">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-blue-700 dark:text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
               Perlu Dikerjakan
             </span>
             <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 text-white shadow-xs shadow-blue-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Inbox className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <div className="mt-3 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               {kpiStats.openCount}
             </span>
-            <span className="text-[11px] font-bold text-slate-500">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
               Tugas Aktif
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-bold mt-1">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
             Open & Reopened
           </p>
         </button>
@@ -191,29 +191,29 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('on_progress')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
+            'p-4 rounded-3xl text-left transition-all relative overflow-hidden group cursor-pointer active:scale-[0.98]',
             currentStatus === 'on_progress'
-              ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-500/20 shadow-[0_4px_16px_-2px_rgba(245,158,11,0.15)]'
-              : 'bg-white border-slate-200/80 hover:border-amber-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
+              ? 'neu-inset ring-2 ring-amber-500/40 bg-[#EEF2F7] dark:bg-[#131C31]'
+              : 'neu-raised neu-card-interactive hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/70">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
               Sedang Dikerjakan
             </span>
             <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-600 text-white shadow-xs shadow-amber-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Wrench className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <div className="mt-3 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               {kpiStats.inProgressCount}
             </span>
-            <span className="text-[11px] font-bold text-slate-500">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
               Dalam Proses
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-bold mt-1">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
             Tindakan Lapangan
           </p>
         </button>
@@ -223,29 +223,29 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('waiting_verification')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
+            'p-4 rounded-3xl text-left transition-all relative overflow-hidden group cursor-pointer active:scale-[0.98]',
             currentStatus === 'waiting_verification'
-              ? 'bg-purple-50/80 border-purple-300 ring-2 ring-purple-500/20 shadow-[0_4px_16px_-2px_rgba(168,85,247,0.15)]'
-              : 'bg-white border-slate-200/80 hover:border-purple-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
+              ? 'neu-inset ring-2 ring-purple-500/40 bg-[#EEF2F7] dark:bg-[#131C31]'
+              : 'neu-raised neu-card-interactive hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/70">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
               Verifikasi QC
             </span>
             <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white shadow-xs shadow-purple-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Clock className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <div className="mt-3 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               {kpiStats.waitingQcCount}
             </span>
-            <span className="text-[11px] font-bold text-slate-500">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
               Menunggu Review
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-bold mt-1">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
             Validasi Hasil Perbaikan
           </p>
         </button>
@@ -255,29 +255,29 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           type="button"
           onClick={() => setCurrentStatus('closed')}
           className={cn(
-            'p-3.5 sm:p-4 rounded-3xl border text-left transition-all relative overflow-hidden group shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] active:scale-[0.98] cursor-pointer',
+            'p-4 rounded-3xl text-left transition-all relative overflow-hidden group cursor-pointer active:scale-[0.98]',
             currentStatus === 'closed'
-              ? 'bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-500/20 shadow-[0_4px_16px_-2px_rgba(16,185,129,0.15)]'
-              : 'bg-white border-slate-200/80 hover:border-emerald-300 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
+              ? 'neu-inset ring-2 ring-emerald-500/40 bg-[#EEF2F7] dark:bg-[#131C31]'
+              : 'neu-raised neu-card-interactive hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10.5px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/70">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
               Selesai (Closed)
             </span>
             <div className="w-8 h-8 rounded-2xl bg-gradient-to-tr from-emerald-400 to-emerald-600 text-white shadow-xs shadow-emerald-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <div className="mt-3 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
               {kpiStats.closedCount}
             </span>
-            <span className="text-[11px] font-bold text-slate-500">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
               Terselesaikan
             </span>
           </div>
-          <p className="text-[10px] text-slate-400 font-bold mt-1">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
             Riwayat Tugas Selesai
           </p>
         </button>
@@ -293,10 +293,10 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               type="button"
               onClick={() => setCurrentStatus(tab.id)}
               className={cn(
-                'px-3.5 py-1.5 text-xs font-bold whitespace-nowrap rounded-full transition-all shrink-0 cursor-pointer active:scale-95',
+                'px-4 py-2 text-xs font-bold whitespace-nowrap rounded-2xl transition-all shrink-0 cursor-pointer active:scale-95',
                 isActive
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
-                  : 'bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs'
+                  ? 'neu-pill-active'
+                  : 'neu-pill-inactive'
               )}
             >
               {tab.label}
@@ -306,7 +306,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
       </div>
 
       {/* ── 4. Search & Controls Filter Bar ───────────────────────────────── */}
-      <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="p-3.5 sm:p-4 rounded-3xl neu-raised flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search Input (Strictly inside user's assigned dataset) */}
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -315,13 +315,13 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nomor kasus, judul tugas, nama aset, lokasi..."
-            className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 placeholder:text-slate-400 font-medium"
+            className="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm rounded-2xl neu-inset outline-hidden transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 font-medium"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-slate-400 hover:text-slate-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -340,13 +340,13 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           </div>
 
           {/* Desktop View Switcher */}
-          <div className="hidden lg:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200">
+          <div className="hidden lg:flex items-center p-1 rounded-2xl neu-inset-sm">
             <button
               type="button"
               onClick={() => setViewMode('table')}
               className={cn(
-                'p-1.5 rounded-lg transition-all',
-                viewMode === 'table' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                'p-1.5 rounded-xl transition-all cursor-pointer',
+                viewMode === 'table' ? 'neu-raised-sm text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               )}
               title="Tampilan Tabel"
             >
@@ -356,8 +356,8 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
               type="button"
               onClick={() => setViewMode('cards')}
               className={cn(
-                'p-1.5 rounded-lg transition-all',
-                viewMode === 'cards' ? 'bg-white text-blue-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                'p-1.5 rounded-xl transition-all cursor-pointer',
+                viewMode === 'cards' ? 'neu-raised-sm text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               )}
               title="Tampilan Kartu"
             >
@@ -383,7 +383,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
             <button
               type="button"
               onClick={handleClearFilters}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors"
+              className="neu-btn-secondary px-4 py-2 rounded-2xl font-bold text-xs"
             >
               Reset Semua Filter
             </button>
@@ -401,14 +401,14 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
           {/* Desktop High-Density Table Workspace (>= lg) */}
           <div
             className={cn(
-              'hidden rounded-2xl bg-white border border-slate-200/80 shadow-2xs overflow-hidden',
+              'hidden rounded-3xl neu-raised overflow-hidden',
               viewMode === 'table' ? 'lg:block' : 'hidden'
             )}
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <tr className="bg-slate-100/60 dark:bg-slate-800/60 border-b border-slate-200/40 dark:border-slate-800/60 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th className="py-3 px-4">No. Kasus & Tugas</th>
                     <th className="py-3 px-4">Aset & Lokasi</th>
                     <th className="py-3 px-4">Prioritas</th>
@@ -417,45 +417,45 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                     <th className="py-3 px-4 text-right">Tindakan Selanjutnya</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-xs text-slate-800">
+                <tbody className="divide-y divide-slate-200/40 dark:divide-slate-800/60 text-xs text-slate-800 dark:text-slate-200">
                   {filteredTasks.map((item) => {
                     const slaInfo = getSlaStatus(item.due_date, item.status, (item as any).closed_at);
                     const locationText = [item.areas?.name, item.locations?.name].filter(Boolean).join(' • ');
 
                     // Contextual Action CTA
                     let ctaText = 'Lihat Detail';
-                    let ctaButtonClass = 'bg-slate-900 hover:bg-slate-800 text-white';
+                    let ctaButtonClass = 'neu-btn-secondary';
 
                     if (item.status === 'open' || item.status === 'reopened') {
                       ctaText = 'Mulai Kerjakan';
-                      ctaButtonClass = 'bg-blue-600 hover:bg-blue-700 text-white shadow-2xs';
+                      ctaButtonClass = 'fintech-btn-primary text-white';
                     } else if (item.status === 'on_progress' || item.status === 'waiting_repair') {
                       ctaText = 'Update Progres';
-                      ctaButtonClass = 'bg-amber-600 hover:bg-amber-700 text-white shadow-2xs';
+                      ctaButtonClass = 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs shadow-amber-500/25';
                     } else if (item.status === 'waiting_verification') {
                       ctaText = 'Lihat Status QC';
-                      ctaButtonClass = 'bg-purple-600 hover:bg-purple-700 text-white shadow-2xs';
+                      ctaButtonClass = 'bg-purple-600 hover:bg-purple-700 text-white shadow-xs shadow-purple-500/25';
                     } else if (item.status === 'closed') {
                       ctaText = 'Lihat Riwayat';
-                      ctaButtonClass = 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200';
+                      ctaButtonClass = 'neu-btn-secondary';
                     }
 
                     return (
-                      <tr key={item.id} className="hover:bg-blue-50/40 transition-colors group">
+                      <tr key={item.id} className="hover:bg-blue-500/5 dark:hover:bg-blue-400/5 transition-colors group">
                         {/* No. Kasus & Judul */}
                         <td className="py-3 px-4 align-top">
                           <Link href={`/cases/${item.id}`} className="block">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-mono font-bold text-xs text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60">
+                              <span className="font-mono font-bold text-xs text-blue-700 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
                                 {item.case_number}
                               </span>
                               {item.requires_maintenance && (
-                                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200/60">
+                                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20">
                                   Maintenance
                                 </span>
                               )}
                             </div>
-                            <p className="font-extrabold text-slate-900 mt-1 leading-snug group-hover:text-blue-600 transition-colors max-w-sm">
+                            <p className="font-black text-slate-900 dark:text-slate-100 mt-1 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors max-w-sm">
                               {item.title}
                             </p>
                           </Link>
@@ -465,16 +465,16 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                         <td className="py-3 px-4 align-top">
                           {item.assets ? (
                             <div>
-                              <span className="font-mono font-bold text-[10.5px] text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200/60">
+                              <span className="font-mono font-bold text-[10.5px] text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
                                 {item.assets.asset_code}
                               </span>
-                              <p className="font-semibold text-slate-800 text-[11.5px] mt-0.5">{item.assets.name}</p>
+                              <p className="font-bold text-slate-800 dark:text-slate-200 text-[11.5px] mt-0.5">{item.assets.name}</p>
                             </div>
                           ) : (
-                            <span className="text-slate-400 italic text-[11px]">Non-aset / Fasilitas</span>
+                            <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">Non-aset / Fasilitas</span>
                           )}
                           {locationText && (
-                            <p className="text-[11px] text-slate-500 font-medium mt-1 flex items-center gap-1">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1 flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                               <span className="truncate max-w-[150px]">{locationText}</span>
                             </p>
@@ -494,7 +494,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                         {/* Target SLA */}
                         <td className="py-3 px-4 align-top">
                           {slaInfo.type === 'no_sla' ? (
-                            <span className="text-slate-400 italic text-[11px]">—</span>
+                            <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">—</span>
                           ) : slaInfo.isClosed ? (
                             <span
                               className={cn(
@@ -504,13 +504,13 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                                 slaInfo.badgeBorder
                               )}
                             >
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                               <span>{slaInfo.badgeLabel}</span>
                             </span>
                           ) : slaInfo.isOverdue ? (
                             <span
                               className={cn(
-                                'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full border shadow-2xs',
+                                'inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-0.5 rounded-full border shadow-xs',
                                 slaInfo.badgeBg,
                                 slaInfo.badgeText,
                                 slaInfo.badgeBorder
@@ -533,15 +533,15 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                             </span>
                           ) : item.due_date ? (
                             <div>
-                              <p className="font-semibold text-slate-800 text-[11px]">
+                              <p className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
                                 {format(new Date(item.due_date), 'dd MMM yyyy, HH:mm', { locale: localeId })}
                               </p>
-                              <span className="text-[10px] text-slate-500 font-medium">
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                                 {slaInfo.badgeLabel}
                               </span>
                             </div>
                           ) : (
-                            <span className="text-slate-400 italic text-[11px]">—</span>
+                            <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">—</span>
                           )}
                         </td>
 
@@ -550,7 +550,7 @@ export function MyTasksClient({ initialTasks, warehouseName, warehouseCode }: My
                           <Link
                             href={`/cases/${item.id}`}
                             className={cn(
-                              'inline-flex items-center gap-1 px-3 py-1.5 rounded-xl font-extrabold text-xs transition-all active:scale-95',
+                              'inline-flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer',
                               ctaButtonClass
                             )}
                           >

@@ -77,25 +77,21 @@ export function UserCard({
 
   return (
     <div
-      className={`p-4 sm:p-5 rounded-3xl bg-white border transition-all shadow-xs hover:shadow-md flex flex-col justify-between gap-4 ${
-        !user.isActive
-          ? 'border-slate-200/60 bg-slate-50/50 opacity-75'
-          : isTargetPrivileged
-          ? 'border-blue-200/80 bg-gradient-to-b from-blue-50/20 to-white'
-          : 'border-slate-200/80 hover:border-slate-300'
+      className={`p-4 sm:p-5 rounded-3xl neu-raised neu-card-interactive transition-all flex flex-col justify-between gap-4.5 ${
+        !user.isActive ? 'opacity-70' : ''
       }`}
     >
       {/* Top Identity Row */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex items-start gap-3.5 min-w-0">
           {/* Avatar with Initials */}
           <div
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm shrink-0 shadow-xs ${
+            className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 shadow-xs ${
               user.isSuperAdmin
-                ? 'bg-gradient-to-tr from-rose-600 to-indigo-600 text-white shadow-rose-500/20'
+                ? 'bg-gradient-to-tr from-rose-600 to-indigo-600 text-white shadow-rose-500/25'
                 : !user.isActive
-                ? 'bg-slate-200 text-slate-500'
-                : 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/20'
+                ? 'neu-inset text-slate-400 dark:text-slate-500'
+                : 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-blue-500/25'
             }`}
           >
             {getInitials(user.fullName)}
@@ -103,28 +99,28 @@ export function UserCard({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-extrabold text-slate-900 truncate">{user.fullName}</h3>
+              <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 truncate">{user.fullName}</h3>
               {user.isSuperAdmin && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
                   <ShieldAlert className="w-3 h-3" />
                   Super Admin
                 </span>
               )}
             </div>
 
-            <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate font-mono">
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate font-mono">
               <Mail className="w-3 h-3 text-slate-400 shrink-0" />
               <span>{user.email}</span>
             </p>
 
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               {user.employeeId && (
-                <span className="text-[10px] font-mono font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 bg-slate-500/10 px-2 py-0.5 rounded-md">
                   ID: {user.employeeId}
                 </span>
               )}
               {user.phone && (
-                <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                   <Phone className="w-2.5 h-2.5 text-slate-400" />
                   {user.phone}
                 </span>
@@ -136,11 +132,11 @@ export function UserCard({
         {/* Global Active Status */}
         <div className="shrink-0">
           {user.isActive ? (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
               Aktif
             </span>
           ) : (
-            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+            <span className="inline-flex items-center text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 shadow-2xs">
               Nonaktif
             </span>
           )}
@@ -148,37 +144,37 @@ export function UserCard({
       </div>
 
       {/* Warehouse Roles Section */}
-      <div className="pt-2 border-t border-slate-100 space-y-2">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="pt-2.5 border-t border-slate-200/40 dark:border-slate-800/60 space-y-2">
+        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
           Penugasan & Peran Gudang
         </span>
 
         {membershipsByWarehouse.size === 0 ? (
-          <p className="text-xs text-slate-400 italic">Belum ada akses gudang aktif.</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 italic">Belum ada akses gudang aktif.</p>
         ) : (
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {Array.from(membershipsByWarehouse.values()).map(({ warehouse, roles }) => {
               const sortedRoles = sortRoles(roles);
               return (
                 <div
                   key={warehouse.id}
-                  className={`p-2 rounded-xl flex items-center justify-between gap-2 text-xs ${
+                  className={`p-2.5 rounded-2xl neu-inset-sm flex items-center justify-between gap-2 text-xs ${
                     warehouse.id === activeWarehouseId
-                      ? 'bg-blue-50/60 border border-blue-100'
-                      : 'bg-slate-50 border border-slate-100'
+                      ? 'ring-1 ring-blue-500/30'
+                      : ''
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span
-                      className={`font-mono text-[10.5px] font-bold px-1.5 py-0.5 rounded ${
+                      className={`font-mono text-[10.5px] font-black px-2 py-0.5 rounded-lg border ${
                         warehouse.id === activeWarehouseId
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-200 text-slate-700'
+                          ? 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30'
+                          : 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20'
                       }`}
                     >
                       {warehouse.code}
                     </span>
-                    <div className="flex items-center gap-1 flex-wrap min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                       {sortedRoles.map((r) => (
                         <RoleBadge key={r.id} roleName={r.name} displayName={r.display_name} size="sm" />
                       ))}
@@ -190,7 +186,7 @@ export function UserCard({
                     <button
                       type="button"
                       onClick={() => onManageAccess(user, warehouse.id)}
-                      className="p-1 rounded-lg hover:bg-white text-slate-400 hover:text-blue-600 transition-colors shrink-0 cursor-pointer"
+                      className="w-7 h-7 rounded-xl neu-icon-well flex items-center justify-center text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0 cursor-pointer"
                       title="Kelola Role Gudang"
                     >
                       <Settings className="w-3.5 h-3.5" />
@@ -204,9 +200,9 @@ export function UserCard({
       </div>
 
       {/* Action Footer */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+      <div className="pt-2.5 border-t border-slate-200/40 dark:border-slate-800/60 flex items-center justify-between gap-2">
         {!canCallerMutate ? (
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-xl border border-amber-500/20">
             <Lock className="w-3.5 h-3.5" />
             <span>Dikelola Super Admin</span>
           </div>
@@ -215,16 +211,16 @@ export function UserCard({
             <button
               type="button"
               onClick={() => onEditProfile(user)}
-              className="py-1.5 px-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="neu-btn-secondary py-1.5 px-3 rounded-xl font-bold text-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5 text-slate-500" />
+              <Edit3 className="w-3.5 h-3.5 text-slate-400" />
               <span>Profil</span>
             </button>
 
             <button
               type="button"
               onClick={() => onManageAccess(user, activeWarehouseId)}
-              className="py-1.5 px-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-blue-200"
+              className="py-1.5 px-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Building2 className="w-3.5 h-3.5" />
               <span>Akses {activeWarehouseCode}</span>
@@ -237,10 +233,10 @@ export function UserCard({
           <button
             type="button"
             onClick={() => onToggleGlobalAccount(user)}
-            className={`p-1.5 rounded-xl border transition-colors cursor-pointer ${
+            className={`w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center transition-all cursor-pointer ${
               user.isActive
-                ? 'border-rose-200 hover:bg-rose-50 text-rose-600'
-                : 'border-emerald-200 hover:bg-emerald-50 text-emerald-600'
+                ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-500/10'
+                : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10'
             }`}
             title={user.isActive ? 'Nonaktifkan Akun Global' : 'Aktifkan Akun'}
           >

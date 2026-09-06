@@ -395,7 +395,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       <div className="flex items-center justify-between">
         <Link
           href="/cases"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 active:scale-95 transition-all p-1"
+          className="neu-btn-secondary inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 active:scale-95 transition-all px-3 py-1.5 rounded-xl"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Kembali ke Daftar Kasus</span>
@@ -403,24 +403,24 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       </div>
 
       {/* ── 1. Case Command Header Card (High Scannability Matrix) ──────── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
+      <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3.5">
         {/* Top Metadata Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono font-black text-blue-700 bg-blue-50/90 px-2.5 py-0.5 rounded-lg border border-blue-200/70 text-xs shadow-2xs">
+            <span className="font-mono font-black text-blue-700 dark:text-blue-400 neu-pill-active px-2.5 py-0.5 rounded-lg text-xs">
               {item.case_number}
             </span>
             <PriorityBadge priority={item.priority} size="sm" />
             <StatusBadge status={item.status} size="sm" />
           </div>
 
-          <span className="text-[11px] font-medium text-slate-400">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
             Dibuat {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })} ({formatWib(item.created_at, 'dd MMM yyyy, HH:mm')})
           </span>
         </div>
 
         {/* Case Title */}
-        <h1 className="text-lg sm:text-xl font-black text-slate-900 leading-snug tracking-tight">
+        <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 leading-snug tracking-tight">
           {item.title}
         </h1>
 
@@ -428,20 +428,20 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         {(item.has_operational_impact || item.requires_maintenance || item.status === 'reopened') && (
           <div className="flex flex-wrap items-center gap-2">
             {item.has_operational_impact && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-800 bg-orange-50/90 px-2.5 py-0.5 rounded-md border border-orange-200/70 shadow-2xs">
-                <AlertTriangle className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-800 dark:text-orange-300 bg-orange-500/10 px-2.5 py-0.5 rounded-md border border-orange-200 dark:border-orange-900/40">
+                <AlertTriangle className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400 shrink-0" />
                 Dampak Operasional Aktif
               </span>
             )}
             {item.requires_maintenance && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50/90 px-2.5 py-0.5 rounded-md border border-amber-200/70 shadow-2xs">
-                <Wrench className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-900/40">
+                <Wrench className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                 Membutuhkan Maintenance
               </span>
             )}
             {item.status === 'reopened' && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-800 bg-indigo-50/90 px-2.5 py-0.5 rounded-md border border-indigo-200/70 shadow-2xs">
-                <AlertCircle className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-300 bg-indigo-500/10 px-2.5 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-900/40">
+                <AlertCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                 Kasus Dibuka Kembali (Reopened)
               </span>
             )}
@@ -450,17 +450,19 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
 
         {/* Inspection Source Banner (if originated from QC inspection) */}
         {sourceInspection && (
-          <div className="p-3 rounded-xl bg-blue-50/80 border border-blue-200/70 flex items-center justify-between gap-3 text-xs">
+          <div className="p-3 rounded-2xl neu-inset-sm flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 min-w-0">
-              <FileCheck2 className="w-4 h-4 text-blue-600 shrink-0" />
+              <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                <FileCheck2 className="w-3.5 h-3.5" />
+              </div>
               <div className="min-w-0">
-                <span className="font-bold text-blue-950">Dibuat dari Temuan Inspeksi QC: </span>
-                <span className="font-mono font-bold text-blue-700">{sourceInspection.inspection_number}</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200">Dibuat dari Temuan Inspeksi QC: </span>
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{sourceInspection.inspection_number}</span>
               </div>
             </div>
             <Link
               href={`/inspections/${sourceInspection.id}`}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-blue-700 font-bold text-[11px] hover:bg-blue-50 transition-colors shrink-0 shadow-2xs"
+              className="neu-btn-secondary inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-blue-600 dark:text-blue-400 font-bold text-[11px] shrink-0"
             >
               <span>Lihat QC</span>
               <ExternalLink className="w-3 h-3" />
@@ -469,73 +471,73 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         )}
 
         {/* Quick Context Matrix: 4-Pillar Discovery Grid (Instant 3-5s scan) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 pt-3 border-t border-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 pt-3 border-t border-slate-200/40 dark:border-slate-800/60">
           {/* 1. Lokasi & Area */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-100/60 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="p-2.5 sm:p-3 rounded-2xl neu-inset-sm flex items-start gap-2 sm:gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl neu-icon-well text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
               <MapPin className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                 Lokasi & Area
               </span>
-              <p className="text-[11.5px] sm:text-xs font-bold text-slate-800 truncate" title={locationText || 'Lokasi belum ditentukan'}>
+              <p className="text-[11.5px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 truncate" title={locationText || 'Lokasi belum ditentukan'}>
                 {locationText || 'Belum ditentukan'}
               </p>
-              <span className="text-[10px] sm:text-[10.5px] font-medium text-slate-500 truncate block">
+              <span className="text-[10px] sm:text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate block">
                 {warehouseName}
               </span>
             </div>
           </div>
 
           {/* 2. Aset Terkait */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100/60 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="p-2.5 sm:p-3 rounded-2xl neu-inset-sm flex items-start gap-2 sm:gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl neu-icon-well text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
               <Package className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                 Aset Terkait
               </span>
               {item.assets ? (
                 <div>
                   <Link
                     href={`/assets/${(item.assets as any).id || ''}`}
-                    className="inline-flex items-center gap-1 font-mono font-bold text-blue-700 hover:text-blue-800 text-[10.5px] sm:text-[11px] hover:underline truncate max-w-full"
+                    className="inline-flex items-center gap-1 font-mono font-bold text-blue-600 dark:text-blue-400 hover:underline text-[10.5px] sm:text-[11px] truncate max-w-full"
                   >
                     <span>{item.assets.asset_code}</span>
                     <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                   </Link>
-                  <p className="text-[10.5px] sm:text-[11px] font-semibold text-slate-700 truncate" title={item.assets.name}>
+                  <p className="text-[10.5px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate" title={item.assets.name}>
                     {item.assets.name}
                   </p>
                 </div>
               ) : (
-                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 italic">Tidak terkait aset</p>
+                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 italic">Tidak terkait aset</p>
               )}
             </div>
           </div>
 
           {/* 3. Penanggung Jawab (PIC) */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-50 text-amber-700 border border-amber-100/80 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="p-2.5 sm:p-3 rounded-2xl neu-inset-sm flex items-start gap-2 sm:gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl neu-icon-well text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
               <UserCheck className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                 Penanggung Jawab
               </span>
               {currentAssigneeName ? (
                 <div>
-                  <p className="text-[11.5px] sm:text-xs font-black text-slate-900 truncate" title={currentAssigneeName}>
+                  <p className="text-[11.5px] sm:text-xs font-black text-slate-900 dark:text-slate-100 truncate" title={currentAssigneeName}>
                     {currentAssigneeName}
                   </p>
-                  <span className="text-[9.5px] sm:text-[10px] font-medium text-slate-500 block truncate">
+                  <span className="text-[9.5px] sm:text-[10px] font-medium text-slate-500 dark:text-slate-400 block truncate">
                     {currentAssignment?.assigned_at ? `Ditugaskan ${formatDistanceToNow(new Date(currentAssignment.assigned_at), { addSuffix: true, locale: localeId })}` : 'PIC Aktif'}
                   </span>
                 </div>
               ) : (
-                <span className="inline-flex items-center text-[10px] sm:text-[10.5px] font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/80 mt-0.5">
+                <span className="inline-flex items-center text-[10px] sm:text-[10.5px] font-extrabold text-amber-800 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-900/40 mt-0.5">
                   Belum Ditugaskan
                 </span>
               )}
@@ -543,17 +545,17 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           </div>
 
           {/* 4. Target SLA */}
-          <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/90 border border-slate-100 flex items-start gap-2 sm:gap-2.5">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-100/80 flex items-center justify-center shrink-0 mt-0.5">
+          <div className="p-2.5 sm:p-3 rounded-2xl neu-inset-sm flex items-start gap-2 sm:gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl neu-icon-well text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
               <Clock className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                 Batas SLA
               </span>
               {item.due_date ? (
                 <div>
-                  <p className={cn('text-[11.5px] sm:text-xs font-black truncate', isOverdue ? 'text-rose-600' : 'text-slate-900')}>
+                  <p className={cn('text-[11.5px] sm:text-xs font-black truncate', isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100')}>
                     {formatWib(item.due_date, 'dd MMM, HH:mm')}
                   </p>
                   <span className={cn('text-[9.5px] sm:text-[10px] font-bold inline-flex items-center gap-1 mt-0.5', slaInfo.badgeText)}>
@@ -562,7 +564,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                   </span>
                 </div>
               ) : (
-                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 italic">Belum diatur</p>
+                <p className="text-[11.5px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 italic">Belum diatur</p>
               )}
             </div>
           </div>
@@ -570,9 +572,9 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
       </div>
 
       {/* ── 2. Operational Lifecycle Stepper (Adaptive Responsive) ───────── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-          <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+      <div className="p-4 sm:p-5 rounded-3xl neu-raised">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200/40 dark:border-slate-800/60">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
             Alur Penyelesaian Operasional
           </span>
           <div className="flex items-center gap-1.5">
@@ -592,8 +594,8 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     s.isCompleted && steps[idx + 1].isCompleted
                       ? 'bg-blue-600'
                       : s.isCompleted
-                      ? 'bg-blue-200'
-                      : 'bg-slate-100'
+                      ? 'bg-blue-300 dark:bg-blue-800'
+                      : 'bg-slate-200 dark:bg-slate-800'
                   )}
                 />
               )}
@@ -601,12 +603,12 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               {/* Step Circle */}
               <div
                 className={cn(
-                  'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black z-10 transition-all shadow-2xs',
+                  'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black z-10 transition-all',
                   s.isCompleted
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-blue-600 text-white shadow-xs'
                     : s.isActive
-                    ? 'bg-blue-50 text-blue-700 ring-2 ring-blue-600 border border-blue-300'
-                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+                    ? 'neu-raised border border-blue-500 text-blue-600 dark:text-blue-400 ring-2 ring-blue-500/30'
+                    : 'neu-inset-sm text-slate-400'
                 )}
               >
                 {s.isCompleted ? <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" /> : idx + 1}
@@ -617,10 +619,10 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                 className={cn(
                   'text-[10px] sm:text-xs font-bold leading-tight line-clamp-1',
                   s.isActive
-                    ? 'text-blue-700 font-black'
+                    ? 'text-blue-600 dark:text-blue-400 font-black'
                     : s.isCompleted
-                    ? 'text-slate-800'
-                    : 'text-slate-400'
+                    ? 'text-slate-800 dark:text-slate-200'
+                    : 'text-slate-400 dark:text-slate-500'
                 )}
               >
                 <span className="hidden sm:inline">{s.label}</span>
@@ -636,30 +638,30 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         {/* ── Main Content Column (8 cols on desktop, 2nd on mobile) ─────── */}
         <div className="lg:col-span-8 order-2 lg:order-1 space-y-4 sm:space-y-5">
           {/* Card: Incident Description & Context */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+          <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                 Deskripsi & Konteks Kejadian
               </span>
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 <span>Kategori:</span>
-                <strong className="text-slate-800 font-bold">
+                <strong className="text-slate-800 dark:text-slate-200 font-bold">
                   {(item.category as any)?.name || 'Umum'}
                   {(item.subcategory as any)?.name ? ` • ${(item.subcategory as any).name}` : ''}
                 </strong>
               </div>
             </div>
 
-            <div className="bg-slate-50/90 p-4 rounded-xl border border-slate-100 text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
+            <div className="neu-inset-sm p-4 rounded-2xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
               {item.description || 'Tidak ada deskripsi rinci.'}
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-              <span className="flex items-center gap-1">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+              <span className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-slate-400" />
                 <span>Pelapor: <strong>{(item.reporter as any)?.full_name || (item.reporter_id ? profileMap.get(item.reporter_id) : null) || 'Staff Gudang'}</strong></span>
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 <span>{formatWib(item.created_at, 'dd MMM yyyy, HH:mm')}</span>
               </span>
@@ -668,18 +670,20 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
 
           {/* Card: Root Cause & Action (if populated) */}
           {(item.root_cause || item.corrective_action || item.preventive_action) && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3 animate-in fade-in">
-              <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                <Wrench className="w-4 h-4 text-purple-600" />
-                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+            <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3 animate-in fade-in">
+              <div className="flex items-center gap-2 pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+                <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+                  <Wrench className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   Analisis & Tindakan Perbaikan
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {item.root_cause && (
-                  <div className="sm:col-span-2 p-3 rounded-xl bg-purple-50/70 border border-purple-100 text-purple-950 space-y-1">
-                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-purple-700">
+                  <div className="sm:col-span-2 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-200 dark:border-purple-900/40 text-purple-950 dark:text-purple-200 space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300">
                       Akar Masalah (Root Cause)
                     </span>
                     <p className="font-bold text-xs">{(item.root_cause as any).name}</p>
@@ -687,22 +691,22 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                 )}
 
                 {item.corrective_action && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <div className="p-3.5 rounded-2xl neu-inset-sm space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Tindakan Korektif
                     </span>
-                    <p className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
+                    <p className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed whitespace-pre-wrap">
                       {item.corrective_action}
                     </p>
                   </div>
                 )}
 
                 {item.preventive_action && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <div className="p-3.5 rounded-2xl neu-inset-sm space-y-1">
+                    <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Tindakan Preventif
                     </span>
-                    <p className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
+                    <p className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed whitespace-pre-wrap">
                       {item.preventive_action}
                     </p>
                   </div>
@@ -712,16 +716,18 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           )}
 
           {/* Card: Evidence Photos with Fullscreen Lightbox */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+          <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3">
             <EvidenceGallery evidences={evidenceList} />
           </div>
 
           {/* Card: Discussion & Internal Notes */}
           {comments && comments.length > 0 && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                <MessageSquare className="w-4 h-4 text-blue-600" />
-                <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+            <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+                <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                </div>
+                <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
                   Diskusi & Catatan ({comments.length})
                 </h2>
               </div>
@@ -733,28 +739,28 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     <div
                       key={com.id}
                       className={cn(
-                        'p-3 rounded-xl border text-xs space-y-1',
+                        'p-3.5 rounded-2xl text-xs space-y-1',
                         com.is_internal
-                          ? 'bg-amber-50/70 border-amber-200/80'
-                          : 'bg-slate-50 border-slate-100'
+                          ? 'bg-amber-500/10 border border-amber-200 dark:border-amber-900/40'
+                          : 'neu-inset-sm'
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-slate-900">
+                          <span className="font-bold text-slate-900 dark:text-slate-100">
                             {authorName}
                           </span>
                           {com.is_internal && (
-                            <span className="text-[9.5px] font-extrabold text-amber-800 bg-amber-200/80 px-1.5 py-0.2 rounded-md">
+                            <span className="text-[9.5px] font-extrabold text-amber-800 dark:text-amber-300 bg-amber-500/20 px-1.5 py-0.2 rounded-md">
                               Internal
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
                           {formatWib(com.created_at, 'dd MMM yyyy, HH:mm')} ({formatDistanceToNow(new Date(com.created_at), { addSuffix: true, locale: localeId })})
                         </span>
                       </div>
-                      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{com.content}</p>
+                      <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{com.content}</p>
                     </div>
                   );
                 })}
@@ -763,10 +769,12 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           )}
 
           {/* Card: Activity & Workflow Timeline */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
-            <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-              <Activity className="w-4 h-4 text-blue-600" />
-              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+          <div className="p-4 sm:p-5 rounded-3xl neu-raised space-y-3.5">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+              <div className="w-6 h-6 rounded-lg neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                <Activity className="w-3.5 h-3.5" />
+              </div>
+              <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
                 Riwayat Aktivitas & Alur Kerja ({activities?.length || 0})
               </h2>
             </div>
@@ -779,26 +787,26 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
 
           {/* Card: Due Date Overrides History (if any) */}
           {dueDateChanges && dueDateChanges.length > 0 && (
-            <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 text-xs space-y-2.5 animate-in fade-in">
-              <div className="flex items-center gap-1.5 text-purple-900 font-extrabold">
-                <Clock className="w-3.5 h-3.5 text-purple-600" />
+            <div className="p-4 rounded-3xl bg-purple-500/10 border border-purple-200 dark:border-purple-900/40 text-xs space-y-2.5 animate-in fade-in">
+              <div className="flex items-center gap-1.5 text-purple-900 dark:text-purple-300 font-extrabold">
+                <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                 <span>Histori Penyesuaian Batas Waktu SLA ({dueDateChanges.length})</span>
               </div>
               <div className="space-y-2">
                 {dueDateChanges.map((ddc: any) => {
                   const changerName = ddc.changer?.full_name || (ddc.changed_by ? profileMap.get(ddc.changed_by) : null) || 'Koordinator / Admin';
                   return (
-                    <div key={ddc.id} className="text-[11.5px] bg-white/90 p-2.5 rounded-xl border border-purple-100 text-slate-700 space-y-1">
-                      <div className="flex items-center justify-between font-bold text-slate-900 text-xs">
+                    <div key={ddc.id} className="text-[11.5px] neu-inset-sm p-3 rounded-2xl text-slate-700 dark:text-slate-300 space-y-1">
+                      <div className="flex items-center justify-between font-bold text-slate-900 dark:text-slate-100 text-xs">
                         <span>Oleh: {changerName}</span>
-                        <span className="text-[10px] text-slate-400 font-normal">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
                           {formatWib(ddc.changed_at, 'dd MMM yyyy, HH:mm')}
                         </span>
                       </div>
-                      <p className="text-slate-600">
-                        Batas waktu baru: <strong className="text-purple-700 font-bold">{formatWib(ddc.new_due_date, 'dd MMM yyyy, HH:mm')}</strong>
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Batas waktu baru: <strong className="text-purple-600 dark:text-purple-400 font-bold">{formatWib(ddc.new_due_date, 'dd MMM yyyy, HH:mm')}</strong>
                       </p>
-                      <p className="text-amber-900 italic bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
+                      <p className="text-amber-800 dark:text-amber-300 italic bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-200/60 dark:border-amber-900/40">
                         Alasan: &quot;{ddc.reason}&quot;
                       </p>
                     </div>
@@ -812,10 +820,10 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
         {/* ── Right / Operational Rail Column (4 cols on desktop, 1st on mobile) */}
         <div className="lg:col-span-4 order-1 lg:order-2 space-y-4 lg:sticky lg:top-4 lg:self-start">
           {/* 1. Target SLA Card */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-800">
-                <Clock className="w-3.5 h-3.5 text-blue-600" />
+          <div className="p-4 rounded-3xl neu-raised space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+              <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>Target SLA</span>
               </div>
               {slaInfo.type === 'no_sla' ? (
@@ -841,7 +849,7 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
                     slaInfo.badgeBorder
                   )}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
                   <span>{slaInfo.badgeLabel}</span>
                 </span>
               ) : slaInfo.isApproaching ? (
@@ -870,12 +878,12 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
               )}
             </div>
 
-            <p className={cn('text-sm font-black tracking-tight', isOverdue ? 'text-rose-600' : 'text-slate-900')}>
+            <p className={cn('text-sm font-black tracking-tight', isOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-slate-100')}>
               {item.due_date
                 ? formatWib(item.due_date, 'dd MMMM yyyy • HH:mm')
                 : 'Batas waktu belum diatur'}
             </p>
-            <p className="text-[11px] text-slate-500 font-medium">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               {isClosed
                 ? `Kasus telah ditutup pada ${item.closed_at ? formatWib(item.closed_at, 'dd MMM yyyy, HH:mm') : 'selesai'}`
                 : isOverdue
@@ -885,29 +893,29 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           </div>
 
           {/* 2. Penugasan PIC Card */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+          <div className="p-4 rounded-3xl neu-raised space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                 Penanggung Jawab (PIC)
               </span>
             </div>
 
             {currentAssignment ? (
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-900 text-white font-black text-sm flex items-center justify-center shadow-2xs shrink-0">
+                <div className="w-9 h-9 rounded-xl neu-pill-active text-white font-black text-sm flex items-center justify-center shrink-0">
                   {currentAssigneeName ? currentAssigneeName[0].toUpperCase() : 'P'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-extrabold text-xs text-slate-900 truncate">
+                  <p className="font-extrabold text-xs text-slate-900 dark:text-slate-100 truncate">
                     {currentAssigneeName}
                   </p>
-                  <p className="text-[10.5px] text-slate-500 font-semibold mt-0.5">
+                  <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
                     Ditugaskan {currentAssignment.assigned_at ? formatDistanceToNow(new Date(currentAssignment.assigned_at), { addSuffix: true, locale: localeId }) : ''}
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 text-xs">
+              <div className="flex items-center gap-2.5 p-2.5 rounded-2xl neu-inset-sm text-slate-500 dark:text-slate-400 text-xs">
                 <User className="w-4 h-4 text-slate-400 shrink-0" />
                 <span className="font-medium italic text-[11.5px]">Belum ada PIC ditugaskan</span>
               </div>
@@ -937,47 +945,51 @@ export default async function CaseDetailPage({ params }: CaseDetailPageProps) {
           />
 
           {/* 4. Lokasi & Aset Terkait Card */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+          <div className="p-4 rounded-3xl neu-raised space-y-2.5">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/40 dark:border-slate-800/60">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                 Lokasi & Aset
               </span>
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5">
+                <div className="w-7 h-7 rounded-xl neu-icon-well flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5" />
+                </div>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                     Area & Lokasi
                   </span>
                   {locationText ? (
-                    <span className="font-bold text-slate-800 leading-snug">{locationText}</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 leading-snug">{locationText}</span>
                   ) : (
-                    <span className="text-slate-400 italic text-[11px]">Lokasi belum ditentukan</span>
+                    <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">Lokasi belum ditentukan</span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 pt-2 border-t border-slate-100">
-                <Package className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5 pt-2 border-t border-slate-200/40 dark:border-slate-800/60">
+                <div className="w-7 h-7 rounded-xl neu-icon-well flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
+                  <Package className="w-3.5 h-3.5" />
+                </div>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                     Aset Terkait
                   </span>
                   {item.assets ? (
                     <div>
                       <Link
                         href={`/assets/${(item.assets as any).id || ''}`}
-                        className="inline-flex items-center gap-1 font-mono font-bold text-blue-700 hover:text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded text-[10.5px] hover:underline"
+                        className="inline-flex items-center gap-1 font-mono font-bold text-blue-600 dark:text-blue-400 neu-pill-active px-2 py-0.5 rounded-lg text-[10.5px] hover:underline"
                       >
                         <span>{item.assets.asset_code}</span>
                         <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                       </Link>
-                      <p className="font-semibold text-slate-800 text-[11px] mt-0.5">{item.assets.name}</p>
+                      <p className="font-semibold text-slate-800 dark:text-slate-200 text-[11px] mt-1">{item.assets.name}</p>
                     </div>
                   ) : (
-                    <span className="text-slate-400 italic text-[11px]">Tidak terkait aset</span>
+                    <span className="text-slate-400 dark:text-slate-500 italic text-[11px]">Tidak terkait aset</span>
                   )}
                 </div>
               </div>

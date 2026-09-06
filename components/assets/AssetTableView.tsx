@@ -18,11 +18,11 @@ interface AssetTableViewProps {
 
 export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
   return (
-    <div className="hidden lg:block bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+    <div className="hidden lg:block neu-raised rounded-3xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/90 border-b border-slate-200/80 text-[10.5px] font-black uppercase tracking-wider text-slate-500">
+            <tr className="bg-[#E5EBF3] dark:bg-[#101726] border-b border-slate-200/60 dark:border-slate-800 text-[10.5px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400">
               <th className="py-3 px-4">Kode & Nama Aset</th>
               <th className="py-3 px-4">Kategori</th>
               <th className="py-3 px-4">Area & Lokasi</th>
@@ -32,7 +32,7 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
               <th className="py-3 px-4 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+          <tbody className="divide-y divide-slate-200/40 dark:divide-slate-800/60 text-xs font-medium text-slate-700 dark:text-slate-300">
             {assets.map((asset) => {
               const brand = asset.specification?.brand;
               const model = asset.specification?.model;
@@ -42,24 +42,24 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
               return (
                 <tr
                   key={asset.id}
-                  className="hover:bg-slate-50/80 transition-colors group"
+                  className="hover:bg-blue-500/5 dark:hover:bg-blue-500/10 transition-colors group"
                 >
                   {/* Code & Name */}
                   <td className="py-3 px-4">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-black text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[11px] border border-blue-200/60">
+                        <span className="font-mono font-black text-blue-700 dark:text-blue-400 neu-pill-active px-2 py-0.5 rounded-lg text-[11px]">
                           {asset.asset_code}
                         </span>
                       </div>
                       <Link
                         href={`/assets/${asset.id}`}
-                        className="font-bold text-slate-900 hover:text-blue-600 transition-colors block line-clamp-1"
+                        className="font-bold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors block line-clamp-1"
                       >
                         {asset.name}
                       </Link>
                       {(brand || model) && (
-                        <p className="text-[11px] text-slate-400 font-medium">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                           {brand} {model ? `• ${model}` : ''}
                         </p>
                       )}
@@ -69,7 +69,7 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
                   {/* Category */}
                   <td className="py-3 px-4">
                     {asset.category?.name ? (
-                      <span className="font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-[10.5px]">
+                      <span className="font-bold neu-pill-inactive px-2.5 py-0.5 rounded-lg text-[10.5px]">
                         {asset.category.name}
                       </span>
                     ) : (
@@ -79,7 +79,7 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
 
                   {/* Area & Location */}
                   <td className="py-3 px-4">
-                    <div className="flex items-center gap-1 text-slate-600">
+                    <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span className="font-semibold text-[11px] truncate max-w-[160px]">
                         {asset.area?.name || 'Belum diatur'}
@@ -101,22 +101,22 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
                   {/* Open Cases */}
                   <td className="py-3 px-4 text-center">
                     {openCases > 0 ? (
-                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/80">
+                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/40">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
                         <span>{openCases} Kasus</span>
                       </span>
                     ) : (
-                      <span className="text-[11px] font-semibold text-slate-400">0 Kasus</span>
+                      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">0 Kasus</span>
                     )}
                   </td>
 
                   {/* Actions */}
                   <td className="py-3 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => onOpenQR(asset)}
-                        className="p-1.5 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-600 border border-slate-200/80 transition-colors"
+                        className="w-8 h-8 rounded-xl neu-icon-well flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
                         title="Tampilkan QR Code"
                         aria-label="Tampilkan QR Code"
                       >
@@ -124,7 +124,7 @@ export function AssetTableView({ assets, onOpenQR }: AssetTableViewProps) {
                       </button>
                       <Link
                         href={`/assets/${asset.id}`}
-                        className="inline-flex items-center gap-0.5 px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] border border-blue-200/60 transition-colors"
+                        className="neu-btn-secondary inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 font-bold text-[11px] transition-all"
                       >
                         <span>Detail</span>
                         <ChevronRight className="w-3.5 h-3.5" />
