@@ -19,21 +19,21 @@ export default function IntegrityPublicLayout({
 }) {
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white transition-colors duration-150">
-      {/* Inline Theme Initializer to prevent flash */}
+      {/* Inline Theme Initializer to prevent flash — Default to Dark */}
       <script
         dangerouslySetInnerHTML={{
           __html: `
             (function() {
               try {
                 var saved = localStorage.getItem('wact-integrity-theme');
-                if (saved === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else if (saved === 'light') {
+                if (saved === 'light') {
                   document.documentElement.classList.remove('dark');
                 } else {
-                  document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('dark');
                 }
-              } catch (e) {}
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
             })();
           `,
         }}
